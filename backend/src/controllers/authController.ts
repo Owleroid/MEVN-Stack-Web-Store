@@ -1,67 +1,73 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 
 import User from "../models/User.js";
+import ApiError from "../utils/apiError.js";
 
-// Fixing the session custom parameter
-declare module "express-session" {
-  interface SessionData {
-    userId: string;
-  }
-}
-
-export const signup = async (req: Request, res: Response) => {
-  console.log("Request triggered");
+export const signup = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { email, password } = req.body;
   try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      throw new ApiError(400, "User already exists");
+    }
+
     const user = new User({ email, password });
     await user.save();
     res.status(201).json({ message: "User created" });
   } catch (error) {
-    res.status(500).json({ error: "Error creating user" });
+    next(error);
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      res.status(500).json({ error: "Invalid credentials" });
-      return;
+      throw new ApiError(401, "Invalid credentials");
     }
 
-    // req.session.userId = user._id;
-    res.cookie("userId", user._id, {
-      httpOnly: true, // The cookie is not accessible via JavaScript
-      secure: true, // The cookie is only sent over HTTPS
-      sameSite: "strict", // Prevents CSRF attacks
-      maxAge: 24 * 60 * 60 * 1000, // Cookie expires in 1 day
-    });
+    req.session.userId = user._id;
+    if (user.isAdmin) req.session.isAdmin = true;
     res.status(200).json({ message: "Logged in" });
   } catch (error) {
-    res.status(500).json({ error: "Error logging in" });
+    next(error);
   }
 };
 
-export const logout = (req: Request, res: Response) => {
+export const logout = (req: Request, res: Response, next: NextFunction) => {
   req.session.destroy((err) => {
-    if (err) return res.status(500).json({ error: "Error logging out" });
+    if (err) {
+      return next(new ApiError(500, "Error logging out"));
+    }
     res.clearCookie("connect.sid");
     res.status(200).json({ message: "Logged out" });
   });
 };
 
-export const resetPassword = async (req: Request, res: Response) => {
+export const resetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      res.status(404).json({ error: "User not found" });
-      return;
+      throw new ApiError(404, "User not found");
     }
+
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, {
       expiresIn: "1h",
     });
@@ -84,6 +90,6 @@ export const resetPassword = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Reset email sent" });
   } catch (error) {
-    res.status(500).json({ error: "Error resetting password" });
+    next(error);
   }
 };

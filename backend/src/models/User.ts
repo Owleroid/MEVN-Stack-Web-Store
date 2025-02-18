@@ -5,6 +5,7 @@ export interface User extends Document {
   _id: string;
   email: string;
   password: string;
+  isAdmin?: boolean;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
 }
