@@ -14,10 +14,7 @@ export const signup = async (
   const { email, password } = req.body;
   try {
     const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      throw new ApiError(400, "User already exists");
-    }
-
+    if (existingUser) throw new ApiError(400, "User already exists");
     const user = new User({ email, password });
     await user.save();
     res.status(201).json({ message: "User created" });
@@ -34,12 +31,9 @@ export const login = async (
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user || !(await bcrypt.compare(password, user.password)))
       throw new ApiError(401, "Invalid credentials");
-    }
-
     req.session.userId = user._id;
-    if (user.isAdmin) req.session.isAdmin = true;
     res.status(200).json({ message: "Logged in" });
   } catch (error) {
     next(error);
@@ -75,7 +69,6 @@ export const resetPassword = async (
     user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
     await user.save();
 
-    // Send email with reset link
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
