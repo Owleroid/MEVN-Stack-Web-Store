@@ -6,6 +6,7 @@ import corseConfig from "./config/cors.js";
 import sessionConfig from "./config/session.js";
 
 import authRoutes from "./routes/authRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
 
@@ -16,6 +17,7 @@ app.use(cors(corseConfig));
 app.use(session(sessionConfig));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use(errorHandler);
 
