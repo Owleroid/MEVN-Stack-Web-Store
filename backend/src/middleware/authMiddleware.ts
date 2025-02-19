@@ -24,7 +24,7 @@ export const isAdmin = async (
     if (!userId) return next(new ApiError(401, "Unauthorized"));
     const user = await User.findById(userId);
     if (!user) return next(new ApiError(404, "User not found"));
-    if (!user.isAdmin) return next(new ApiError(500, "User is not an admin"));
+    if (!user.isAdmin) return next(new ApiError(403, "User is not an admin"));
   } catch (error) {
     return next(error);
   }
