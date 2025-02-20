@@ -1,9 +1,9 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export interface Product extends Document {
   _id: string;
   title: string;
-  category: string;
+  category: mongoose.Types.ObjectId;
   price: number;
   artist: string;
   size: string;
@@ -12,15 +12,19 @@ export interface Product extends Document {
   boxArt: string;
   amount: number;
   description?: string;
-  imageUrls?: {
+  imageUrls: {
     main: string;
-    secondary: string[];
+    secondary?: string[];
   };
 }
 
 const productSchema = new mongoose.Schema({
   title: { type: String, required: true, unique: true },
-  category: { type: String, required: true },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+    required: true,
+  },
   price: { type: Number, required: true },
   artist: { type: String, required: false },
   size: { type: String, required: true },
@@ -30,7 +34,7 @@ const productSchema = new mongoose.Schema({
   amount: { type: Number, required: true },
   description: { type: String, required: false },
   imageUrls: {
-    main: { type: String, required: false },
+    main: { type: String, required: true },
     secondary: { type: [String], required: false },
   },
 });

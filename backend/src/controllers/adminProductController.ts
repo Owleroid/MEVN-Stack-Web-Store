@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
-import ApiError from "../utils/apiError.js";
 import Product from "../models/Product.js";
+import ApiError from "../utils/apiError.js";
 import { ProductInput } from "../types/product.js";
 
 export const addProduct = async (

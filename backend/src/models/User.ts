@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export interface User extends Document {
   _id: string;
