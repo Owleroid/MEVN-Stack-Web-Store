@@ -7,6 +7,7 @@ import sessionConfig from "./config/session.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import storeRoutes from "./routes/storeRoutes.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
 
@@ -18,6 +19,7 @@ app.use(session(sessionConfig));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/store", storeRoutes);
 
 app.use(errorHandler);
 
