@@ -22,7 +22,13 @@ export const addProduct = async (
     description = "",
     imageUrls = { main: "", secondary: [] },
   }: ProductInput = req.body;
+
   try {
+    const existingProduct = await Product.findOne({ title });
+    if (existingProduct) {
+      return next(new ApiError(400, "Product with this title already exists"));
+    }
+
     const newProduct = new Product({
       title,
       category,
@@ -36,11 +42,9 @@ export const addProduct = async (
       description,
       imageUrls,
     });
-    const existingProduct = await Product.findOne({ title });
-    if (existingProduct) {
-      return next(new ApiError(400, "Product with this title already exists"));
-    }
+
     const savedProduct = await newProduct.save();
+
     res.status(201).json({
       success: true,
       message: "New product was successfully added",
@@ -59,10 +63,15 @@ export const editProduct = async (
   try {
     const { _id } = req.body;
     const updatedProduct: ProductInput = req.body;
+
     const product = await Product.findByIdAndUpdate(_id, updatedProduct, {
       new: true,
     });
-    if (!product) return next(new ApiError(404, "Product not found"));
+
+    if (!product) {
+      return next(new ApiError(404, "Product not found"));
+    }
+
     res.status(200).json({
       success: true,
       message: "Product was successfully updated",
@@ -80,8 +89,13 @@ export const deleteProduct = async (
 ) => {
   try {
     const { _id } = req.body;
+
     const product = await Product.findByIdAndDelete(_id);
-    if (!product) return next(new ApiError(404, "Product not found"));
+
+    if (!product) {
+      return next(new ApiError(404, "Product not found"));
+    }
+
     res.status(200).json({
       success: true,
       message: "Product was successfully deleted",

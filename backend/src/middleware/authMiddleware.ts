@@ -21,12 +21,21 @@ export const isAdmin = async (
 ) => {
   try {
     const userId = req.session.userId;
-    if (!userId) return next(new ApiError(401, "Unauthorized"));
+    if (!userId) {
+      return next(new ApiError(401, "Unauthorized"));
+    }
+
     const user = await User.findById(userId);
-    if (!user) return next(new ApiError(404, "User not found"));
-    if (!user.isAdmin) return next(new ApiError(403, "User is not an admin"));
+    if (!user) {
+      return next(new ApiError(404, "User not found"));
+    }
+
+    if (!user.isAdmin) {
+      return next(new ApiError(403, "User is not an admin"));
+    }
   } catch (error) {
     return next(error);
   }
+
   next();
 };

@@ -10,11 +10,15 @@ export const createCategory = async (
 ) => {
   try {
     const { name } = req.body;
+
     const existingCategory = await Category.findOne({ name });
-    if (existingCategory)
+    if (existingCategory) {
       return next(new ApiError(400, "Category with this name already exists"));
+    }
+
     const newCategory = new Category({ name });
     const savedCategory = await newCategory.save();
+
     res.status(201).json({
       success: true,
       message: "New category was successfully created",
@@ -33,12 +37,17 @@ export const updateCategory = async (
   try {
     const { id } = req.params;
     const { name } = req.body;
+
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
       { name },
       { new: true }
     );
-    if (!updatedCategory) return next(new ApiError(404, "Category not found"));
+
+    if (!updatedCategory) {
+      return next(new ApiError(404, "Category not found"));
+    }
+
     res.status(200).json({
       success: true,
       message: "Category was successfully updated",
@@ -56,8 +65,13 @@ export const deleteCategory = async (
 ) => {
   try {
     const { id } = req.params;
+
     const deletedCategory = await Category.findByIdAndDelete(id);
-    if (!deletedCategory) return next(new ApiError(404, "Category not found"));
+
+    if (!deletedCategory) {
+      return next(new ApiError(404, "Category not found"));
+    }
+
     res.status(200).json({
       success: true,
       message: "Category was successfully deleted",

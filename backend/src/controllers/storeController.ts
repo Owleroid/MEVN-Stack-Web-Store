@@ -11,11 +11,17 @@ export const getProductsByCategory = async (
 ) => {
   try {
     const { category } = req.params;
+
     const categoryDoc = await Category.findOne({ name: category });
-    if (!categoryDoc) return next(new ApiError(404, "Category not found"));
+    if (!categoryDoc) {
+      return next(new ApiError(404, "Category not found"));
+    }
+
     const products = await Product.find({ category: categoryDoc._id });
-    if (!products.length)
+    if (!products.length) {
       return next(new ApiError(404, "No products found in this category"));
+    }
+
     res.status(200).json(products);
   } catch (error) {
     next(error);
