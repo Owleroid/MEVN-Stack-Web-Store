@@ -6,27 +6,28 @@
             <input v-model="password" type="password" placeholder="Password" required />
             <button type="submit">Login</button>
         </form>
-        <p v-if="error">{{ error }}</p>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useAuthStore } from '../stores/authStore';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '../stores/authStore';
 
 const email = ref('');
 const password = ref('');
-const error = ref('');
-const authStore = useAuthStore();
 const router = useRouter();
+const authStore = useAuthStore();
 
-const handleLogin = async () => {
+async function handleLogin() {
     try {
         await authStore.login(email.value, password.value);
         router.push('/');
-    } catch (err) {
-        error.value = 'Login failed. Please check your credentials.';
+    } catch (error) {
+        console.error("Login failed:", error);
+        // To do: Handle login error (e.g., show a message to the user)
     }
-};
+}
 </script>
+
+<style scoped></style>

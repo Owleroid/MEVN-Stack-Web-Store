@@ -1,11 +1,12 @@
 <template>
-    <router-view />
+    <div id="app">
+        <Navbar />
+        <router-view />
+    </div>
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from './stores/authStore';
-
-// Check authentication status on app load
-const authStore = useAuthStore();
-authStore.isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
+import Navbar from './components/Navbar.vue';
 </script>
+
+<style></style>
