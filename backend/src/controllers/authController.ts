@@ -45,10 +45,14 @@ export const login = async (
     }
 
     req.session.userId = user._id;
+    if (user.isAdmin) {
+      req.session.isAdmin = user.isAdmin;
+    }
 
     res.status(200).json({
       success: true,
       message: "Logged in",
+      isAdmin: user.isAdmin,
     });
   } catch (error) {
     next(error);

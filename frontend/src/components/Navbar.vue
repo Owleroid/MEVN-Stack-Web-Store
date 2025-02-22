@@ -16,6 +16,7 @@
                 <div class="dropdown-content">
                     <router-link to="/settings">Settings</router-link>
                     <router-link to="/orders">Orders</router-link>
+                    <router-link v-if="authStore.isAdmin" to="/admin">Admin Panel</router-link>
                 </div>
             </li>
             <li v-if="authStore.isAuthenticated"><button @click="authStore.logout">Logout</button></li>

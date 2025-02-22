@@ -6,6 +6,7 @@ import {
   deleteProduct,
 } from "../controllers/adminProductController.js";
 import {
+  getAllCategories,
   createCategory,
   updateCategory,
   deleteCategory,
@@ -14,12 +15,15 @@ import { isAuthenticated, isAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
+// Product routes
 router.post("/add-product", isAuthenticated, isAdmin, addProduct);
 router.put("/edit-product", isAuthenticated, isAdmin, editProduct);
 router.delete("/delete-product", isAuthenticated, isAdmin, deleteProduct);
 
-router.post("/create", createCategory);
-router.put("/update/:id", updateCategory);
-router.delete("/delete/:id", deleteCategory);
+// Category routes
+router.get("/categories", isAuthenticated, isAdmin, getAllCategories);
+router.post("/create", isAuthenticated, isAdmin, createCategory);
+router.put("/update/:id", isAuthenticated, isAdmin, updateCategory);
+router.delete("/delete/:id", isAuthenticated, isAdmin, deleteCategory);
 
 export default router;

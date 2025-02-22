@@ -80,3 +80,20 @@ export const deleteCategory = async (
     next(error);
   }
 };
+
+export const getAllCategories = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const categories = await Category.find();
+
+    res.status(200).json({
+      success: true,
+      categories,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
