@@ -11,6 +11,10 @@ export const getAllCategories = async () => {
   return categoryService.get("/categories");
 };
 
+export const getCategory = async (id: string) => {
+  return categoryService.get(`/${id}`);
+};
+
 export const deleteCategory = async (id: string) => {
   return categoryService.delete(`/delete/${id}`);
 };

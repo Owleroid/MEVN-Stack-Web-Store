@@ -58,6 +58,7 @@ const addCategory = () => {
 onMounted(() => {
     fetchCategories();
     on('categoryAdded', fetchCategories);
+    on('categoryUpdated', fetchCategories);
 });
 </script>
 
