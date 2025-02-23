@@ -14,8 +14,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { getCategory, updateCategory } from '../../services/categoryService';
-import { useEventBus } from '../../utils/eventBus';
+import { getCategory, updateCategory } from '../../../services/categoryService';
+import { useEventBus } from '../../../utils/eventBus';
 
 const name = ref('');
 const router = useRouter();

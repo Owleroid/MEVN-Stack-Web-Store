@@ -8,8 +8,8 @@
         <ul v-else>
             <li v-for="category in categories" :key="category._id">
                 {{ category.name }}
-                <button @click="editCategory(category._id)">Edit</button>
-                <button @click="removeCategory(category._id)">Remove</button>
+                <button @click="editCategory(category._id ?? '')">Edit</button>
+                <button @click="removeCategory(category._id ?? '')">Remove</button>
             </li>
         </ul>
         <button v-if="categories.length > 0" @click="addCategory">Add New Category</button>
@@ -20,10 +20,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useEventBus } from '../../utils/eventBus';
+import { useEventBus } from '../../../utils/eventBus';
 
-import { getAllCategories, deleteCategory } from '../../services/categoryService';
-import type { Category } from '../../types/categories';
+import { getAllCategories, deleteCategory } from '../../../services/categoryService';
+import type { Category } from '../../../types/categories';
 
 const categories = ref<Category[]>([]);
 const router = useRouter();
