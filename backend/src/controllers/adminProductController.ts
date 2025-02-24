@@ -61,10 +61,10 @@ export const editProduct = async (
   next: NextFunction
 ) => {
   try {
-    const { _id } = req.body;
+    const { id } = req.params;
     const updatedProduct: ProductInput = req.body;
 
-    const product = await Product.findByIdAndUpdate(_id, updatedProduct, {
+    const product = await Product.findByIdAndUpdate(id, updatedProduct, {
       new: true,
     });
 
@@ -75,7 +75,7 @@ export const editProduct = async (
     res.status(200).json({
       success: true,
       message: "Product was successfully updated",
-      productId: _id,
+      productId: id,
     });
   } catch (error) {
     next(error);
@@ -88,9 +88,9 @@ export const deleteProduct = async (
   next: NextFunction
 ) => {
   try {
-    const { _id } = req.body;
+    const { id } = req.params;
 
-    const product = await Product.findByIdAndDelete(_id);
+    const product = await Product.findByIdAndDelete(id);
 
     if (!product) {
       return next(new ApiError(404, "Product not found"));

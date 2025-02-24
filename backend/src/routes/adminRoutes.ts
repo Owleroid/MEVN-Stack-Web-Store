@@ -17,8 +17,8 @@ const router = express.Router();
 
 // Product routes
 router.post("/add-product", isAuthenticated, isAdmin, addProduct);
-router.put("/edit-product", isAuthenticated, isAdmin, editProduct);
-router.delete("/delete-product", isAuthenticated, isAdmin, deleteProduct);
+router.put("/edit-product/:id", isAuthenticated, isAdmin, editProduct);
+router.delete("/delete-product/:id", isAuthenticated, isAdmin, deleteProduct);
 
 // Category routes
 router.get("/categories", isAuthenticated, isAdmin, getAllCategories);
