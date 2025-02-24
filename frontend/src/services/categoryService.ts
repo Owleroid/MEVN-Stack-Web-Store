@@ -12,22 +12,22 @@ export const getAllCategories = async () => {
 };
 
 export const getCategory = async (id: string) => {
-  return categoryService.get(`/${id}`);
+  return categoryService.get(`/category/${id}`);
 };
 
 export const deleteCategory = async (id: string) => {
-  return categoryService.delete(`/delete/${id}`);
+  return categoryService.delete(`/delete-category/${id}`);
 };
 
 export const createCategory = async (category: { name: string }) => {
-  return categoryService.post("/create", category);
+  return categoryService.post("/add-category", category);
 };
 
 export const updateCategory = async (
   id: string,
   category: { name: string }
 ) => {
-  return categoryService.put(`/update/${id}`, category);
+  return categoryService.put(`/update-category/${id}`, category);
 };
 
 export default categoryService;

@@ -6,7 +6,10 @@
                 <label for="name">Category Name:</label>
                 <input type="text" id="name" v-model="name" required />
             </div>
-            <button type="submit">Add Category</button>
+            <div class="form-actions">
+                <button type="submit">Add Category</button>
+                <button type="button" @click="cancelAdd">Cancel</button>
+            </div>
         </form>
     </div>
 </template>
@@ -16,19 +19,27 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { createCategory } from '../../../services/categoryService';
 import { useEventBus } from '../../../utils/eventBus';
+import { useToast } from 'vue-toastification';
 
 const name = ref('');
 const router = useRouter();
 const { emit } = useEventBus();
+const toast = useToast();
 
 const submitForm = async () => {
     try {
         await createCategory({ name: name.value });
         emit('categoryAdded');
+        toast.success('Category was successfully added');
         router.push({ name: 'AdminCategories' });
     } catch (error) {
+        toast.error('Failed to add category');
         console.error('Failed to add category:', error);
     }
+};
+
+const cancelAdd = () => {
+    router.push({ name: 'AdminCategories' });
 };
 </script>
 
@@ -64,6 +75,11 @@ input {
     box-sizing: border-box;
 }
 
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
 button {
     padding: 10px 15px;
     border: none;
@@ -72,10 +88,17 @@ button {
     color: white;
     cursor: pointer;
     width: fit-content;
-    align-self: flex-end;
 }
 
 button:hover {
     background-color: #0056b3;
+}
+
+button[type="button"] {
+    background-color: #6c757d;
+}
+
+button[type="button"]:hover {
+    background-color: #5a6268;
 }
 </style>

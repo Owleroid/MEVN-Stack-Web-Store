@@ -6,43 +6,65 @@
                 <label for="name">Category Name:</label>
                 <input type="text" id="name" v-model="name" required />
             </div>
-            <button type="submit">Update Category</button>
+            <div class="form-actions">
+                <button type="submit">Update Category</button>
+                <button type="button" @click="cancelEdit">Cancel</button>
+            </div>
         </form>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { getCategory, updateCategory } from '../../../services/categoryService';
 import { useEventBus } from '../../../utils/eventBus';
+import { useToast } from 'vue-toastification';
 
 const name = ref('');
 const router = useRouter();
 const route = useRoute();
 const { emit } = useEventBus();
-const categoryId = route.params.id as string;
+const toast = useToast();
+const categoryId = ref(route.params.id as string);
 
-const fetchCategory = async () => {
+const fetchCategory = async (id: string) => {
     try {
-        const response = await getCategory(categoryId);
-        name.value = response.data.name;
+        const response = await getCategory(id);
+        name.value = response.data.category.name;
     } catch (error) {
+        toast.error('Failed to fetch category');
         console.error('Failed to fetch category:', error);
     }
 };
 
 const submitForm = async () => {
     try {
-        await updateCategory(categoryId, { name: name.value });
+        await updateCategory(categoryId.value, { name: name.value });
         emit('categoryUpdated');
+        toast.success('Category was successfully updated');
         router.push({ name: 'AdminCategories' });
     } catch (error) {
+        toast.error('Failed to update category');
         console.error('Failed to update category:', error);
     }
 };
 
-onMounted(fetchCategory);
+const cancelEdit = () => {
+    router.push({ name: 'AdminCategories' });
+};
+
+onMounted(() => {
+    fetchCategory(categoryId.value);
+});
+
+watch(
+    () => route.params.id,
+    (newId) => {
+        categoryId.value = newId as string;
+        fetchCategory(newId as string);
+    }
+);
 </script>
 
 <style scoped>
@@ -77,6 +99,11 @@ input {
     box-sizing: border-box;
 }
 
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
 button {
     padding: 10px 15px;
     border: none;
@@ -85,10 +112,17 @@ button {
     color: white;
     cursor: pointer;
     width: fit-content;
-    align-self: flex-end;
 }
 
 button:hover {
     background-color: #0056b3;
+}
+
+button[type="button"] {
+    background-color: #6c757d;
+}
+
+button[type="button"]:hover {
+    background-color: #5a6268;
 }
 </style>

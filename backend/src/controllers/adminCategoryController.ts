@@ -3,6 +3,46 @@ import { Request, Response, NextFunction } from "express";
 import ApiError from "../utils/apiError.js";
 import Category from "../models/Category.js";
 
+export const getAllCategories = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const categories = await Category.find();
+
+    res.status(200).json({
+      success: true,
+      categories,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getCategoryById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    const category = await Category.findById(id);
+
+    if (!category) {
+      return next(new ApiError(404, "Category not found"));
+    }
+
+    res.status(200).json({
+      success: true,
+      category,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const createCategory = async (
   req: Request,
   res: Response,
@@ -75,23 +115,6 @@ export const deleteCategory = async (
     res.status(200).json({
       success: true,
       message: "Category was successfully deleted",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getAllCategories = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const categories = await Category.find();
-
-    res.status(200).json({
-      success: true,
-      categories,
     });
   } catch (error) {
     next(error);

@@ -21,6 +21,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useEventBus } from '../../../utils/eventBus';
+import { useToast } from 'vue-toastification';
 
 import { getAllCategories, deleteCategory } from '../../../services/categoryService';
 import type { Category } from '../../../types/categories';
@@ -28,12 +29,14 @@ import type { Category } from '../../../types/categories';
 const categories = ref<Category[]>([]);
 const router = useRouter();
 const { on } = useEventBus();
+const toast = useToast();
 
 const fetchCategories = async () => {
     try {
         const response = await getAllCategories();
         categories.value = response.data.categories;
     } catch (error) {
+        toast.error('Failed to fetch categories');
         console.error('Failed to fetch categories:', error);
     }
 };
@@ -45,8 +48,10 @@ const editCategory = (id: string) => {
 const removeCategory = async (id: string) => {
     try {
         await deleteCategory(id);
-        fetchCategories(); // Refresh the list after deletion
+        fetchCategories();
+        toast.success('Category removed successfully');
     } catch (error) {
+        toast.error('Failed to remove category');
         console.error('Failed to remove category:', error);
     }
 };

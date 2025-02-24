@@ -7,6 +7,7 @@ import {
 } from "../controllers/adminProductController.js";
 import {
   getAllCategories,
+  getCategoryById,
   createCategory,
   updateCategory,
   deleteCategory,
@@ -22,8 +23,9 @@ router.delete("/delete-product/:id", isAuthenticated, isAdmin, deleteProduct);
 
 // Category routes
 router.get("/categories", isAuthenticated, isAdmin, getAllCategories);
-router.post("/create", isAuthenticated, isAdmin, createCategory);
-router.put("/update/:id", isAuthenticated, isAdmin, updateCategory);
-router.delete("/delete/:id", isAuthenticated, isAdmin, deleteCategory);
+router.get("/category/:id", isAuthenticated, isAdmin, getCategoryById);
+router.post("/add-category", isAuthenticated, isAdmin, createCategory);
+router.put("/update-category/:id", isAuthenticated, isAdmin, updateCategory);
+router.delete("/delete-category/:id", isAuthenticated, isAdmin, deleteCategory);
 
 export default router;
