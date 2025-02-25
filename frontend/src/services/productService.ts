@@ -9,14 +9,14 @@ const productService = axios.create({
 });
 
 export const getProductsByCategory = async (categoryId: string) => {
-  return productService.get(`/category/${categoryId}`);
+  return productService.get(`/products/category/${categoryId}`);
 };
 
-export const getProduct = async (id: string) => {
-  return productService.get(`/${id}`);
+export const getProductById = async (id: string) => {
+  return productService.get(`/product/${id}`);
 };
 
-export const createProduct = async (product: ProductInput) => {
+export const addProduct = async (product: ProductInput) => {
   return productService.post("/add-product", product);
 };
 

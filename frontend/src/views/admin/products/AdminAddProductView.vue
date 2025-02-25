@@ -46,17 +46,24 @@
                 <label for="secondaryImageUrls">Secondary Image URLs:</label>
                 <textarea id="secondaryImageUrls" v-model="secondaryImageUrls"></textarea>
             </div>
-            <button type="submit">Add Product</button>
+            <div class="form-actions">
+                <button type="submit">Add Product</button>
+                <button type="button" @click="cancelAdd">Cancel</button>
+            </div>
         </form>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useToast } from 'vue-toastification';
 import { useRouter, useRoute } from 'vue-router';
-import { createProduct } from '../../../services/productService';
-import { useEventBus } from '../../../utils/eventBus';
+
 import type { ProductInput } from '../../../types/products';
+
+import { addProduct } from '../../../services/productService';
+
+import { useEventBus } from '../../../utils/eventBus';
 
 const title = ref('');
 const price = ref(0);
@@ -72,6 +79,7 @@ const secondaryImageUrls = ref('');
 const router = useRouter();
 const route = useRoute();
 const { emit } = useEventBus();
+const toast = useToast();
 const categoryId = route.params.categoryId as string;
 
 const submitForm = async () => {
@@ -92,12 +100,19 @@ const submitForm = async () => {
                 secondary: secondaryImageUrls.value.split(',').map(url => url.trim())
             }
         };
-        await createProduct(product);
+
+        await addProduct(product);
         emit('productAdded');
-        router.push({ name: 'AdminProducts' });
+        toast.success('Product was successfully added');
+        router.push({ name: 'AdminProducts', params: { categoryId } });
     } catch (error) {
+        toast.error('Failed to add product');
         console.error('Failed to add product:', error);
     }
+};
+
+const cancelAdd = () => {
+    router.push({ name: 'AdminProducts' });
 };
 </script>
 
@@ -134,6 +149,11 @@ textarea {
     box-sizing: border-box;
 }
 
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
 button {
     padding: 10px 15px;
     border: none;
@@ -142,10 +162,17 @@ button {
     color: white;
     cursor: pointer;
     width: fit-content;
-    align-self: flex-end;
 }
 
 button:hover {
     background-color: #0056b3;
+}
+
+button[type="button"] {
+    background-color: #6c757d;
+}
+
+button[type="button"]:hover {
+    background-color: #5a6268;
 }
 </style>

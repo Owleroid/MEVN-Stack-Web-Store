@@ -11,12 +11,15 @@ import NewsView from "../views/NewsView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
 
 import AdminPanelView from "../views/admin/AdminPanelView.vue";
+
 import AdminCategoriesView from "../views/admin/categories/AdminCategoriesView.vue";
 import AdminAddCategoryView from "../views/admin/categories/AdminAddCategoryView.vue";
 import AdminEditCategoryView from "../views/admin/categories/AdminEditCategoryView.vue";
+
 import AdminProductsView from "../views/admin/products/AdminProductsView.vue";
 import AdminAddProductView from "../views/admin/products/AdminAddProductView.vue";
 import AdminEditProductView from "../views/admin/products/AdminEditProductView.vue";
+
 import AdminWarehouseView from "../views/admin/AdminWarehouseView.vue";
 import AdminOrdersView from "../views/admin/AdminOrdersView.vue";
 import AdminClientsView from "../views/admin/AdminClientsView.vue";
@@ -57,16 +60,17 @@ const routes = [
       },
       {
         path: "products",
+        name: "AdminProducts",
         component: AdminProductsView,
         children: [
           {
-            path: "/admin/products/add/:categoryId",
+            path: "add/:categoryId",
             name: "AddProduct",
             component: AdminAddProductView,
             meta: { requiresAuth: true, requiresAdmin: true },
           },
           {
-            path: "/admin/products/edit/:id",
+            path: "edit/:id",
             name: "EditProduct",
             component: AdminEditProductView,
             meta: { requiresAuth: true, requiresAdmin: true },
