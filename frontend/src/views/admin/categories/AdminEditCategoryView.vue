@@ -23,7 +23,6 @@ import { getCategory, updateCategory } from '../../../services/categoryService';
 
 import { useEventBus } from '../../../utils/eventBus';
 
-
 const name = ref('');
 const router = useRouter();
 const route = useRoute();

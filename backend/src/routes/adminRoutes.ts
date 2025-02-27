@@ -5,6 +5,7 @@ import {
   getProductById,
   addProduct,
   editProduct,
+  updateProductCategory,
   deleteProduct,
 } from "../controllers/adminProductController.js";
 import {
@@ -13,6 +14,7 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
+  deleteCategoryAndReassignProducts,
 } from "../controllers/adminCategoryController.js";
 import { isAuthenticated, isAdmin } from "../middleware/authMiddleware.js";
 
@@ -28,6 +30,12 @@ router.get(
 router.get("/product/:id", isAuthenticated, isAdmin, getProductById);
 router.post("/add-product", isAuthenticated, isAdmin, addProduct);
 router.put("/edit-product/:id", isAuthenticated, isAdmin, editProduct);
+router.put(
+  "/edit-product-category/:id",
+  isAuthenticated,
+  isAdmin,
+  updateProductCategory
+);
 router.delete("/delete-product/:id", isAuthenticated, isAdmin, deleteProduct);
 
 // Category routes
@@ -36,5 +44,11 @@ router.get("/category/:id", isAuthenticated, isAdmin, getCategoryById);
 router.post("/add-category", isAuthenticated, isAdmin, createCategory);
 router.put("/update-category/:id", isAuthenticated, isAdmin, updateCategory);
 router.delete("/delete-category/:id", isAuthenticated, isAdmin, deleteCategory);
+router.put(
+  "/delete-and-reassign-category/:id",
+  isAuthenticated,
+  isAdmin,
+  deleteCategoryAndReassignProducts
+);
 
 export default router;

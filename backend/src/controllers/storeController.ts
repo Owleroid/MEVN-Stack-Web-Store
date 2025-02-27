@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import Product from "../models/Product.js";
+
 import ApiError from "../utils/apiError.js";
+
+import Product from "../models/Product.js";
 import Category from "../models/Category.js";
 
 export const getProductsByCategory = async (

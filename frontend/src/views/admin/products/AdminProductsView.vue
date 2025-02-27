@@ -29,6 +29,7 @@
                     <ul>
                         <li v-for="product in products" :key="product._id">
                             {{ product.title }}
+                            <button @click="openChangeCategoryModal(product)">Change Category</button>
                             <button @click="editProduct(product._id)">Edit</button>
                             <button @click="deleteProduct(product._id)">Delete</button>
                         </li>
@@ -36,20 +37,32 @@
                 </div>
             </div>
         </div>
+        <div v-if="showChangeCategoryModal" class="modal">
+            <div class="modal-content">
+                <h3>Change Category for {{ productToChangeCategory?.title }}</h3>
+                <select v-model="selectedNewCategory">
+                    <option v-for="category in filteredCategories" :key="category._id" :value="category._id">
+                        {{ category.name }}
+                    </option>
+                </select>
+                <button @click="changeCategory(selectedNewCategory)">Change</button>
+                <button @click="closeChangeCategoryModal">Cancel</button>
+            </div>
+        </div>
         <router-view></router-view>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useToast } from 'vue-toastification';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 import type { Product } from '../../../types/products';
 import type { Category } from '../../../types/categories';
 
 import { getAllCategories } from '../../../services/categoryService';
-import { getProductsByCategory, deleteProduct as deleteProductService } from '../../../services/productService';
+import { getProductsByCategory, deleteProduct as deleteProductService, updateProductCategory } from '../../../services/productService';
 
 import { useEventBus } from '../../../utils/eventBus';
 
@@ -60,6 +73,14 @@ const loading = ref(true);
 const router = useRouter();
 const toast = useToast();
 const { on } = useEventBus();
+
+const showChangeCategoryModal = ref(false);
+const productToChangeCategory = ref<Product | null>(null);
+const selectedNewCategory = ref<string>('');
+
+const filteredCategories = computed(() => {
+    return categories.value.filter(category => category._id !== productToChangeCategory.value?.category);
+});
 
 const fetchCategories = async () => {
     try {
@@ -116,6 +137,35 @@ const deleteProduct = async (id: string) => {
 const selectCategory = (categoryId: string) => {
     selectedCategory.value = categoryId;
     fetchProducts();
+};
+
+const openChangeCategoryModal = (product: Product) => {
+    productToChangeCategory.value = product;
+    showChangeCategoryModal.value = true;
+};
+
+const closeChangeCategoryModal = () => {
+    productToChangeCategory.value = null;
+    showChangeCategoryModal.value = false;
+};
+
+const changeCategory = async (newCategoryId: string) => {
+    if (!productToChangeCategory.value) return;
+
+    if (!newCategoryId) {
+        toast.error('Please select a new category');
+        return;
+    }
+
+    try {
+        await updateProductCategory(productToChangeCategory.value._id, newCategoryId);
+        fetchProducts();
+        toast.success('Product category updated successfully');
+        closeChangeCategoryModal();
+    } catch (error) {
+        console.error('Failed to update product category:', error);
+        toast.error('Failed to update product category');
+    }
 };
 
 watch(selectedCategory, (newCategoryId) => {
@@ -176,5 +226,24 @@ onMounted(() => {
 
 .products-list button {
     margin-left: 10px;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
 }
 </style>

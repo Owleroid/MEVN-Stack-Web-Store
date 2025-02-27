@@ -16,10 +16,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { createCategory } from '../../../services/categoryService';
-import { useEventBus } from '../../../utils/eventBus';
 import { useToast } from 'vue-toastification';
+import { useRouter } from 'vue-router';
+
+import { createCategory } from '../../../services/categoryService';
+
+import { useEventBus } from '../../../utils/eventBus';
 
 const name = ref('');
 const router = useRouter();

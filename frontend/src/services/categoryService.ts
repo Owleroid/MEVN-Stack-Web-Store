@@ -19,6 +19,15 @@ export const deleteCategory = async (id: string) => {
   return categoryService.delete(`/delete-category/${id}`);
 };
 
+export const deleteCategoryAndReassignProducts = async (
+  id: string,
+  newCategoryId: string
+) => {
+  return await categoryService.put(`/delete-and-reassign-category/${id}`, {
+    newCategoryId,
+  });
+};
+
 export const createCategory = async (category: { name: string }) => {
   return categoryService.post("/add-category", category);
 };

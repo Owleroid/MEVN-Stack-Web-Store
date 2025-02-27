@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 
-import Product from "../models/Product.js";
 import ApiError from "../utils/apiError.js";
+
+import Product from "../models/Product.js";
+
 import { ProductInput } from "../types/product.js";
 
 export const getProductsByCategoryId = async (
@@ -118,6 +120,36 @@ export const editProduct = async (
       success: true,
       message: "Product was successfully updated",
       productId: id,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProductCategory = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { categoryId } = req.body;
+
+    const product = await Product.findByIdAndUpdate(
+      id,
+      { category: categoryId },
+      { new: true }
+    );
+
+    if (!product) {
+      return next(new ApiError(404, "Product not found"));
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Product category was successfully updated",
+      productId: id,
+      category: categoryId,
     });
   } catch (error) {
     next(error);

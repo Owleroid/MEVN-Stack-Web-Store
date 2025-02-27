@@ -24,6 +24,10 @@ export const updateProduct = async (id: string, product: ProductInput) => {
   return productService.put(`/edit-product/${id}`, product);
 };
 
+export const updateProductCategory = async (id: string, categoryId: string) => {
+  return productService.put(`/edit-product-category/${id}`, { categoryId });
+};
+
 export const deleteProduct = async (id: string) => {
   return productService.delete(`/delete-product/${id}`);
 };
