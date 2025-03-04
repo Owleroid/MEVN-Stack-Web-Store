@@ -77,7 +77,12 @@ const routes = [
           },
         ],
       },
-      { path: "warehouse", component: AdminWarehouseView },
+      {
+        path: "warehouse",
+        name: "AdminWarehouse",
+        component: AdminWarehouseView,
+        meta: { requiresAuth: true, requiresAdmin: true },
+      },
       { path: "orders", component: AdminOrdersView },
       { path: "clients", component: AdminClientsView },
       { path: "news", component: AdminNewsView },

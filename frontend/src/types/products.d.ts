@@ -7,7 +7,6 @@ export interface ProductInput {
   material: string;
   parts?: string;
   boxArt: string;
-  amount: number;
   description?: string;
   imageUrls?: {
     main: string;

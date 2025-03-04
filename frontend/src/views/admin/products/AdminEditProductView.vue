@@ -31,10 +31,6 @@
                 <input type="text" id="boxArt" v-model="boxArt" required />
             </div>
             <div class="form-group">
-                <label for="amount">Amount:</label>
-                <input type="number" id="amount" v-model="amount" required />
-            </div>
-            <div class="form-group">
                 <label for="description">Description:</label>
                 <textarea id="description" v-model="description"></textarea>
             </div>
@@ -72,7 +68,6 @@ const size = ref('');
 const material = ref('');
 const parts = ref('');
 const boxArt = ref('');
-const amount = ref(0);
 const description = ref('');
 const mainImageUrl = ref('');
 const secondaryImageUrls = ref('');
@@ -94,7 +89,6 @@ const fetchProduct = async () => {
         material.value = product.material;
         parts.value = product.parts;
         boxArt.value = product.boxArt;
-        amount.value = product.amount;
         description.value = product.description;
         mainImageUrl.value = product.imageUrls.main;
         secondaryImageUrls.value = product.imageUrls.secondary.join(', ');
@@ -115,7 +109,6 @@ const submitForm = async () => {
             material: material.value,
             parts: parts.value,
             boxArt: boxArt.value,
-            amount: amount.value,
             description: description.value,
             imageUrls: {
                 main: mainImageUrl.value,

@@ -1,10 +1,12 @@
+import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 
-import ApiError from "../utils/apiError.js";
+import ApiError from "../../utils/apiError.js";
 
-import Product from "../models/Product.js";
+import Product from "../../models/Product.js";
+import Warehouse from "../../models/Warehouse.js";
 
-import { ProductInput } from "../types/product.js";
+import { ProductInput } from "../../types/product.js";
 
 export const getProductsByCategoryId = async (
   req: Request,
@@ -19,6 +21,26 @@ export const getProductsByCategoryId = async (
       success: true,
       message: "Products fetched successfully",
       products,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getProductIdsByCategoryId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { categoryId } = req.params;
+    const products = await Product.find({ category: categoryId }).select("_id");
+    const productIds = products.map((product) => product._id.toString());
+
+    res.status(200).json({
+      success: true,
+      message: "Product IDs fetched successfully",
+      productIds,
     });
   } catch (error) {
     next(error);
@@ -62,7 +84,6 @@ export const addProduct = async (
     material,
     parts = "",
     boxArt,
-    amount,
     description = "",
     imageUrls = { main: "", secondary: [] },
   }: ProductInput = req.body;
@@ -82,12 +103,22 @@ export const addProduct = async (
       material,
       parts,
       boxArt,
-      amount,
       description,
       imageUrls,
     });
 
     const savedProduct = await newProduct.save();
+
+    // Fetch all warehouses and update each with the new product and amount 0
+    const warehouses = await Warehouse.find();
+    for (const warehouse of warehouses) {
+      warehouse.products.push({
+        product: new mongoose.Types.ObjectId(savedProduct._id),
+        name: savedProduct.title,
+        amount: 0,
+      });
+      await warehouse.save();
+    }
 
     res.status(201).json({
       success: true,
@@ -169,6 +200,9 @@ export const deleteProduct = async (
     if (!product) {
       return next(new ApiError(404, "Product not found"));
     }
+
+    // Remove the product from all warehouses
+    await Warehouse.updateMany({}, { $pull: { products: { product: id } } });
 
     res.status(200).json({
       success: true,

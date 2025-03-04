@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 
-import ApiError from "../utils/apiError.js";
+import ApiError from "../../utils/apiError.js";
 
-import Product from "../models/Product.js";
-import Category from "../models/Category.js";
+import Product from "../../models/Product.js";
+import Category from "../../models/Category.js";
+import Warehouse from "../../models/Warehouse.js";
 
 export const getAllCategories = async (
   req: Request,
@@ -114,12 +115,23 @@ export const deleteCategory = async (
       return next(new ApiError(404, "Category not found"));
     }
 
-    // Find and delete all products related to the category
+    // Find all products related to the category
+    const products = await Product.find({ category: id });
+
+    // Remove each product from all warehouses
+    for (const product of products) {
+      await Warehouse.updateMany(
+        {},
+        { $pull: { products: { product: product._id } } }
+      );
+    }
+
+    // Delete all products related to the category
     await Product.deleteMany({ category: id });
 
     res.status(200).json({
       success: true,
-      message: "Category was successfully deleted",
+      message: "Category and related products were successfully deleted",
     });
   } catch (error) {
     next(error);

@@ -10,7 +10,6 @@ export interface Product extends Document {
   material: string;
   parts?: string;
   boxArt: string;
-  amount: number;
   description?: string;
   imageUrls: {
     main: string;
@@ -31,7 +30,6 @@ const productSchema = new mongoose.Schema({
   material: { type: String, required: true },
   parts: { type: String, required: false },
   boxArt: { type: String, required: true },
-  amount: { type: Number, required: true },
   description: { type: String, required: false },
   imageUrls: {
     main: { type: String, required: true },

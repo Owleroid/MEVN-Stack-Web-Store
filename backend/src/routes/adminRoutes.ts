@@ -1,42 +1,33 @@
 import express from "express";
 
 import {
-  getProductsByCategoryId,
-  getProductById,
-  addProduct,
-  editProduct,
-  updateProductCategory,
-  deleteProduct,
-} from "../controllers/adminProductController.js";
-import {
   getAllCategories,
   getCategoryById,
   createCategory,
   updateCategory,
   deleteCategory,
   deleteCategoryAndReassignProducts,
-} from "../controllers/adminCategoryController.js";
+} from "../controllers/admin/categoryController.js";
+import {
+  getProductsByCategoryId,
+  getProductIdsByCategoryId,
+  getProductById,
+  addProduct,
+  editProduct,
+  updateProductCategory,
+  deleteProduct,
+} from "../controllers/admin/productController.js";
+import {
+  getAllWarehouses,
+  getWarehouseById,
+  createWarehouse,
+  updateWarehouse,
+  deleteWarehouse,
+} from "../controllers/admin/warehouseController.js";
+
 import { isAuthenticated, isAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
-
-// Product routes
-router.get(
-  "/products/category/:categoryId",
-  isAuthenticated,
-  isAdmin,
-  getProductsByCategoryId
-);
-router.get("/product/:id", isAuthenticated, isAdmin, getProductById);
-router.post("/add-product", isAuthenticated, isAdmin, addProduct);
-router.put("/edit-product/:id", isAuthenticated, isAdmin, editProduct);
-router.put(
-  "/edit-product-category/:id",
-  isAuthenticated,
-  isAdmin,
-  updateProductCategory
-);
-router.delete("/delete-product/:id", isAuthenticated, isAdmin, deleteProduct);
 
 // Category routes
 router.get("/categories", isAuthenticated, isAdmin, getAllCategories);
@@ -49,6 +40,37 @@ router.put(
   isAuthenticated,
   isAdmin,
   deleteCategoryAndReassignProducts
+);
+
+// Product routes
+router.get(
+  "/products/category/:categoryId",
+  isAuthenticated,
+  isAdmin,
+  getProductsByCategoryId
+);
+router.get("/products/category/:categoryId/ids", getProductIdsByCategoryId);
+router.get("/product/:id", isAuthenticated, isAdmin, getProductById);
+router.post("/add-product", isAuthenticated, isAdmin, addProduct);
+router.put("/edit-product/:id", isAuthenticated, isAdmin, editProduct);
+router.put(
+  "/edit-product-category/:id",
+  isAuthenticated,
+  isAdmin,
+  updateProductCategory
+);
+router.delete("/delete-product/:id", isAuthenticated, isAdmin, deleteProduct);
+
+// Warehouse routes
+router.get("/warehouses", isAuthenticated, isAdmin, getAllWarehouses);
+router.get("/warehouse/:id", isAuthenticated, isAdmin, getWarehouseById);
+router.post("/add-warehouse", isAuthenticated, isAdmin, createWarehouse);
+router.put("/update-warehouse/:id", isAuthenticated, isAdmin, updateWarehouse);
+router.delete(
+  "/delete-warehouse/:id",
+  isAuthenticated,
+  isAdmin,
+  deleteWarehouse
 );
 
 export default router;

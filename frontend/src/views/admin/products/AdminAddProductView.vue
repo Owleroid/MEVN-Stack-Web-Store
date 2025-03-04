@@ -24,15 +24,11 @@
             </div>
             <div class="form-group">
                 <label for="parts">Parts:</label>
-                <input type="text" id="parts" v-model="parts" />
+                <input type="text" id="parts" />
             </div>
             <div class="form-group">
                 <label for="boxArt">Box Art:</label>
                 <input type="text" id="boxArt" v-model="boxArt" required />
-            </div>
-            <div class="form-group">
-                <label for="amount">Amount:</label>
-                <input type="number" id="amount" v-model="amount" required />
             </div>
             <div class="form-group">
                 <label for="description">Description:</label>
@@ -72,7 +68,6 @@ const size = ref('');
 const material = ref('');
 const parts = ref('');
 const boxArt = ref('');
-const amount = ref(0);
 const description = ref('');
 const mainImageUrl = ref('');
 const secondaryImageUrls = ref('');
@@ -93,7 +88,6 @@ const submitForm = async () => {
             material: material.value,
             parts: parts.value,
             boxArt: boxArt.value,
-            amount: amount.value,
             description: description.value,
             imageUrls: {
                 main: mainImageUrl.value,

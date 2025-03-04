@@ -18,7 +18,7 @@
                     </button>
                 </div>
             </div>
-            <div class="products-list">
+            <div v-if="categories.length > 0" class="products-list">
                 <h2>Products</h2>
                 <div v-if="products.length === 0">
                     <p>No products found for this category.</p>

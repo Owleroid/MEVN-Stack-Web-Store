@@ -12,6 +12,10 @@ export const getProductsByCategory = async (categoryId: string) => {
   return productService.get(`/products/category/${categoryId}`);
 };
 
+export const getProductIdsByCategory = async (categoryId: string) => {
+  return productService.get(`/products/category/${categoryId}/ids`);
+};
+
 export const getProductById = async (id: string) => {
   return productService.get(`/product/${id}`);
 };
