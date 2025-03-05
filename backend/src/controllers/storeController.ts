@@ -5,15 +5,32 @@ import ApiError from "../utils/apiError.js";
 import Product from "../models/Product.js";
 import Category from "../models/Category.js";
 
-export const getProductsByCategory = async (
+export const getCategories = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const categories = await Category.find();
+    if (!categories.length) {
+      return next(new ApiError(404, "No categories found"));
+    }
+
+    res.status(200).json(categories);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getProductsByCategoryId = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { category } = req.params;
+    const { id } = req.params;
 
-    const categoryDoc = await Category.findOne({ name: category });
+    const categoryDoc = await Category.findById(id);
     if (!categoryDoc) {
       return next(new ApiError(404, "Category not found"));
     }

@@ -7,7 +7,7 @@ import Category from "../../models/Category.js";
 import Warehouse from "../../models/Warehouse.js";
 
 export const getAllCategories = async (
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -30,6 +30,9 @@ export const getCategoryById = async (
 ) => {
   try {
     const { id } = req.params;
+
+    console.log(req.params);
+    console.log(req.body);
 
     const category = await Category.findById(id);
 
