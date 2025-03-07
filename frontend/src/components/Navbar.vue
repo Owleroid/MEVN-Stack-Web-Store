@@ -8,7 +8,12 @@
             <li><router-link to="/contact">Contact</router-link></li>
         </ul>
         <ul class="right">
-            <li><router-link to="/cart">Cart</router-link></li>
+            <li class="cart-link">
+                <router-link to="/cart">Cart</router-link>
+                <div class="cart-hover-container" v-if="!isCartPage">
+                    <CartHoover />
+                </div>
+            </li>
             <li v-if="!authStore.isAuthenticated"><router-link to="/login">Login</router-link></li>
             <li v-if="!authStore.isAuthenticated"><router-link to="/signup">Sign Up</router-link></li>
             <li v-if="authStore.isAuthenticated" class="dropdown">
@@ -25,9 +30,15 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useAuthStore } from '../stores/authStore';
+import { useRoute } from 'vue-router';
+import CartHoover from '../components/CartHoover.vue';
 
 const authStore = useAuthStore();
+const route = useRoute();
+
+const isCartPage = computed(() => route.path === '/cart');
 </script>
 
 <style scoped>
@@ -55,6 +66,29 @@ button {
     border: none;
     color: white;
     cursor: pointer;
+}
+
+.cart-link {
+    position: relative;
+}
+
+.cart-hover-container {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 10;
+    background: white;
+    color: black;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    height: auto;
+    width: auto;
+}
+
+.cart-link:hover .cart-hover-container {
+    display: block;
 }
 
 .dropdown {

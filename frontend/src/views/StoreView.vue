@@ -19,7 +19,7 @@
                     <img :src="product.imageUrls?.main" alt="Product Image" />
                     <h2>{{ product.title }}</h2>
                     <p>{{ product.price }}</p>
-                    <button @click="addToCart(product)">Add to Cart</button>
+                    <AddToCartButton :product="product" />
                 </div>
             </div>
         </div>
@@ -33,6 +33,7 @@ import type { Product } from '../types/products';
 import type { Category } from '../types/categories';
 
 import { getAllCategories, getProductsByCategoryId } from '../services/storeService';
+import AddToCartButton from '../components/AddToCartButton.vue';
 
 const categories = ref<Category[]>([]);
 const products = ref<Product[]>([]);
@@ -58,12 +59,6 @@ const fetchProducts = async (categoryId: string) => {
     } catch (error) {
         console.error('Error fetching products:', error);
     }
-};
-
-
-const addToCart = (product: any) => {
-    console.log('Adding to cart:', product);
-    // ToDo: Implement component button to add to cart
 };
 
 onMounted(() => {

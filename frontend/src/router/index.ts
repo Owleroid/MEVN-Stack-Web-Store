@@ -1,14 +1,16 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import HomeView from "../views/HomeView.vue";
-import LoginView from "../views/LoginView.vue";
-import SignupView from "../views/SignupView.vue";
-import PasswordResetView from "../views/PasswordResetView.vue";
 import StoreView from "../views/StoreView.vue";
 import AboutView from "../views/AboutView.vue";
 import ContactView from "../views/ContactView.vue";
 import NewsView from "../views/NewsView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
+import CartView from "../views/CartView.vue";
+
+import LoginView from "../views/LoginView.vue";
+import SignupView from "../views/SignupView.vue";
+import PasswordResetView from "../views/PasswordResetView.vue";
 
 import AdminPanelView from "../views/admin/AdminPanelView.vue";
 
@@ -34,6 +36,7 @@ const routes = [
   { path: "/about", component: AboutView },
   { path: "/contact", component: ContactView },
   { path: "/news", component: NewsView },
+  { path: "/cart", component: CartView },
   {
     path: "/admin",
     component: AdminPanelView,
