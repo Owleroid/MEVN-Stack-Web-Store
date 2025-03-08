@@ -7,10 +7,10 @@
         <div v-else>
             <ul>
                 <li v-for="product in cart" :key="product._id">
-                    <img :src="product.imageUrls?.main" alt="product.title" />
+                    <img :src="product.imageUrls?.main" :alt="product.title" />
                     <div>
                         <p>{{ product.title }}</p>
-                        <p>{{ product.price }}</p>
+                        <p>{{ product.price.euros.amount }} €</p>
                     </div>
                 </li>
             </ul>
@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useEventBus } from '../utils/eventBus';
 import { getCart } from '../services/cartService';
 import type { Product } from '../types/products';

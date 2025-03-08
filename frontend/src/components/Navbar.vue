@@ -33,7 +33,7 @@
 import { computed } from 'vue';
 import { useAuthStore } from '../stores/authStore';
 import { useRoute } from 'vue-router';
-import CartHoover from '../components/CartHoover.vue';
+import CartHoover from './CartHoover.vue';
 
 const authStore = useAuthStore();
 const route = useRoute();

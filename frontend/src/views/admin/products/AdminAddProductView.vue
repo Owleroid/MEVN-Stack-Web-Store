@@ -7,8 +7,12 @@
                 <input type="text" id="title" v-model="title" required />
             </div>
             <div class="form-group">
-                <label for="price">Price:</label>
-                <input type="number" id="price" v-model="price" required />
+                <label for="priceRubles">Price (Rubles):</label>
+                <input type="number" id="priceRubles" v-model="priceRubles" required />
+            </div>
+            <div class="form-group">
+                <label for="priceEuros">Price (Euros):</label>
+                <input type="number" id="priceEuros" v-model="priceEuros" required />
             </div>
             <div class="form-group">
                 <label for="artist">Artist:</label>
@@ -24,7 +28,7 @@
             </div>
             <div class="form-group">
                 <label for="parts">Parts:</label>
-                <input type="text" id="parts" />
+                <input type="text" id="parts" v-model="parts" />
             </div>
             <div class="form-group">
                 <label for="boxArt">Box Art:</label>
@@ -62,7 +66,8 @@ import { addProduct } from '../../../services/productService';
 import { useEventBus } from '../../../utils/eventBus';
 
 const title = ref('');
-const price = ref(0);
+const priceRubles = ref(0);
+const priceEuros = ref(0);
 const artist = ref('');
 const size = ref('');
 const material = ref('');
@@ -82,7 +87,10 @@ const submitForm = async () => {
         const product: ProductInput = {
             title: title.value,
             category: categoryId,
-            price: price.value,
+            price: {
+                rubles: { amount: priceRubles.value },
+                euros: { amount: priceEuros.value }
+            },
             artist: artist.value,
             size: size.value,
             material: material.value,

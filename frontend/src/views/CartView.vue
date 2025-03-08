@@ -11,13 +11,13 @@
                     <img :src="product.imageUrls?.main" alt="product.title" />
                     <div>
                         <p>{{ product.title }}</p>
-                        <p>{{ product.price }}</p>
+                        <p>{{ product.price.euros.amount }} €</p>
                         <button @click="deleteFromCart(product._id)">Remove</button>
                     </div>
                 </li>
             </ul>
             <div class="cart-summary">
-                <p>Total: {{ totalPrice }}</p>
+                <p>Total: {{ totalPrice }} €</p>
                 <button @click="checkout">Checkout</button>
             </div>
         </div>
@@ -35,11 +35,12 @@ import { getCart, removeFromCart, clearCart } from '../services/cartService';
 const cart = ref<Product[]>([]);
 
 const totalPrice = computed(() => {
-    return cart.value.reduce((total, product) => total + product.price, 0);
+    return cart.value.reduce((total, product) => total + product.price.euros.amount, 0);
 });
 
 onMounted(() => {
     cart.value = getCart();
+    console.log(cart.value);
 });
 
 const router = useRouter();

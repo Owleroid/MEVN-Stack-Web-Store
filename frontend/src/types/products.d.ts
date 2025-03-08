@@ -1,7 +1,17 @@
+interface CurrencyDetailsInput {
+  amount: number;
+  discount?: number;
+  discountStartDate?: Date;
+  discountEndDate?: Date;
+}
+
 export interface ProductInput {
   title: string;
   category: string;
-  price: number;
+  price: {
+    rubles: CurrencyDetailsInput;
+    euros: CurrencyDetailsInput;
+  };
   artist: string;
   size: string;
   material: string;

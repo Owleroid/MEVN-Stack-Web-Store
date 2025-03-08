@@ -12,7 +12,6 @@ export const getAllCategories = async () => {
 };
 
 export const getProductsByCategoryId = async (categoryId: string) => {
-  console.log(categoryId);
   return storeService.get(`/products/category/${categoryId}`);
 };
 

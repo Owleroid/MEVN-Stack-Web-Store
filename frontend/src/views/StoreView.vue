@@ -18,7 +18,7 @@
                 <div v-for="product in products" :key="product._id" class="product">
                     <img :src="product.imageUrls?.main" alt="Product Image" />
                     <h2>{{ product.title }}</h2>
-                    <p>{{ product.price }}</p>
+                    <p>{{ product.price.euros.amount }} €</p>
                     <AddToCartButton :product="product" />
                 </div>
             </div>
