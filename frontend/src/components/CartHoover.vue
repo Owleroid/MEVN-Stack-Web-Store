@@ -6,11 +6,12 @@
         </div>
         <div v-else>
             <ul>
-                <li v-for="product in cart" :key="product._id">
-                    <img :src="product.imageUrls?.main" :alt="product.title" />
+                <li v-for="item in cart" :key="item.product._id">
+                    <img :src="item.product.imageUrls?.main" :alt="item.product.title" />
                     <div>
-                        <p>{{ product.title }}</p>
-                        <p>{{ product.price.euros.amount }} €</p>
+                        <p>{{ item.product.title }}</p>
+                        <p>{{ item.product.price.euros.amount }} €</p>
+                        <p>{{ $t('cartHoover.quantity') }}: {{ item.quantity }}</p>
                     </div>
                 </li>
             </ul>
@@ -20,16 +21,18 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { ref, onMounted } from 'vue';
-
+import { useI18n } from 'vue-i18n';
+import { useEventBus } from '../utils/eventBus';
+import { getCart } from '../services/cartService';
 import type { Product } from '../types/products';
 
-import { useEventBus } from '../utils/eventBus';
+interface CartItem {
+    product: Product;
+    quantity: number;
+}
 
-import { getCart } from '../services/cartService';
-
-const cart = ref<Product[]>([]);
+const cart = ref<CartItem[]>([]);
 
 const fetchCart = () => {
     cart.value = getCart();

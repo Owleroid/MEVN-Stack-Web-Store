@@ -7,12 +7,14 @@
         </div>
         <div v-else>
             <ul>
-                <li v-for="product in cart" :key="product._id">
-                    <img :src="product.imageUrls?.main" :alt="product.title" />
+                <li v-for="item in cart" :key="item.product._id">
+                    <img :src="item.product.imageUrls?.main" :alt="item.product.title" />
                     <div>
-                        <p>{{ product.title }}</p>
-                        <p>{{ product.price.euros.amount }} €</p>
-                        <button @click="deleteFromCart(product._id)">{{ $t('cartView.remove') }}</button>
+                        <p>{{ item.product.title }}</p>
+                        <p>{{ item.product.price.euros.amount }} €</p>
+                        <input type="number" v-model.number="item.quantity"
+                            @change="updateQuantity(item.product._id, item.quantity)" min="1" />
+                        <button @click="deleteFromCart(item.product._id)">{{ $t('cartView.remove') }}</button>
                     </div>
                 </li>
             </ul>
@@ -25,23 +27,26 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 import type { Product } from '../types/products';
+import { getCart, removeFromCart, updateCartQuantity, clearCart } from '../services/cartService';
 
-import { getCart, removeFromCart, clearCart } from '../services/cartService';
+interface CartItem {
+    product: Product;
+    quantity: number;
+}
 
-const cart = ref<Product[]>([]);
+const cart = ref<CartItem[]>([]);
 
 const totalPrice = computed(() => {
-    return cart.value.reduce((total, product) => total + product.price.euros.amount, 0);
+    return cart.value.reduce((total, item) => total + item.product.price.euros.amount * item.quantity, 0);
 });
 
 onMounted(() => {
     cart.value = getCart();
-    console.log(cart.value);
 });
 
 const router = useRouter();
@@ -49,6 +54,11 @@ const { t } = useI18n();
 
 function deleteFromCart(productId: string) {
     removeFromCart(productId);
+    cart.value = getCart();
+}
+
+function updateQuantity(productId: string, quantity: number) {
+    updateCartQuantity(productId, quantity);
     cart.value = getCart();
 }
 

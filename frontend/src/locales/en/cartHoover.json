@@ -1,5 +1,6 @@
 {
   "cart": "Cart",
   "emptyCart": "Your cart is empty.",
-  "viewFullCart": "View Full Cart"
+  "viewFullCart": "View Full Cart",
+  "quantity": "Quantity"
 }
