@@ -2,7 +2,7 @@
     <div class="store-view">
         <div class="categories">
             <div v-if="categories.length === 0" class="no-categories">
-                Store is under construction, we are working on it.
+                {{ $t('storeView.underConstruction') }}
             </div>
             <div v-else>
                 <button v-for="category in categories" :key="category._id" @click="fetchProducts(category._id || '')">
@@ -12,7 +12,7 @@
         </div>
         <div v-if="categories.length > 0" class="products">
             <div v-if="products.length === 0" class="no-products">
-                No products found in this category.
+                {{ $t('storeView.noProducts') }}
             </div>
             <div v-else>
                 <div v-for="product in products" :key="product._id" class="product">
@@ -27,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { ref, onMounted } from 'vue';
 
 import type { Product } from '../types/products';
@@ -34,12 +35,14 @@ import type { Category } from '../types/categories';
 
 import { getAllCategories, getProductsByCategoryId } from '../services/storeService';
 import { getUserLocation, getUserRegion } from '../services/geolocationService';
+
 import AddToCartButton from '../components/AddToCartButton.vue';
 
 const categories = ref<Category[]>([]);
 const products = ref<Product[]>([]);
 const selectedCategoryId = ref('');
 const currency = ref(sessionStorage.getItem('currency') || 'euros');
+const { t } = useI18n();
 
 const fetchCategories = async () => {
     try {

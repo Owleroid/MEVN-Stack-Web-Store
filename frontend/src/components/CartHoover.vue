@@ -1,8 +1,8 @@
 <template>
     <div class="cart-hover">
-        <h3>Cart</h3>
+        <h3>{{ $t('cartHoover.cart') }}</h3>
         <div v-if="cart.length === 0">
-            <p>Your cart is empty.</p>
+            <p>{{ $t('cartHoover.emptyCart') }}</p>
         </div>
         <div v-else>
             <ul>
@@ -14,16 +14,20 @@
                     </div>
                 </li>
             </ul>
-            <router-link to="/cart">View Full Cart</router-link>
+            <router-link to="/cart">{{ $t('cartHoover.viewFullCart') }}</router-link>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { ref, onMounted } from 'vue';
-import { useEventBus } from '../utils/eventBus';
-import { getCart } from '../services/cartService';
+
 import type { Product } from '../types/products';
+
+import { useEventBus } from '../utils/eventBus';
+
+import { getCart } from '../services/cartService';
 
 const cart = ref<Product[]>([]);
 
@@ -32,6 +36,7 @@ const fetchCart = () => {
 };
 
 const { on } = useEventBus();
+const { t } = useI18n();
 
 onMounted(() => {
     fetchCart();

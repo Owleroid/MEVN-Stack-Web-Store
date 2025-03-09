@@ -1,12 +1,16 @@
 <template>
-    <button @click="addToCart">Add to Cart</button>
+    <button @click="addToCart">{{ $t('addToCartButton.addToCart') }}</button>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
-import { useEventBus } from '../utils/eventBus';
-import { addToCart as addToCartService } from '../services/cartService';
+
 import type { Product } from '../types/products';
+
+import { useEventBus } from '../utils/eventBus';
+
+import { addToCart as addToCartService } from '../services/cartService';
 
 const props = defineProps<{
     product: Product;
@@ -14,10 +18,11 @@ const props = defineProps<{
 
 const toast = useToast();
 const { emit } = useEventBus();
+const { t } = useI18n();
 
 function addToCart() {
     addToCartService(props.product);
-    toast.success(`${props.product.title} has been added to the cart`);
+    toast.success(t('addToCartButton.addedToCart', { product: props.product.title }));
     emit('cart-updated');
 }
 </script>

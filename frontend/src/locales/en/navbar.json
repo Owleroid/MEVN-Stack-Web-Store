@@ -1,0 +1,14 @@
+{
+  "mainPage": "Home",
+  "store": "Store",
+  "news": "News",
+  "about": "About",
+  "contact": "Contact",
+  "login": "Login",
+  "signup": "Sign Up",
+  "settings": "Settings",
+  "orders": "Orders",
+  "adminPanel": "Admin Panel",
+  "logout": "Logout",
+  "cart": "Cart"
+}

@@ -1,0 +1,9 @@
+{
+  "yourCart": "Your Cart",
+  "emptyCart": "Your cart is empty.",
+  "goToStore": "Go to Store",
+  "remove": "Remove",
+  "total": "Total",
+  "checkout": "Checkout",
+  "checkoutNotImplemented": "Checkout not implemented yet"
+}

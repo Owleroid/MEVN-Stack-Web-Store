@@ -1,45 +1,50 @@
 <template>
     <nav>
         <ul class="left">
-            <li><router-link to="/">Main Page</router-link></li>
-            <li><router-link to="/categories">Store</router-link></li>
-            <li><router-link to="/news">News</router-link></li>
-            <li><router-link to="/about">About</router-link></li>
-            <li><router-link to="/contact">Contact</router-link></li>
+            <li><router-link to="/">{{ $t('navbar.mainPage') }}</router-link></li>
+            <li><router-link to="/categories">{{ $t('navbar.store') }}</router-link></li>
+            <li><router-link to="/news">{{ $t('navbar.news') }}</router-link></li>
+            <li><router-link to="/about">{{ $t('navbar.about') }}</router-link></li>
+            <li><router-link to="/contact">{{ $t('navbar.contact') }}</router-link></li>
         </ul>
         <ul class="right">
             <li class="language-switcher">
                 <button @click="toggleLanguage">{{ currentLanguage }}</button>
             </li>
             <li class="cart-link">
-                <router-link to="/cart">Cart</router-link>
+                <router-link to="/cart">{{ $t('navbar.cart') }}</router-link>
                 <div class="cart-hover-container" v-if="!isCartPage">
                     <CartHoover />
                 </div>
             </li>
-            <li v-if="!authStore.isAuthenticated"><router-link to="/login">Login</router-link></li>
-            <li v-if="!authStore.isAuthenticated"><router-link to="/signup">Sign Up</router-link></li>
+            <li v-if="!authStore.isAuthenticated"><router-link to="/login">{{ $t('navbar.login') }}</router-link></li>
+            <li v-if="!authStore.isAuthenticated"><router-link to="/signup">{{ $t('navbar.signup') }}</router-link></li>
             <li v-if="authStore.isAuthenticated" class="dropdown">
                 <span>{{ authStore.userEmail }}</span>
                 <div class="dropdown-content">
-                    <router-link to="/settings">Settings</router-link>
-                    <router-link to="/orders">Orders</router-link>
-                    <router-link v-if="authStore.isAdmin" to="/admin">Admin Panel</router-link>
+                    <router-link to="/settings">{{ $t('navbar.settings') }}</router-link>
+                    <router-link to="/orders">{{ $t('navbar.orders') }}</router-link>
+                    <router-link v-if="authStore.isAdmin" to="/admin">{{ $t('navbar.adminPanel') }}</router-link>
                 </div>
             </li>
-            <li v-if="authStore.isAuthenticated"><button @click="authStore.logout">Logout</button></li>
+            <li v-if="authStore.isAuthenticated"><button @click="authStore.logout">{{ $t('navbar.logout') }}</button>
+            </li>
         </ul>
     </nav>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useAuthStore } from '../stores/authStore';
+import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
+
 import CartHoover from './CartHoover.vue';
+
+import { useAuthStore } from '../stores/authStore';
 
 const authStore = useAuthStore();
 const route = useRoute();
+const { locale } = useI18n();
 
 const isCartPage = computed(() => route.path === '/cart');
 
@@ -48,8 +53,10 @@ const currentLanguage = computed(() => authStore.language === 'en' ? 'EN' : 'RU'
 const toggleLanguage = () => {
     if (authStore.language === 'en') {
         authStore.setLanguage('ru');
+        locale.value = 'ru';
     } else {
         authStore.setLanguage('en');
+        locale.value = 'en';
     }
 };
 </script>

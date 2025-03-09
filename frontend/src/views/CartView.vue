@@ -1,32 +1,33 @@
 <template>
     <div class="cart-page">
-        <h1>Your Cart</h1>
+        <h1>{{ $t('cartView.yourCart') }}</h1>
         <div v-if="cart.length === 0">
-            <p>Your cart is empty.</p>
-            <button @click="redirectToStore">Go to Store</button>
+            <p>{{ $t('cartView.emptyCart') }}</p>
+            <button @click="redirectToStore">{{ $t('cartView.goToStore') }}</button>
         </div>
         <div v-else>
             <ul>
                 <li v-for="product in cart" :key="product._id">
-                    <img :src="product.imageUrls?.main" alt="product.title" />
+                    <img :src="product.imageUrls?.main" :alt="product.title" />
                     <div>
                         <p>{{ product.title }}</p>
                         <p>{{ product.price.euros.amount }} €</p>
-                        <button @click="deleteFromCart(product._id)">Remove</button>
+                        <button @click="deleteFromCart(product._id)">{{ $t('cartView.remove') }}</button>
                     </div>
                 </li>
             </ul>
             <div class="cart-summary">
-                <p>Total: {{ totalPrice }} €</p>
-                <button @click="checkout">Checkout</button>
+                <p>{{ $t('cartView.total') }}: {{ totalPrice }} €</p>
+                <button @click="checkout">{{ $t('cartView.checkout') }}</button>
             </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from 'vue';
 
 import type { Product } from '../types/products';
 
@@ -44,6 +45,7 @@ onMounted(() => {
 });
 
 const router = useRouter();
+const { t } = useI18n();
 
 function deleteFromCart(productId: string) {
     removeFromCart(productId);
@@ -52,7 +54,7 @@ function deleteFromCart(productId: string) {
 
 function checkout() {
     // Implement checkout logic here
-    alert('Checkout not implemented yet');
+    alert(t('cartView.checkoutNotImplemented'));
     clearCart();
     cart.value = [];
 }

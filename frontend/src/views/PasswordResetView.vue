@@ -1,9 +1,9 @@
 <template>
     <div>
-        <h1>Password Reset</h1>
+        <h1>{{ $t('passwordResetView.passwordReset') }}</h1>
         <form @submit.prevent="handlePasswordReset">
-            <input v-model="email" type="email" placeholder="Email" required />
-            <button type="submit">Reset Password</button>
+            <input v-model="email" type="email" :placeholder="$t('passwordResetView.email')" required />
+            <button type="submit">{{ $t('passwordResetView.resetPassword') }}</button>
         </form>
         <p v-if="error">{{ error }}</p>
     </div>
@@ -11,18 +11,24 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useToast } from 'vue-toastification';
+
 import { useAuthStore } from '../stores/authStore';
 
 const email = ref('');
 const error = ref('');
 const authStore = useAuthStore();
+const toast = useToast();
+const { t } = useI18n();
 
 const handlePasswordReset = async () => {
     try {
         await authStore.resetPassword(email.value);
-        alert('Password reset email sent. Check your inbox.');
+        toast.success(t('passwordResetView.resetEmailSent'));
     } catch (err) {
-        error.value = 'Password reset failed. Please try again.';
+        error.value = t('passwordResetView.resetFailed');
+        toast.error(error.value);
     }
 };
 </script>
