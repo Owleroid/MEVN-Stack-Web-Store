@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "../stores/authStore";
+import { getUserLocation, getUserRegion } from "../services/geolocationService";
 
 import HomeView from "../views/HomeView.vue";
 import StoreView from "../views/StoreView.vue";
@@ -99,8 +101,35 @@ const router = createRouter({
   routes,
 });
 
-// Navigation guard to check authentication and admin access
-router.beforeEach((to, _from, next) => {
+// Navigation guard to check authentication, admin access, and user location
+router.beforeEach(async (to, _from, next) => {
+  const authStore = useAuthStore();
+
+  // Check if user region is already stored in session
+  let region = getUserRegion();
+  if (!region) {
+    // Fetch user location and store region in session
+    const location = await getUserLocation();
+    region = location ? location.country_code : "EU";
+    authStore.userRegion = region || "EU";
+  }
+
+  // Set currency and language based on user region if not already set
+  if (!authStore.currency || !authStore.language) {
+    if (region === "RU") {
+      authStore.currency = "rubles";
+      authStore.language = "ru";
+    } else {
+      authStore.currency = "euros";
+      authStore.language = "en";
+    }
+    sessionStorage.setItem("currency", authStore.currency);
+    sessionStorage.setItem("language", authStore.language);
+  }
+
+  // Set the language for the application
+  document.documentElement.lang = authStore.language;
+
   const isAuthenticated = sessionStorage.getItem("isAuthenticated") === "true";
   const isAdmin = sessionStorage.getItem("isAdmin") === "true";
 

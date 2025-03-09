@@ -8,6 +8,9 @@
             <li><router-link to="/contact">Contact</router-link></li>
         </ul>
         <ul class="right">
+            <li class="language-switcher">
+                <button @click="toggleLanguage">{{ currentLanguage }}</button>
+            </li>
             <li class="cart-link">
                 <router-link to="/cart">Cart</router-link>
                 <div class="cart-hover-container" v-if="!isCartPage">
@@ -39,6 +42,16 @@ const authStore = useAuthStore();
 const route = useRoute();
 
 const isCartPage = computed(() => route.path === '/cart');
+
+const currentLanguage = computed(() => authStore.language === 'en' ? 'EN' : 'RU');
+
+const toggleLanguage = () => {
+    if (authStore.language === 'en') {
+        authStore.setLanguage('ru');
+    } else {
+        authStore.setLanguage('en');
+    }
+};
 </script>
 
 <style scoped>

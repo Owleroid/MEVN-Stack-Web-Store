@@ -19,6 +19,4 @@ const isAdminRoute = computed(() => {
 });
 </script>
 
-<style>
-/* Add your global styles here */
-</style>
+<style></style>

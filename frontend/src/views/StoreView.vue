@@ -18,7 +18,7 @@
                 <div v-for="product in products" :key="product._id" class="product">
                     <img :src="product.imageUrls?.main" alt="Product Image" />
                     <h2>{{ product.title }}</h2>
-                    <p>{{ product.price.euros.amount }} €</p>
+                    <p>{{ getPrice(product) }}</p>
                     <AddToCartButton :product="product" />
                 </div>
             </div>
@@ -33,11 +33,13 @@ import type { Product } from '../types/products';
 import type { Category } from '../types/categories';
 
 import { getAllCategories, getProductsByCategoryId } from '../services/storeService';
+import { getUserLocation, getUserRegion } from '../services/geolocationService';
 import AddToCartButton from '../components/AddToCartButton.vue';
 
 const categories = ref<Category[]>([]);
 const products = ref<Product[]>([]);
 const selectedCategoryId = ref('');
+const currency = ref(sessionStorage.getItem('currency') || 'euros');
 
 const fetchCategories = async () => {
     try {
@@ -61,7 +63,21 @@ const fetchProducts = async (categoryId: string) => {
     }
 };
 
+const getPrice = (product: Product) => {
+    return currency.value === 'rubles' ? `${product.price.rubles.amount} ₽` : `${product.price.euros.amount} €`;
+};
+
+const setCurrencyBasedOnLocation = async () => {
+    let region = getUserRegion();
+    if (!region) {
+        const location = await getUserLocation();
+        region = location ? location.country_code : 'EU';
+    }
+    currency.value = region === 'RU' ? 'rubles' : 'euros';
+};
+
 onMounted(() => {
+    setCurrencyBasedOnLocation();
     fetchCategories();
 });
 </script>
