@@ -22,7 +22,7 @@ const { t } = useI18n();
 
 function addToCart() {
     addToCartService(props.product);
-    toast.success(t('addToCartButton.addedToCart', { product: props.product.title }));
+    toast.success(t('addToCartButton.addedToCart', { product: props.product.name }));
     emit('cart-updated');
 }
 </script>

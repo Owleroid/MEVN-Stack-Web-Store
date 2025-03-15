@@ -7,6 +7,11 @@ const authService = axios.create({
   withCredentials: true,
 });
 
+export const checkEmail = async (email: string) => {
+  const response = await authService.get(`/check-email/${email}`);
+  return response.data;
+};
+
 export const login = async (email: string, password: string) => {
   const response = await authService.post("/login", { email, password });
   return response.data;

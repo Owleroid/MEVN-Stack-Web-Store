@@ -28,7 +28,7 @@
                     <button @click="addProduct">Add New Product</button>
                     <ul>
                         <li v-for="product in products" :key="product._id">
-                            {{ product.title }}
+                            {{ product.name }}
                             <button @click="openChangeCategoryModal(product)">Change Category</button>
                             <button @click="editProduct(product._id)">Edit</button>
                             <button @click="deleteProduct(product._id)">Delete</button>
@@ -39,7 +39,7 @@
         </div>
         <div v-if="showChangeCategoryModal" class="modal">
             <div class="modal-content">
-                <h3>Change Category for {{ productToChangeCategory?.title }}</h3>
+                <h3>Change Category for {{ productToChangeCategory?.name }}</h3>
                 <select v-model="selectedNewCategory">
                     <option v-for="category in filteredCategories" :key="category._id" :value="category._id">
                         {{ category.name }}

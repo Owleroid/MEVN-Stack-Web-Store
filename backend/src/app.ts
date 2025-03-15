@@ -9,6 +9,7 @@ import geoRoutes from "./routes/geoRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import storeRoutes from "./routes/storeRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
 
@@ -22,6 +23,7 @@ app.use("/api/geo", geoRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/store", storeRoutes);
+app.use("/api/orders", orderRoutes);
 
 app.use(errorHandler);
 

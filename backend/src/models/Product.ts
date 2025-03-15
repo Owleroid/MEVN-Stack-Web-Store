@@ -9,7 +9,7 @@ interface CurrencyDetails {
 
 export interface Product extends Document {
   _id: string;
-  title: string;
+  name: string;
   category: mongoose.Types.ObjectId;
   price: {
     rubles: CurrencyDetails;
@@ -35,7 +35,7 @@ const currencyDetailsSchema = new mongoose.Schema({
 });
 
 const productSchema = new mongoose.Schema({
-  title: { type: String, required: true, unique: true },
+  name: { type: String, required: true, unique: true },
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",

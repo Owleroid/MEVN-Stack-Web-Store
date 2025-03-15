@@ -3,8 +3,8 @@
         <h1>Edit Product</h1>
         <form @submit.prevent="submitForm">
             <div class="form-group">
-                <label for="title">Product Title:</label>
-                <input type="text" id="title" v-model="title" required />
+                <label for="name">Product Name:</label>
+                <input type="text" id="name" v-model="name" required />
             </div>
             <div class="form-group">
                 <label for="priceRubles">Price (Rubles):</label>
@@ -65,7 +65,7 @@ import { getProductById, updateProduct } from '../../../services/productService'
 
 import { useEventBus } from '../../../utils/eventBus';
 
-const title = ref('');
+const name = ref('');
 const priceRubles = ref(0);
 const priceEuros = ref(0);
 const artist = ref('');
@@ -87,7 +87,7 @@ const fetchProduct = async () => {
         const response = await getProductById(productId);
         const product = response.data.product;
 
-        title.value = product.title;
+        name.value = product.name;
         priceRubles.value = product.price.rubles.amount;
         priceEuros.value = product.price.euros.amount;
         artist.value = product.artist;
@@ -107,7 +107,7 @@ const fetchProduct = async () => {
 const submitForm = async () => {
     try {
         const product: ProductInput = {
-            title: title.value,
+            name: name.value,
             category: route.params.category as string,
             price: {
                 rubles: { amount: priceRubles.value },

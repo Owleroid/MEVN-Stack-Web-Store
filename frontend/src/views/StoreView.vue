@@ -17,7 +17,7 @@
             <div v-else>
                 <div v-for="product in products" :key="product._id" class="product">
                     <img :src="product.imageUrls?.main" alt="Product Image" />
-                    <h2>{{ product.title }}</h2>
+                    <h2>{{ product.name }}</h2>
                     <p>{{ getPrice(product) }}</p>
                     <AddToCartButton :product="product" />
                 </div>

@@ -31,9 +31,6 @@ export const getCategoryById = async (
   try {
     const { id } = req.params;
 
-    console.log(req.params);
-    console.log(req.body);
-
     const category = await Category.findById(id);
 
     if (!category) {
@@ -149,8 +146,6 @@ export const deleteCategoryAndReassignProducts = async (
   try {
     const { id } = req.params;
     const { newCategoryId } = req.body;
-
-    console.log(id, newCategoryId);
 
     const deletedCategory = await Category.findByIdAndDelete(id);
 

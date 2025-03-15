@@ -8,7 +8,9 @@ import AboutView from "../views/AboutView.vue";
 import ContactView from "../views/ContactView.vue";
 import NewsView from "../views/NewsView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
+
 import CartView from "../views/CartView.vue";
+import CheckoutView from "../views/CheckoutView.vue";
 
 import LoginView from "../views/LoginView.vue";
 import SignupView from "../views/SignupView.vue";
@@ -39,6 +41,11 @@ const routes = [
   { path: "/contact", component: ContactView },
   { path: "/news", component: NewsView },
   { path: "/cart", component: CartView },
+  {
+    path: "/checkout",
+    name: "Checkout",
+    component: CheckoutView,
+  },
   {
     path: "/admin",
     component: AdminPanelView,

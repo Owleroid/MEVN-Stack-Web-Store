@@ -15,10 +15,7 @@ const options: PluginOptions = {
   pauseOnHover: true,
   draggable: true,
   draggablePercent: 0.6,
-  showCloseButtonOnHover: true,
   hideProgressBar: true,
-  closeButton: true,
-  icon: true,
   rtl: false,
 };
 

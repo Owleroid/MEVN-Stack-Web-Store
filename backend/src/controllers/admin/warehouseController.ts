@@ -42,12 +42,12 @@ export const createWarehouse = async (
   const { name } = req.body;
   try {
     // Fetch all products
-    const products = await Product.find().select("_id title");
+    const products = await Product.find().select("_id name");
 
     // Create an array of products with amount set to 0
     const productsWithAmount = products.map((product) => ({
       product: product._id,
-      name: product.title,
+      name: product.name,
       amount: 0,
     }));
 
@@ -65,7 +65,7 @@ export const updateWarehouse = async (
   next: NextFunction
 ) => {
   const { productId, amount } = req.body;
-  console.log(req.body);
+
   try {
     const warehouse = await Warehouse.findById(req.params.id);
     if (!warehouse) {

@@ -1,11 +1,11 @@
 import { defineStore } from "pinia";
-import { useRouter } from "vue-router";
 import { getUserLocation } from "../services/geolocationService";
 import { login, logout, signup, passwordReset } from "../services/authService";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     isAuthenticated: sessionStorage.getItem("isAuthenticated") === "true",
+    userId: sessionStorage.getItem("userId") || "",
     userEmail: sessionStorage.getItem("userEmail") || "",
     isAdmin: sessionStorage.getItem("isAdmin") === "true",
     userRegion: sessionStorage.getItem("userRegion") || "",
@@ -18,10 +18,12 @@ export const useAuthStore = defineStore("auth", {
       try {
         const response = await login(email, password);
         this.isAuthenticated = true;
+        this.userId = response.userId;
         this.userEmail = email;
         this.isAdmin = response.isAdmin;
 
         sessionStorage.setItem("isAuthenticated", "true");
+        sessionStorage.setItem("userId", response.userId);
         sessionStorage.setItem("userEmail", email);
         if (response.isAdmin) {
           sessionStorage.setItem("isAdmin", "true");
@@ -56,6 +58,7 @@ export const useAuthStore = defineStore("auth", {
       try {
         await logout();
         this.isAuthenticated = false;
+        this.userId = "";
         this.userEmail = "";
         this.isAdmin = false;
         this.userRegion = "";
@@ -63,6 +66,7 @@ export const useAuthStore = defineStore("auth", {
         this.currency = "euros";
 
         sessionStorage.removeItem("isAuthenticated");
+        sessionStorage.removeItem("userId");
         sessionStorage.removeItem("userEmail");
         sessionStorage.removeItem("isAdmin");
         sessionStorage.removeItem("userRegion");
@@ -77,8 +81,6 @@ export const useAuthStore = defineStore("auth", {
     async signup(email: string, password: string) {
       try {
         await signup(email, password);
-        const router = useRouter();
-        router.push({ name: "login" });
       } catch (error) {
         console.error("Signup failed:", error);
         throw error;

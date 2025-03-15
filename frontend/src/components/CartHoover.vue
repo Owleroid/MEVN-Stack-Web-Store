@@ -7,9 +7,9 @@
         <div v-else>
             <ul>
                 <li v-for="item in cart" :key="item.product._id">
-                    <img :src="item.product.imageUrls?.main" :alt="item.product.title" />
+                    <img :src="item.product.imageUrls?.main" :alt="item.product.name" />
                     <div>
-                        <p>{{ item.product.title }}</p>
+                        <p>{{ item.product.name }}</p>
                         <p>{{ item.product.price.euros.amount }} €</p>
                         <p>{{ $t('cartHoover.quantity') }}: {{ item.quantity }}</p>
                     </div>

@@ -8,6 +8,7 @@ import enLoginView from "./locales/en/loginView.json";
 import enSignupView from "./locales/en/signupView.json";
 import enPasswordResetView from "./locales/en/passwordResetView.json";
 import enStoreView from "./locales/en/storeView.json";
+import enCheckoutView from "./locales/en/checkoutView.json";
 
 import ruNavbar from "./locales/ru/navbar.json";
 import ruAddToCartButton from "./locales/ru/addToCartButton.json";
@@ -17,6 +18,7 @@ import ruLoginView from "./locales/ru/loginView.json";
 import ruSignupView from "./locales/ru/signupView.json";
 import ruPasswordResetView from "./locales/ru/passwordResetView.json";
 import ruStoreView from "./locales/ru/storeView.json";
+import ruCheckoutView from "./locales/ru/checkoutView.json";
 
 const messages = {
   en: {
@@ -28,6 +30,7 @@ const messages = {
     signupView: enSignupView,
     passwordResetView: enPasswordResetView,
     storeView: enStoreView,
+    checkoutView: enCheckoutView,
   },
   ru: {
     navbar: ruNavbar,
@@ -38,10 +41,12 @@ const messages = {
     signupView: ruSignupView,
     passwordResetView: ruPasswordResetView,
     storeView: ruStoreView,
+    checkoutView: ruCheckoutView,
   },
 };
 
 const i18n = createI18n({
+  legacy: false, // Use Composition API mode
   locale: sessionStorage.getItem("language") || "en", // set locale from sessionStorage or default to 'en'
   messages,
 });

@@ -8,9 +8,9 @@
         <div v-else>
             <ul>
                 <li v-for="item in cart" :key="item.product._id">
-                    <img :src="item.product.imageUrls?.main" :alt="item.product.title" />
+                    <img :src="item.product.imageUrls?.main" :alt="item.product.name" />
                     <div>
-                        <p>{{ item.product.title }}</p>
+                        <p>{{ item.product.name }}</p>
                         <p>{{ item.product.price.euros.amount }} €</p>
                         <input type="number" v-model.number="item.quantity"
                             @change="updateQuantity(item.product._id, item.quantity)" min="1" />
@@ -27,17 +27,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from 'vue';
 
-import type { Product } from '../types/products';
-import { getCart, removeFromCart, updateCartQuantity, clearCart } from '../services/cartService';
+import type { CartItem } from '../types/cart';
 
-interface CartItem {
-    product: Product;
-    quantity: number;
-}
+import { getCart, removeFromCart, updateCartQuantity } from '../services/cartService';
 
 const cart = ref<CartItem[]>([]);
 
@@ -63,10 +59,7 @@ function updateQuantity(productId: string, quantity: number) {
 }
 
 function checkout() {
-    // Implement checkout logic here
-    alert(t('cartView.checkoutNotImplemented'));
-    clearCart();
-    cart.value = [];
+    router.push('/checkout');
 }
 
 function redirectToStore() {

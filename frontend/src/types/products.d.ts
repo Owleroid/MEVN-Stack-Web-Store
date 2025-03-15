@@ -6,7 +6,7 @@ interface CurrencyDetailsInput {
 }
 
 export interface ProductInput {
-  title: string;
+  name: string;
   category: string;
   price: {
     rubles: CurrencyDetailsInput;

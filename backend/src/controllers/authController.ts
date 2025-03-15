@@ -7,6 +7,28 @@ import ApiError from "../utils/apiError.js";
 
 import User from "../models/User.js";
 
+export const checkEmail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { email } = req.params;
+  console.log(email);
+
+  try {
+    const user = await User.findOne({ email });
+    console.log(user);
+
+    if (user) {
+      res.status(200).json({ exists: true });
+    } else {
+      res.status(200).json({ exists: false });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const signup = async (
   req: Request,
   res: Response,
@@ -53,6 +75,7 @@ export const login = async (
     res.status(200).json({
       success: true,
       message: "Logged in",
+      userId: user._id,
       isAdmin: user.isAdmin,
     });
   } catch (error) {

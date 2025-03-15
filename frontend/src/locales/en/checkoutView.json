@@ -1,0 +1,19 @@
+{
+  "checkout": "Checkout",
+  "orderSummary": "Order Summary",
+  "total": "Total",
+  "deliveryInfo": "Delivery Information",
+  "name": "Name",
+  "surname": "Surname",
+  "phone": "Phone",
+  "email": "Email",
+  "street": "Street",
+  "buildingNumber": "Building Number",
+  "apartment": "Apartment",
+  "city": "City",
+  "state": "State",
+  "postalCode": "Postal Code",
+  "country": "Country",
+  "placeOrder": "Place Order",
+  "confirmOrder": "Confirm Order"
+}

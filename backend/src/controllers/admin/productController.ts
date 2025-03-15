@@ -76,7 +76,7 @@ export const addProduct = async (
   next: NextFunction
 ) => {
   const {
-    title,
+    name,
     category,
     price,
     artist,
@@ -89,13 +89,13 @@ export const addProduct = async (
   }: ProductInput = req.body;
 
   try {
-    const existingProduct = await Product.findOne({ title });
+    const existingProduct = await Product.findOne({ name });
     if (existingProduct) {
-      return next(new ApiError(400, "Product with this title already exists"));
+      return next(new ApiError(400, "Product with this name already exists"));
     }
 
     const newProduct = new Product({
-      title,
+      name,
       category,
       price,
       artist,
@@ -114,7 +114,7 @@ export const addProduct = async (
     for (const warehouse of warehouses) {
       warehouse.products.push({
         product: new mongoose.Types.ObjectId(savedProduct._id),
-        name: savedProduct.title,
+        name: savedProduct.name,
         amount: 0,
       });
       await warehouse.save();

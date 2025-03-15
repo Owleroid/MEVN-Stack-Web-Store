@@ -8,6 +8,17 @@ export interface User extends Document {
   isAdmin?: boolean;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
+  name?: string;
+  surname?: string;
+  phone?: string;
+  deliveryData?: {
+    country?: string;
+    city?: string;
+    street?: string;
+    buildingNumber?: string;
+    apartment?: string;
+    postalCode?: string;
+  };
 }
 
 const userSchema = new mongoose.Schema({
@@ -19,6 +30,17 @@ const userSchema = new mongoose.Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
+  name: { type: String, required: false },
+  surname: { type: String, required: false },
+  phone: { type: String, required: false },
+  deliveryData: {
+    country: { type: String, required: false },
+    city: { type: String, required: false },
+    street: { type: String, required: false },
+    buildingNumber: { type: String, required: false },
+    apartment: { type: String, required: false },
+    postalCode: { type: String, required: false },
+  },
 });
 
 userSchema.pre<User>("save", async function (next) {
