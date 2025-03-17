@@ -1,29 +1,27 @@
 <template>
     <div>
-        <h1>Categories</h1>
+        <h1>{{ $t('adminCategoriesView.categories') }}</h1>
         <div v-if="categories.length === 0">
-            <p>No categories found.</p>
-            <button @click="addCategory">Add New Category</button>
+            <p>{{ $t('adminCategoriesView.noCategories') }}</p>
+            <button @click="showAddModal = true">{{ $t('adminCategoriesView.addNewCategory') }}</button>
         </div>
         <ul v-else>
             <li v-for="category in categories" :key="category._id">
                 {{ category.name }}
-                <button @click="editCategory(category._id ?? '')">Edit</button>
-                <button @click="confirmRemoveCategory(category._id ?? '')">Delete</button>
+                <button @click="openEditModal(category)">{{ $t('adminCategoriesView.editCategory') }}</button>
+                <button @click="confirmRemoveCategory(category._id ?? '')">{{ $t('adminCategoriesView.delete') }}</button>
             </li>
         </ul>
-        <button v-if="categories.length > 0" @click="addCategory">Add New Category</button>
-        <router-view></router-view>
+        <button v-if="categories.length > 0" @click="showAddModal = true">{{ $t('adminCategoriesView.addNewCategory') }}</button>
 
         <!-- Modal for delete confirmation -->
         <div v-if="showDeleteModal" class="modal">
             <div class="modal-content">
                 <span class="close" @click="cancelRemove">&times;</span>
-                <p>Category might have related products. Choose an option:</p>
-                <button @click="selectedCategoryId && removeCategory(selectedCategoryId)">Delete with all related
-                    products</button>
-                <button @click="showReassignModal = true; showDeleteModal = false;">Reassign and Delete</button>
-                <button @click="cancelRemove">Cancel</button>
+                <p>{{ $t('adminCategoriesView.deleteConfirmation') }}</p>
+                <button @click="selectedCategoryId && removeCategory(selectedCategoryId)">{{ $t('adminCategoriesView.deleteWithProducts') }}</button>
+                <button @click="showReassignModal = true; showDeleteModal = false;">{{ $t('adminCategoriesView.reassignAndDelete') }}</button>
+                <button @click="cancelRemove">{{ $t('adminCategoriesView.cancel') }}</button>
             </div>
         </div>
 
@@ -31,15 +29,51 @@
         <div v-if="showReassignModal" class="modal">
             <div class="modal-content">
                 <span class="close" @click="cancelRemove">&times;</span>
-                <label for="newCategory">Choose new category for related products:</label>
+                <label for="newCategory">{{ $t('adminCategoriesView.chooseNewCategory') }}</label>
                 <select v-model="newCategoryId">
                     <option v-for="category in categories.filter(cat => cat._id !== selectedCategoryId)"
                         :key="category._id" :value="category._id">
                         {{ category.name }}
                     </option>
                 </select>
-                <button @click="reassignAndRemoveCategory">Reassign and Delete</button>
-                <button @click="cancelRemove">Cancel</button>
+                <button @click="reassignAndRemoveCategory">{{ $t('adminCategoriesView.reassignAndDelete') }}</button>
+                <button @click="cancelRemove">{{ $t('adminCategoriesView.cancel') }}</button>
+            </div>
+        </div>
+
+        <!-- Modal for adding category -->
+        <div v-if="showAddModal" class="modal">
+            <div class="modal-content">
+                <span class="close" @click="cancelAdd">&times;</span>
+                <h2>{{ $t('adminCategoriesView.addNewCategory') }}</h2>
+                <form @submit.prevent="submitAddForm">
+                    <div class="form-group">
+                        <label for="newCategoryName">{{ $t('adminCategoriesView.categoryName') }}</label>
+                        <input type="text" id="newCategoryName" v-model="newCategoryName" required />
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit">{{ $t('adminCategoriesView.addCategory') }}</button>
+                        <button type="button" @click="cancelAdd">{{ $t('adminCategoriesView.cancel') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal for editing category -->
+        <div v-if="showEditModal" class="modal">
+            <div class="modal-content">
+                <span class="close" @click="cancelEdit">&times;</span>
+                <h2>{{ $t('adminCategoriesView.editCategory') }}</h2>
+                <form @submit.prevent="submitEditForm">
+                    <div class="form-group">
+                        <label for="editCategoryName">{{ $t('adminCategoriesView.categoryName') }}</label>
+                        <input type="text" id="editCategoryName" v-model="editCategoryName" required />
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit">{{ $t('adminCategoriesView.updateCategory') }}</button>
+                        <button type="button" @click="cancelEdit">{{ $t('adminCategoriesView.cancel') }}</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -47,37 +81,43 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
+import { useI18n } from 'vue-i18n';
 
 import type { Category } from '../../../types/categories';
 
-import { getAllCategories, deleteCategory, deleteCategoryAndReassignProducts } from '../../../services/categoryService';
+import { getAllCategories, deleteCategory, deleteCategoryAndReassignProducts, createCategory, updateCategory } from '../../../services/categoryService';
 
 import { useEventBus } from '../../../utils/eventBus';
 
+const { t } = useI18n();
 const categories = ref<Category[]>([]);
-const router = useRouter();
 const { on } = useEventBus();
 const toast = useToast();
 
 const showDeleteModal = ref(false);
 const showReassignModal = ref(false);
+const showAddModal = ref(false);
+const showEditModal = ref(false);
 const selectedCategoryId = ref<string | null>(null);
 const newCategoryId = ref<string | null>(null);
+const newCategoryName = ref('');
+const editCategoryName = ref('');
 
 const fetchCategories = async () => {
     try {
         const response = await getAllCategories();
         categories.value = response.data.categories;
     } catch (error) {
-        toast.error('Failed to fetch categories');
+        toast.error(t('adminCategoriesView.fetchCategoriesError'));
         console.error('Failed to fetch categories:', error);
     }
 };
 
-const editCategory = (id: string) => {
-    router.push({ name: 'EditCategory', params: { id } });
+const openEditModal = (category: Category) => {
+    selectedCategoryId.value = category._id ?? null;
+    editCategoryName.value = category.name;
+    showEditModal.value = true;
 };
 
 const confirmRemoveCategory = (id: string) => {
@@ -89,9 +129,9 @@ const removeCategory = async (id: string) => {
     try {
         await deleteCategory(id);
         fetchCategories();
-        toast.success('Category removed successfully');
+        toast.success(t('adminCategoriesView.removeCategorySuccess'));
     } catch (error) {
-        toast.error('Failed to remove category');
+        toast.error(t('adminCategoriesView.removeCategoryError'));
         console.error('Failed to remove category:', error);
     } finally {
         showDeleteModal.value = false;
@@ -103,19 +143,55 @@ const reassignAndRemoveCategory = async () => {
         if (selectedCategoryId.value && newCategoryId.value) {
             await deleteCategoryAndReassignProducts(selectedCategoryId.value, newCategoryId.value);
             fetchCategories();
-            toast.success('Category reassigned and removed successfully');
+            toast.success(t('adminCategoriesView.reassignAndRemoveCategorySuccess'));
             showReassignModal.value = false;
         } else {
-            toast.error('Please select a category to reassign');
+            toast.error(t('adminCategoriesView.reassignAndRemoveCategoryError'));
         }
     } catch (error) {
-        toast.error('Failed to reassign and remove category');
+        toast.error(t('adminCategoriesView.reassignAndRemoveCategoryError'));
         console.error('Failed to reassign and remove category:', error);
     }
 };
 
-const addCategory = () => {
-    router.push({ name: 'AddCategory' });
+const submitAddForm = async () => {
+    try {
+        await createCategory({ name: newCategoryName.value });
+        fetchCategories();
+        toast.success(t('adminCategoriesView.addCategorySuccess'));
+        showAddModal.value = false;
+        newCategoryName.value = '';
+    } catch (error) {
+        toast.error(t('adminCategoriesView.addCategoryError'));
+        console.error('Failed to add category:', error);
+    }
+};
+
+const submitEditForm = async () => {
+    try {
+        if (selectedCategoryId.value) {
+            await updateCategory(selectedCategoryId.value, { name: editCategoryName.value });
+            fetchCategories();
+            toast.success(t('adminCategoriesView.updateCategorySuccess'));
+            showEditModal.value = false;
+            selectedCategoryId.value = null;
+            editCategoryName.value = '';
+        }
+    } catch (error) {
+        toast.error(t('adminCategoriesView.updateCategoryError'));
+        console.error('Failed to update category:', error);
+    }
+};
+
+const cancelAdd = () => {
+    showAddModal.value = false;
+    newCategoryName.value = '';
+};
+
+const cancelEdit = () => {
+    showEditModal.value = false;
+    selectedCategoryId.value = null;
+    editCategoryName.value = '';
 };
 
 const cancelRemove = () => {
@@ -170,5 +246,49 @@ button {
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    width: fit-content;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button[type="button"] {
+    background-color: #6c757d;
+}
+
+button[type="button"]:hover {
+    background-color: #5a6268;
 }
 </style>

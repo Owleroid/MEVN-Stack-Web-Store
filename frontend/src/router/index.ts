@@ -19,8 +19,6 @@ import PasswordResetView from "../views/PasswordResetView.vue";
 import AdminPanelView from "../views/admin/AdminPanelView.vue";
 
 import AdminCategoriesView from "../views/admin/categories/AdminCategoriesView.vue";
-import AdminAddCategoryView from "../views/admin/categories/AdminAddCategoryView.vue";
-import AdminEditCategoryView from "../views/admin/categories/AdminEditCategoryView.vue";
 
 import AdminProductsView from "../views/admin/products/AdminProductsView.vue";
 import AdminAddProductView from "../views/admin/products/AdminAddProductView.vue";
@@ -56,20 +54,7 @@ const routes = [
         path: "categories",
         name: "AdminCategories",
         component: AdminCategoriesView,
-        children: [
-          {
-            path: "add",
-            name: "AddCategory",
-            component: AdminAddCategoryView,
-            meta: { requiresAuth: true, requiresAdmin: true },
-          },
-          {
-            path: "edit/:id",
-            name: "EditCategory",
-            component: AdminEditCategoryView,
-            meta: { requiresAuth: true, requiresAdmin: true },
-          },
-        ],
+        meta: { requiresAuth: true, requiresAdmin: true },
       },
       {
         path: "products",
