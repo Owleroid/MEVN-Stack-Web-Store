@@ -24,6 +24,13 @@ import {
   updateWarehouse,
   deleteWarehouse,
 } from "../controllers/admin/warehouseController.js";
+import {
+  getOrderById,
+  deleteOrderById,
+  editOrderById,
+  getAllOrders,
+  filterOrders,
+} from "../controllers/admin/orderController.js";
 
 import { isAuthenticated, isAdmin } from "../middleware/authMiddleware.js";
 
@@ -71,6 +78,18 @@ router.delete(
   isAuthenticated,
   isAdmin,
   deleteWarehouse
+);
+
+// Order routes
+router.get("/orders", isAuthenticated, isAdmin, getAllOrders);
+router.get("/filter-orders", isAuthenticated, isAdmin, filterOrders);
+router.get("/order/:orderId", isAuthenticated, isAdmin, getOrderById);
+router.put("/edit-order/:orderId", isAuthenticated, isAdmin, editOrderById);
+router.delete(
+  "/delete-order/:orderId",
+  isAuthenticated,
+  isAdmin,
+  deleteOrderById
 );
 
 export default router;
