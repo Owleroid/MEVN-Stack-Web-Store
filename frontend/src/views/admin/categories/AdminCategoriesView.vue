@@ -211,6 +211,7 @@ onMounted(() => {
 <style scoped>
 button {
     margin-left: 10px;
+    margin-bottom: 10px;
 }
 
 .modal {
@@ -268,6 +269,7 @@ input {
 .form-actions {
     display: flex;
     justify-content: space-between;
+    margin-top: 15px;
 }
 
 button {
