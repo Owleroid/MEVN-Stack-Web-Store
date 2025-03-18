@@ -222,6 +222,7 @@ onMounted(async () => {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 20px;
 }
 
 .top-center {
@@ -231,30 +232,84 @@ onMounted(async () => {
     gap: 10px;
 }
 
+.top-center button {
+    margin-top: 10px;
+}
+
 .content {
     display: flex;
     width: 100%;
+    gap: 20px;
 }
 
 .left,
 .right {
     flex: 1;
+    min-width: 0;
 }
 
 .left {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    gap: 10px;
 }
 
 .right {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    gap: 10px;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    width: 200px;
+    box-sizing: border-box;
+}
+
+button:hover {
+    background-color: #0056b3;
 }
 
 button.active {
-    background-color: #007bff;
+    background-color: #0056b3;
     color: white;
+}
+
+button[type="button"] {
+    background-color: #6c757d;
+}
+
+button[type="button"]:hover {
+    background-color: #5a6268;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f8f9fa;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 </style>
