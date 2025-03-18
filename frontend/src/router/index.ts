@@ -21,8 +21,6 @@ import AdminPanelView from "../views/admin/AdminPanelView.vue";
 import AdminCategoriesView from "../views/admin/categories/AdminCategoriesView.vue";
 
 import AdminProductsView from "../views/admin/products/AdminProductsView.vue";
-import AdminAddProductView from "../views/admin/products/AdminAddProductView.vue";
-import AdminEditProductView from "../views/admin/products/AdminEditProductView.vue";
 
 import AdminOrdersView from "../views/admin/orders/AdminOrdersView.vue";
 
@@ -60,20 +58,7 @@ const routes = [
         path: "products",
         name: "AdminProducts",
         component: AdminProductsView,
-        children: [
-          {
-            path: "add/:categoryId",
-            name: "AddProduct",
-            component: AdminAddProductView,
-            meta: { requiresAuth: true, requiresAdmin: true },
-          },
-          {
-            path: "edit/:id",
-            name: "EditProduct",
-            component: AdminEditProductView,
-            meta: { requiresAuth: true, requiresAdmin: true },
-          },
-        ],
+        meta: { requiresAuth: true, requiresAdmin: true },
       },
       {
         path: "warehouse",
