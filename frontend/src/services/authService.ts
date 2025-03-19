@@ -12,6 +12,11 @@ export const checkEmail = async (email: string) => {
   return response.data;
 };
 
+export const getUserData = async (userId: string) => {
+  const response = await authService.get(`/user/${userId}`);
+  return response.data;
+};
+
 export const login = async (email: string, password: string) => {
   const response = await authService.post("/login", { email, password });
   return response.data;

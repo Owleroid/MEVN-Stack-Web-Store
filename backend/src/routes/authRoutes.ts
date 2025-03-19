@@ -1,6 +1,7 @@
 import express from "express";
 
 import {
+  getUserData,
   checkEmail,
   signup,
   login,
@@ -12,6 +13,7 @@ import { isAuthenticated } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
+router.get("/user/:userId", getUserData);
 router.get("/check-email/:email", checkEmail);
 router.post("/signup", signup);
 router.post("/login", login);

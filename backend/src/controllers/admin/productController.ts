@@ -8,6 +8,31 @@ import Warehouse from "../../models/Warehouse.js";
 
 import { ProductInput } from "../../types/product.js";
 
+export const searchProductsByName = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { name } = req.params;
+    if (!name) {
+      return next(new ApiError(400, "Product name is required"));
+    }
+
+    const products = await Product.find({
+      name: { $regex: name, $options: "i" },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Products fetched successfully",
+      products,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getProductsByCategoryId = async (
   req: Request,
   res: Response,

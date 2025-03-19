@@ -210,8 +210,26 @@ onMounted(() => {
 
 <style scoped>
 button {
-    margin-left: 10px;
-    margin-bottom: 10px;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  width: fit-content;
+  margin: 5px 0;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button[type="button"] {
+  background-color: #6c757d;
+}
+
+button[type="button"]:hover {
+  background-color: #5a6268;
 }
 
 .modal {
@@ -272,25 +290,21 @@ input {
     margin-top: 15px;
 }
 
-button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    width: fit-content;
+.form-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  width: fit-content;
 }
 
-button:hover {
-    background-color: #0056b3;
+.form-actions button[type="button"] {
+  background-color: #6c757d;
 }
 
-button[type="button"] {
-    background-color: #6c757d;
-}
-
-button[type="button"]:hover {
-    background-color: #5a6268;
+.form-actions button[type="button"]:hover {
+  background-color: #5a6268;
 }
 </style>

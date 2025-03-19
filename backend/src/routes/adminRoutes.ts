@@ -9,6 +9,7 @@ import {
   deleteCategoryAndReassignProducts,
 } from "../controllers/admin/categoryController.js";
 import {
+  searchProductsByName,
   getProductsByCategoryId,
   getProductIdsByCategoryId,
   getProductById,
@@ -50,6 +51,12 @@ router.put(
 );
 
 // Product routes
+router.get(
+  "/products/search/:name",
+  isAuthenticated,
+  isAdmin,
+  searchProductsByName
+);
 router.get(
   "/products/category/:categoryId",
   isAuthenticated,

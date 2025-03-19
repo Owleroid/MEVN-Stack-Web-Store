@@ -23,7 +23,7 @@
           </thead>
           <tbody>
             <tr v-for="order in newOrders" :key="order._id">
-              <td @click="viewOrder(order)" class="clickable">{{ order._id }}</td>
+              <td @click="viewOrder(order)" class="clickable">{{ order.orderNumber }}</td>
               <td>
                 <ul>
                   <li v-for="product in order.products" :key="product.productId">
@@ -91,7 +91,7 @@
           </thead>
           <tbody>
             <tr v-for="order in filteredOrders" :key="order._id">
-              <td @click="viewOrder(order)" class="clickable">{{ order._id }}</td>
+              <td @click="viewOrder(order)" class="clickable">{{ order.orderNumber }}</td>
               <td>
                 <ul>
                   <li v-for="product in order.products" :key="product.productId">
@@ -127,7 +127,7 @@
         <h2 v-if="isEditing">Edit Order</h2>
         <h2 v-else>Order Details</h2>
         <div v-if="selectedOrder">
-          <p><strong>Order ID:</strong> {{ selectedOrder._id }}</p>
+          <p><strong>Order ID:</strong> {{ selectedOrder.orderNumber }}</p>
           <p><strong>Date:</strong> {{ new Date(selectedOrder.dateOfCreation).toLocaleString() }}</p>
           <p><strong>Status:</strong> {{ selectedOrder.status }}</p>
           <p><strong>Checked:</strong> {{ selectedOrder.checked ? 'Yes' : 'No' }}</p>
@@ -158,8 +158,42 @@
                 <label for="checked">Checked:</label>
                 <input type="checkbox" v-model="selectedOrder.checked" id="checked" />
               </div>
+              <div>
+                <label for="recipientEmail">Recipient Email:</label>
+                <input type="email" v-model="selectedOrder.recipient.email" id="recipientEmail" />
+              </div>
+              <div>
+                <label for="recipientPhone">Recipient Phone:</label>
+                <input type="tel" v-model="selectedOrder.recipient.phone" id="recipientPhone" />
+              </div>
+              <div>
+                <label for="products">Products:</label>
+                <ul>
+                  <li v-for="(product, index) in selectedOrder.products" :key="product.productId">
+                    {{ product.name }} 
+                    <input type="number" v-model.number="product.amount" min="1" @input="updateProductAmount(index, product.amount)" />
+                    <button type="button" @click="removeProduct(index)">Remove</button>
+                  </li>
+                </ul>
+                <button type="button" @click="showAddProductFields = !showAddProductFields">+</button>
+                <div v-if="showAddProductFields">
+                  <label for="newProductName">New Product Name:</label>
+                  <input type="text" v-model="newProductName" id="newProductName" @input="searchProducts" />
+                  <ul v-if="searchResults.length > 0">
+                    <li v-for="product in searchResults" :key="product._id" @click="selectProduct(product)">
+                      {{ product.name }}
+                    </li>
+                  </ul>
+                  <label for="newProductAmount">Amount:</label>
+                  <input type="number" v-model.number="newProductAmount" id="newProductAmount" min="1" />
+                  <button type="button" @click="addProduct">Add Product</button>
+                </div>
+              </div>
               <!-- Add more fields as needed -->
-              <button type="submit">Update Order</button>
+              <div class="form-actions">
+                <button type="submit">Update Order</button>
+                <button type="button" @click="cancelEdit">Cancel</button>
+              </div>
             </form>
           </div>
         </div>
@@ -172,7 +206,9 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { getAllOrders, editOrderById } from '../../../services/orderService';
+import { searchProductsByName } from '../../../services/productService';
 import type { OrderData } from '../../../types/orders';
+import type { Product } from '../../../types/products';
 
 const orders = ref<OrderData[]>([]);
 const sortOrder = ref('newest');
@@ -220,6 +256,7 @@ const viewOrder = (order: OrderData) => {
 const editOrder = (order: OrderData) => {
   selectedOrder.value = order;
   isEditing.value = true;
+  showAddProductFields.value = false; // Reset the add product fields visibility
   showModal.value = true;
 };
 
@@ -227,6 +264,7 @@ const closeModal = () => {
   showModal.value = false;
   selectedOrder.value = null;
   isEditing.value = false;
+  showAddProductFields.value = false; // Reset the add product fields visibility
 };
 
 const updateOrder = async () => {
@@ -248,6 +286,66 @@ const updateOrderStatus = async (orderId: string, status: string) => {
   } catch (error) {
     console.error('Error updating order status:', error);
   }
+};
+
+const showAddProductFields = ref(false);
+const newProductName = ref('');
+const newProductAmount = ref(1);
+const searchResults = ref<Product[]>([]);
+const selectedProduct = ref<Product | null>(null);
+
+const searchProducts = async () => {
+  if (newProductName.value) {
+    try {
+      const response = await searchProductsByName(newProductName.value);
+      const allProducts = response.data.products;
+
+      // Filter out products that are already in the order
+      const existingProductIds = selectedOrder.value?.products.map(p => p.productId) || [];
+      searchResults.value = allProducts.filter(product => !existingProductIds.includes(product._id));
+    } catch (error) {
+      console.error('Error searching products:', error);
+    }
+  } else {
+    searchResults.value = [];
+  }
+};
+
+const selectProduct = (product: Product) => {
+  selectedProduct.value = product;
+  newProductName.value = product.name;
+  searchResults.value = [];
+};
+
+const addProduct = () => {
+  if (selectedProduct.value && newProductAmount.value > 0) {
+    selectedOrder.value?.products.push({
+      productId: selectedProduct.value._id,
+      name: selectedProduct.value.name,
+      amount: newProductAmount.value,
+      productPrice: selectedProduct.value.price.euros.amount // Adjust based on your currency
+    });
+    newProductName.value = '';
+    newProductAmount.value = 1;
+    selectedProduct.value = null;
+    showAddProductFields.value = false;
+  }
+};
+
+const removeProduct = (index: number) => {
+  selectedOrder.value?.products.splice(index, 1);
+};
+
+const updateProductAmount = (index: number, amount: number) => {
+  if (selectedOrder.value) {
+    selectedOrder.value.products[index].amount = amount;
+  }
+};
+
+const cancelEdit = () => {
+  // Reset the selected order to its original state
+  fetchOrders();
+  closeModal();
 };
 
 onMounted(() => {
@@ -318,5 +416,79 @@ th {
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+form div {
+  margin-bottom: 15px;
+}
+
+form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="tel"],
+form input[type="number"],
+form select {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+form ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+form ul li {
+  margin-bottom: 10px;
+}
+
+form button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+form button:hover {
+  background-color: #0056b3;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.form-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.form-actions button[type="button"] {
+  background-color: #6c757d;
+}
+
+.form-actions button[type="button"]:hover {
+  background-color: #5a6268;
 }
 </style>

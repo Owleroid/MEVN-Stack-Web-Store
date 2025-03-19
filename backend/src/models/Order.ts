@@ -1,4 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { customAlphabet } from "nanoid";
+
+const nanoid = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 6);
 
 interface Product {
   productId: mongoose.Types.ObjectId;
@@ -26,6 +29,7 @@ interface Recipient {
 
 interface Order extends Document {
   _id: string;
+  orderNumber: string;
   userId: mongoose.Types.ObjectId;
   products: Product[];
   totalPrice: number;
@@ -69,6 +73,7 @@ const RecipientSchema: Schema = new Schema({
 });
 
 const OrderSchema: Schema = new Schema({
+  orderNumber: { type: String, unique: true },
   userId: { type: mongoose.Types.ObjectId, required: true, ref: "User" },
   products: { type: [ProductSchema], required: true },
   totalPrice: { type: Number, required: true },
@@ -91,6 +96,13 @@ const OrderSchema: Schema = new Schema({
   paymentMethod: { type: String, required: false },
   orderNotes: { type: String, required: false },
   trackingNumber: { type: String, required: false },
+});
+
+OrderSchema.pre<Order>("save", function (next) {
+  if (!this.orderNumber) {
+    this.orderNumber = nanoid();
+  }
+  next();
 });
 
 const Order = mongoose.model<Order>("Order", OrderSchema);

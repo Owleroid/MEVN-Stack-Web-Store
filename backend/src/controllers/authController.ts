@@ -7,6 +7,27 @@ import ApiError from "../utils/apiError.js";
 
 import User from "../models/User.js";
 
+export const getUserData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId).select(
+      "-password -resetPasswordToken -resetPasswordExpires"
+    );
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const checkEmail = async (
   req: Request,
   res: Response,

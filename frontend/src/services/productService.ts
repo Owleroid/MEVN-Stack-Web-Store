@@ -20,6 +20,10 @@ export const getProductById = async (id: string) => {
   return productService.get(`/product/${id}`);
 };
 
+export const searchProductsByName = async (name: string) => {
+  return productService.get(`/products/search/${name}`);
+};
+
 export const addProduct = async (product: ProductInput) => {
   return productService.post("/add-product", product);
 };

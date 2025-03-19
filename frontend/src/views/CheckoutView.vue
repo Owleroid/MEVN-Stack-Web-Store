@@ -78,7 +78,9 @@ import { useToast } from 'vue-toastification';
 import type { CartItem } from '../types/cart';
 import type { OrderData, Recipient, Address } from '../types/orders';
 
-import { checkEmail } from '../services/authService';
+import { useEventBus } from '../utils/eventBus';
+
+import { checkEmail, getUserData } from '../services/authService';
 import { createOrder } from '../services/orderService';
 import { getCart, clearCart } from '../services/cartService';
 
@@ -88,6 +90,7 @@ const authStore = useAuthStore();
 const router = useRouter();
 const { t } = useI18n();
 const toast = useToast();
+const { emit } = useEventBus();
 
 const isAuthenticated = authStore.isAuthenticated;
 
@@ -111,7 +114,7 @@ const cart = ref<CartItem[]>([]);
 const totalPrice = ref(0);
 const currency = ref<'rubles' | 'euros'>('euros');
 
-onMounted(() => {
+onMounted(async () => {
     cart.value = getCart();
     totalPrice.value = cart.value.reduce((total, item) => total + item.product.price[currency.value].amount * item.quantity, 0);
     currency.value = (sessionStorage.getItem('currency') as 'rubles' | 'euros') || 'euros';
@@ -124,6 +127,26 @@ onMounted(() => {
     }
     if (savedShippingAddress) {
         Object.assign(shippingAddress.value, JSON.parse(savedShippingAddress));
+    }
+
+    // If user is authenticated, fetch user data from backend and pre-fill the form
+    if (isAuthenticated) {
+        try {
+            const userData = await getUserData(authStore.userId);
+            recipient.value.name = userData.name || '';
+            recipient.value.surname = userData.surname || '';
+            recipient.value.phone = userData.phone || '';
+            recipient.value.email = userData.email || '';
+            shippingAddress.value.country = userData.deliveryData?.country || '';
+            shippingAddress.value.city = userData.deliveryData?.city || '';
+            shippingAddress.value.street = userData.deliveryData?.street || '';
+            shippingAddress.value.buildingNumber = userData.deliveryData?.buildingNumber || '';
+            shippingAddress.value.apartment = userData.deliveryData?.apartment || '';
+            shippingAddress.value.postalCode = userData.deliveryData?.postalCode || '';
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            toast.error('An error occurred while fetching user data. Please try again.');
+        }
     }
 });
 
@@ -166,13 +189,15 @@ const handleCheckout = async () => {
     };
 
     try {
-        console.log(authStore.userId);
+        console.log("Sending order data:", orderData);
         await createOrder(orderData);
         // Clear cart and redirect to order confirmation page
+        console.log("Order placed successfully!");
         clearCart();
         localStorage.removeItem('recipient');
         localStorage.removeItem('shippingAddress');
-        router.push('/store');
+        emit('cart-updated');
+        router.push('/categories');
         toast.success('Order placed successfully!');
     } catch (error) {
         console.error('Error creating order:', error);

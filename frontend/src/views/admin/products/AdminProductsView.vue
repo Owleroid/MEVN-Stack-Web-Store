@@ -437,20 +437,52 @@ onMounted(() => {
 }
 
 .categories-menu button, .products-list button {
-    display: block;
-    margin: 5px 0;
-    padding: 10px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
-    width: 200px; /* Fixed width for all buttons */
-    box-sizing: border-box;
+  display: block;
+  margin: 5px 0;
+  padding: 10px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  width: fit-content;
+  box-sizing: border-box;
 }
 
 .categories-menu button.active {
-    background-color: #0056b3;
+  background-color: #0056b3;
+}
+
+.form-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.form-actions button[type="button"] {
+  background-color: #6c757d;
+}
+
+.form-actions button[type="button"]:hover {
+  background-color: #5a6268;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+button:hover {
+  background-color: #0056b3;
 }
 
 .products-list ul {
@@ -520,7 +552,7 @@ onMounted(() => {
     color: white;
     cursor: pointer;
     border-radius: 5px;
-    width: 200px; /* Fixed width for form action buttons */
+    width: 200px;
 }
 
 .form-actions button[type="button"] {

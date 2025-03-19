@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 
 import Order from "../../models/Order.js";
+import Product from "../../models/Product.js";
 
-// Get order by ID
 export const getOrderById = async (
   req: Request,
   res: Response,
@@ -30,7 +30,6 @@ export const getOrderById = async (
   }
 };
 
-// Delete order by ID
 export const deleteOrderById = async (
   req: Request,
   res: Response,
@@ -58,7 +57,6 @@ export const deleteOrderById = async (
   }
 };
 
-// Edit order by ID
 export const editOrderById = async (
   req: Request,
   res: Response,
@@ -66,8 +64,34 @@ export const editOrderById = async (
 ) => {
   const { orderId } = req.params;
   const updateData = req.body;
+  const { currency } = updateData;
 
   try {
+    // Fetch product prices from the database
+    const productIds = updateData.products.map(
+      (product: any) => product.productId
+    );
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    // Create a map of product prices based on the specified currency
+    const productPriceMap = new Map();
+    products.forEach((product: any) => {
+      const price =
+        currency === "rubles"
+          ? product.price.rubles.amount
+          : product.price.euros.amount;
+      productPriceMap.set(product._id.toString(), price);
+    });
+
+    // Recalculate totalPrice based on products, their amounts, and prices from the database
+    updateData.totalPrice = updateData.products.reduce(
+      (total: number, product: any) => {
+        const productPrice = productPriceMap.get(product.productId);
+        return total + product.amount * productPrice;
+      },
+      0
+    );
+
     const order = await Order.findByIdAndUpdate(orderId, updateData, {
       new: true,
     });
@@ -90,7 +114,6 @@ export const editOrderById = async (
   }
 };
 
-// Get all orders
 export const getAllOrders = async (
   req: Request,
   res: Response,
@@ -108,7 +131,6 @@ export const getAllOrders = async (
   }
 };
 
-// Filter orders by specific filters
 export const filterOrders = async (
   req: Request,
   res: Response,
