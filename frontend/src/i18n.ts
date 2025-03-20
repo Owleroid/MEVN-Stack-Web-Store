@@ -12,6 +12,7 @@ import enCheckoutView from "./locales/en/checkoutView.json";
 
 import enAdminCategoriesView from "./locales/en/adminCategoriesView.json";
 import enAdminProductsView from "./locales/en/adminProductsView.json";
+import enAdminNavbar from "./locales/en/adminNavbar.json";
 
 import ruNavbar from "./locales/ru/navbar.json";
 import ruAddToCartButton from "./locales/ru/addToCartButton.json";
@@ -25,6 +26,7 @@ import ruCheckoutView from "./locales/ru/checkoutView.json";
 
 import ruAdminCategoriesView from "./locales/ru/adminCategoriesView.json";
 import ruAdminProductsView from "./locales/ru/adminProductsView.json";
+import ruAdminNavbar from "./locales/ru/adminNavbar.json";
 
 const messages = {
   en: {
@@ -39,6 +41,7 @@ const messages = {
     checkoutView: enCheckoutView,
     adminCategoriesView: enAdminCategoriesView,
     adminProductsView: enAdminProductsView,
+    adminNavbar: enAdminNavbar,
   },
   ru: {
     navbar: ruNavbar,
@@ -52,6 +55,7 @@ const messages = {
     checkoutView: ruCheckoutView,
     adminCategoriesView: ruAdminCategoriesView,
     adminProductsView: ruAdminProductsView,
+    adminNavbar: ruAdminNavbar,
   },
 };
 

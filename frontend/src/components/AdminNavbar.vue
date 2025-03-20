@@ -1,20 +1,23 @@
 <template>
     <nav>
         <ul class="left">
-            <li><router-link to="/admin/categories">Categories</router-link></li>
-            <li><router-link to="/admin/products">Products</router-link></li>
-            <li><router-link to="/admin/warehouse">Warehouse</router-link></li>
-            <li><router-link to="/admin/orders">Orders</router-link></li>
-            <li><router-link to="/admin/clients">Clients</router-link></li>
-            <li><router-link to="/admin/news">News</router-link></li>
+            <li><router-link to="/admin/categories">{{ $t('adminNavbar.categories') }}</router-link></li>
+            <li><router-link to="/admin/products">{{ $t('adminNavbar.products') }}</router-link></li>
+            <li><router-link to="/admin/warehouse">{{ $t('adminNavbar.warehouse') }}</router-link></li>
+            <li><router-link to="/admin/orders">{{ $t('adminNavbar.orders') }}</router-link></li>
+            <li><router-link to="/admin/clients">{{ $t('adminNavbar.clients') }}</router-link></li>
+            <li><router-link to="/admin/news">{{ $t('adminNavbar.news') }}</router-link></li>
         </ul>
         <ul class="right">
-            <li><router-link to="/">Home</router-link></li>
+            <li><router-link to="/">{{ $t('adminNavbar.home') }}</router-link></li>
         </ul>
     </nav>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 </script>
 
 <style scoped>
