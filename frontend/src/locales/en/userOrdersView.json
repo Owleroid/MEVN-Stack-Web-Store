@@ -1,0 +1,10 @@
+{
+  "title": "Your Orders",
+  "order": "Order",
+  "date": "Date",
+  "total": "Total",
+  "status": "Status",
+  "notes": "Notes",
+  "trackingNumber": "Tracking Number",
+  "noOrders": "You have no orders."
+}

@@ -9,6 +9,7 @@ import enSignupView from "./locales/en/signupView.json";
 import enPasswordResetView from "./locales/en/passwordResetView.json";
 import enStoreView from "./locales/en/storeView.json";
 import enCheckoutView from "./locales/en/checkoutView.json";
+import enUserOrdersView from "./locales/en/userOrdersView.json";
 
 import enAdminCategoriesView from "./locales/en/adminCategoriesView.json";
 import enAdminProductsView from "./locales/en/adminProductsView.json";
@@ -23,6 +24,7 @@ import ruSignupView from "./locales/ru/signupView.json";
 import ruPasswordResetView from "./locales/ru/passwordResetView.json";
 import ruStoreView from "./locales/ru/storeView.json";
 import ruCheckoutView from "./locales/ru/checkoutView.json";
+import ruUserOrdersView from "./locales/ru/userOrdersView.json";
 
 import ruAdminCategoriesView from "./locales/ru/adminCategoriesView.json";
 import ruAdminProductsView from "./locales/ru/adminProductsView.json";
@@ -39,6 +41,7 @@ const messages = {
     passwordResetView: enPasswordResetView,
     storeView: enStoreView,
     checkoutView: enCheckoutView,
+    userOrdersView: enUserOrdersView,
     adminCategoriesView: enAdminCategoriesView,
     adminProductsView: enAdminProductsView,
     adminNavbar: enAdminNavbar,
@@ -53,6 +56,7 @@ const messages = {
     passwordResetView: ruPasswordResetView,
     storeView: ruStoreView,
     checkoutView: ruCheckoutView,
+    userOrdersView: ruUserOrdersView,
     adminCategoriesView: ruAdminCategoriesView,
     adminProductsView: ruAdminProductsView,
     adminNavbar: ruAdminNavbar,

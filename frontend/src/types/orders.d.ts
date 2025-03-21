@@ -39,3 +39,9 @@ export interface OrderData {
   orderNotes?: string;
   trackingNumber?: string;
 }
+
+export interface Order extends OrderData {
+  _id: string;
+  orderNumber: string;
+  dateOfCreation: string;
+}

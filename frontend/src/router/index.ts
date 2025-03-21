@@ -15,15 +15,12 @@ import CheckoutView from "../views/CheckoutView.vue";
 import LoginView from "../views/LoginView.vue";
 import SignupView from "../views/SignupView.vue";
 import PasswordResetView from "../views/PasswordResetView.vue";
+import UserOrdersView from "../views/UserOrdersView.vue";
 
 import AdminPanelView from "../views/admin/AdminPanelView.vue";
-
 import AdminCategoriesView from "../views/admin/categories/AdminCategoriesView.vue";
-
 import AdminProductsView from "../views/admin/products/AdminProductsView.vue";
-
 import AdminOrdersView from "../views/admin/orders/AdminOrdersView.vue";
-
 import AdminWarehouseView from "../views/admin/AdminWarehouseView.vue";
 import AdminClientsView from "../views/admin/AdminClientsView.vue";
 import AdminNewsView from "../views/admin/AdminNewsView.vue";
@@ -38,6 +35,7 @@ const routes = [
   { path: "/contact", component: ContactView },
   { path: "/news", component: NewsView },
   { path: "/cart", component: CartView },
+  { path: "/orders", component: UserOrdersView, meta: { requiresAuth: true } },
   {
     path: "/checkout",
     name: "Checkout",
