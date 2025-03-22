@@ -28,17 +28,76 @@ export const getUserData = async (
   }
 };
 
+export const updateUserData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req.params;
+  const { name, surname, phone, deliveryData } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    user.name = name || user.name;
+    user.surname = surname || user.surname;
+    user.phone = phone || user.phone;
+    user.deliveryData = deliveryData || user.deliveryData;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "User data updated",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const changeUserPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req.params;
+  const { currentPassword, newPassword } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      throw new ApiError(401, "Current password is incorrect");
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const checkEmail = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const { email } = req.params;
-  console.log(email);
 
   try {
     const user = await User.findOne({ email });
-    console.log(user);
 
     if (user) {
       res.status(200).json({ exists: true });

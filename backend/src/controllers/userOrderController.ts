@@ -119,12 +119,8 @@ export const getOrdersByUserId = async (
 ) => {
   const { userId } = req.params;
 
-  console.log(userId);
-
   try {
     const orders = await Order.find({ userId });
-
-    console.log(orders);
 
     if (!orders) {
       res.status(404).json({

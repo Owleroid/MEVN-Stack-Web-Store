@@ -54,9 +54,7 @@ onMounted(async () => {
 async function fetchOrders(userId: string) {
   try {
     const response = await getOrdersByUserId(userId);
-    console.log("Fetched orders:", response.data.orders); // Debugging log
     orders.value = response.data.orders;
-    console.log("Orders value:", orders.value); // Debugging log
   } catch (error) {
     console.error("Failed to fetch orders:", error);
   }

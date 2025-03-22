@@ -189,10 +189,7 @@ const handleCheckout = async () => {
     };
 
     try {
-        console.log("Sending order data:", orderData);
         await createOrder(orderData);
-        // Clear cart and redirect to order confirmation page
-        console.log("Order placed successfully!");
         clearCart();
         localStorage.removeItem('recipient');
         localStorage.removeItem('shippingAddress');

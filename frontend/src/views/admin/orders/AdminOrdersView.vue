@@ -31,8 +31,8 @@
                   </li>
                 </ul>
               </td>
-              <td>{{ order.recipient.email }}</td>
-              <td>{{ order.recipient.phone }}</td>
+              <td>{{ order.recipient?.email }}</td>
+              <td>{{ order.recipient?.phone }}</td>
               <td>{{ new Date(order.dateOfCreation).toLocaleString() }}</td>
               <td>
                 <select v-model="order.status" @change="updateOrderStatus(order._id, order.status)">
@@ -99,8 +99,8 @@
                   </li>
                 </ul>
               </td>
-              <td>{{ order.recipient.email }}</td>
-              <td>{{ order.recipient.phone }}</td>
+              <td>{{ order.recipient?.email }}</td>
+              <td>{{ order.recipient?.phone }}</td>
               <td>{{ new Date(order.dateOfCreation).toLocaleString() }}</td>
               <td>
                 <select v-model="order.status" @change="updateOrderStatus(order._id, order.status)">
@@ -137,8 +137,8 @@
               {{ product.name }} ({{ product.amount }})
             </li>
           </ul>
-          <p><strong>Recipient Email:</strong> {{ selectedOrder.recipient.email }}</p>
-          <p><strong>Recipient Phone:</strong> {{ selectedOrder.recipient.phone }}</p>
+          <p><strong>Recipient Email:</strong> {{ selectedOrder.recipient?.email }}</p>
+          <p><strong>Recipient Phone:</strong> {{ selectedOrder.recipient?.phone }}</p>
           <!-- Add more order details as needed -->
 
           <!-- Edit Form -->
@@ -160,11 +160,11 @@
               </div>
               <div>
                 <label for="recipientEmail">Recipient Email:</label>
-                <input type="email" v-model="selectedOrder.recipient.email" id="recipientEmail" />
+                <input type="email" v-model="recipientEmail" id="recipientEmail" />
               </div>
               <div>
                 <label for="recipientPhone">Recipient Phone:</label>
-                <input type="tel" v-model="selectedOrder.recipient.phone" id="recipientPhone" />
+                <input type="tel" v-model="recipientPhone" id="recipientPhone" />
               </div>
               <div>
                 <label for="products">Products:</label>
@@ -204,19 +204,20 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { getAllOrders, editOrderById } from '../../../services/orderService';
-import { searchProductsByName } from '../../../services/productService';
-import type { OrderData } from '../../../types/orders';
+
+import type { Order } from '../../../types/orders';
 import type { Product } from '../../../types/products';
 
-const orders = ref<OrderData[]>([]);
+import { searchProductsByName } from '../../../services/productService';
+import { getAllOrders, editOrderById } from '../../../services/orderService';
+
+const orders = ref<Order[]>([]);
 const sortOrder = ref('newest');
 const statusFilter = ref('');
 const showModal = ref(false);
-const selectedOrder = ref<OrderData | null>(null);
+const selectedOrder = ref<Order | null>(null);
 const isEditing = ref(false);
-const router = useRouter();
+const currency = ref<'rubles' | 'euros'>('euros');
 
 const fetchOrders = async () => {
   try {
@@ -247,16 +248,16 @@ const filteredOrders = computed(() => {
   return filtered;
 });
 
-const viewOrder = (order: OrderData) => {
+const viewOrder = (order: Order) => {
   selectedOrder.value = order;
   isEditing.value = false;
   showModal.value = true;
 };
 
-const editOrder = (order: OrderData) => {
+const editOrder = (order: Order) => {
   selectedOrder.value = order;
   isEditing.value = true;
-  showAddProductFields.value = false; // Reset the add product fields visibility
+  showAddProductFields.value = false;
   showModal.value = true;
 };
 
@@ -264,7 +265,7 @@ const closeModal = () => {
   showModal.value = false;
   selectedOrder.value = null;
   isEditing.value = false;
-  showAddProductFields.value = false; // Reset the add product fields visibility
+  showAddProductFields.value = false;
 };
 
 const updateOrder = async () => {
@@ -281,7 +282,7 @@ const updateOrder = async () => {
 
 const updateOrderStatus = async (orderId: string, status: string) => {
   try {
-    await editOrderById(orderId, { status });
+    await editOrderById(orderId, { status: status as 'waiting confirmation' | 'packing' | 'sended' | 'delivered' | 'canceled' });
     fetchOrders();
   } catch (error) {
     console.error('Error updating order status:', error);
@@ -302,7 +303,7 @@ const searchProducts = async () => {
 
       // Filter out products that are already in the order
       const existingProductIds = selectedOrder.value?.products.map(p => p.productId) || [];
-      searchResults.value = allProducts.filter(product => !existingProductIds.includes(product._id));
+      searchResults.value = allProducts.filter((product: { _id: string; }) => !existingProductIds.includes(product._id));
     } catch (error) {
       console.error('Error searching products:', error);
     }
@@ -319,11 +320,13 @@ const selectProduct = (product: Product) => {
 
 const addProduct = () => {
   if (selectedProduct.value && newProductAmount.value > 0) {
+    const productPrice = currency.value === 'rubles' ? selectedProduct.value.price.rubles.amount : selectedProduct.value.price.euros.amount;
+
     selectedOrder.value?.products.push({
       productId: selectedProduct.value._id,
       name: selectedProduct.value.name,
       amount: newProductAmount.value,
-      productPrice: selectedProduct.value.price.euros.amount // Adjust based on your currency
+      productPrice: productPrice,
     });
     newProductName.value = '';
     newProductAmount.value = 1;
@@ -343,12 +346,30 @@ const updateProductAmount = (index: number, amount: number) => {
 };
 
 const cancelEdit = () => {
-  // Reset the selected order to its original state
   fetchOrders();
   closeModal();
 };
 
+const recipientEmail = computed({
+  get: () => selectedOrder.value?.recipient?.email || '',
+  set: (value) => {
+    if (selectedOrder.value && selectedOrder.value.recipient) {
+      selectedOrder.value.recipient.email = value;
+    }
+  }
+});
+
+const recipientPhone = computed({
+  get: () => selectedOrder.value?.recipient?.phone || '',
+  set: (value) => {
+    if (selectedOrder.value && selectedOrder.value.recipient) {
+      selectedOrder.value.recipient.phone = value;
+    }
+  }
+});
+
 onMounted(() => {
+  currency.value = (sessionStorage.getItem('currency') as 'rubles' | 'euros') || 'euros';
   fetchOrders();
 });
 </script>

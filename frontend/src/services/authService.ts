@@ -17,6 +17,23 @@ export const getUserData = async (userId: string) => {
   return response.data;
 };
 
+export const updateUserData = async (userId: string, userData: any) => {
+  const response = await authService.put(`/update-user/${userId}`, userData);
+  return response.data;
+};
+
+export const changeUserPassword = async (
+  userId: string,
+  currentPassword: string,
+  newPassword: string
+) => {
+  const response = await authService.put(`/user/${userId}/change-password`, {
+    currentPassword,
+    newPassword,
+  });
+  return response.data;
+};
+
 export const login = async (email: string, password: string) => {
   const response = await authService.post("/login", { email, password });
   return response.data;

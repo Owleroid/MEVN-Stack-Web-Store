@@ -16,6 +16,7 @@ import LoginView from "../views/LoginView.vue";
 import SignupView from "../views/SignupView.vue";
 import PasswordResetView from "../views/PasswordResetView.vue";
 import UserOrdersView from "../views/UserOrdersView.vue";
+import UserSettingsView from "../views/UserSettingsView.vue";
 
 import AdminPanelView from "../views/admin/AdminPanelView.vue";
 import AdminCategoriesView from "../views/admin/categories/AdminCategoriesView.vue";
@@ -36,6 +37,11 @@ const routes = [
   { path: "/news", component: NewsView },
   { path: "/cart", component: CartView },
   { path: "/orders", component: UserOrdersView, meta: { requiresAuth: true } },
+  {
+    path: "/settings",
+    component: UserSettingsView,
+    meta: { requiresAuth: true },
+  },
   {
     path: "/checkout",
     name: "Checkout",
