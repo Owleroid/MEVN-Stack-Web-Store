@@ -1,4 +1,6 @@
 import { defineStore } from "pinia";
+import { useRouter } from "vue-router";
+
 import { getUserLocation } from "../services/geolocationService";
 import { login, logout, signup, passwordReset } from "../services/authService";
 
@@ -55,6 +57,7 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async logout() {
+      const router = useRouter();
       try {
         await logout();
         this.isAuthenticated = false;
@@ -72,6 +75,8 @@ export const useAuthStore = defineStore("auth", {
         sessionStorage.removeItem("userRegion");
         sessionStorage.removeItem("language");
         sessionStorage.removeItem("currency");
+
+        router.push("/");
       } catch (error) {
         console.error("Logout failed:", error);
         throw error;

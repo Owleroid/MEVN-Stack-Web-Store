@@ -19,8 +19,9 @@
         </ul>
         <div class="recipient">
           <h3>{{ $t("userOrdersView.recipient.title") }}</h3>
-          <p>{{ $t("userOrdersView.recipient.name") }}: {{ order.recipient?.name }}</p>
           <p>{{ $t("userOrdersView.recipient.email") }}: {{ order.recipient?.email }}</p>
+          <p>{{ $t("userOrdersView.recipient.name") }}: {{ order.recipient?.name }}</p>
+          <p>{{ $t("userOrdersView.recipient.surname") }}: {{ order.recipient?.surname }}</p>
           <p>{{ $t("userOrdersView.recipient.phone") }}: {{ order.recipient?.phone }}</p>
         </div>
         <div class="delivery">

@@ -59,6 +59,7 @@ const fetchCategories = async () => {
 
 const fetchProducts = async (categoryId: string) => {
     try {
+        products.value = [];
         const response = await getProductsByCategoryId(categoryId);
         products.value = response.data;
     } catch (error) {
