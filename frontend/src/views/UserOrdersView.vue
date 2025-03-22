@@ -17,6 +17,21 @@
             {{ item.name }} - {{ item.amount }} x {{ item.productPrice }}
           </li>
         </ul>
+        <div class="recipient">
+          <h3>{{ $t("userOrdersView.recipient.title") }}</h3>
+          <p>{{ $t("userOrdersView.recipient.name") }}: {{ order.recipient?.name }}</p>
+          <p>{{ $t("userOrdersView.recipient.email") }}: {{ order.recipient?.email }}</p>
+          <p>{{ $t("userOrdersView.recipient.phone") }}: {{ order.recipient?.phone }}</p>
+        </div>
+        <div class="delivery">
+          <h3>{{ $t("userOrdersView.delivery.title") }}</h3>
+          <p>{{ $t("userOrdersView.delivery.country") }}: {{ order.shippingAddress?.country }}</p>
+          <p>{{ $t("userOrdersView.delivery.city") }}: {{ order.shippingAddress?.city }}</p>
+          <p>{{ $t("userOrdersView.delivery.street") }}: {{ order.shippingAddress?.street }}</p>
+          <p>{{ $t("userOrdersView.delivery.buildingNumber") }}: {{ order.shippingAddress?.buildingNumber }}</p>
+          <p>{{ $t("userOrdersView.delivery.apartment") }}: {{ order.shippingAddress?.apartment }}</p>
+          <p>{{ $t("userOrdersView.delivery.postalCode") }}: {{ order.shippingAddress?.postalCode }}</p>
+        </div>
         <p v-if="order.orderNotes">
           {{ $t("userOrdersView.notes") }}: {{ order.orderNotes }}
         </p>
@@ -86,6 +101,14 @@ async function fetchOrders(userId: string) {
 }
 
 .order li {
+  margin: 0.5rem 0;
+}
+
+.recipient, .delivery {
+  margin-top: 1rem;
+}
+
+.recipient h3, .delivery h3 {
   margin: 0.5rem 0;
 }
 </style>

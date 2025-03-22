@@ -2,6 +2,7 @@
   "login": "Login",
   "email": "Email",
   "password": "Password",
-  "loginSuccess": "Login successful!",
-  "loginFailed": "Login failed. Please try again."
+  "forgotPassword": "Forgot Password?",
+  "loginSuccess": "Login successful.",
+  "loginFailed": "Failed to login."
 }

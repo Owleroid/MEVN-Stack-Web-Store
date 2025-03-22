@@ -4,7 +4,22 @@
   "date": "Date",
   "total": "Total",
   "status": "Status",
-  "notes": "Notes",
+  "notes": "Order Notes",
   "trackingNumber": "Tracking Number",
-  "noOrders": "You have no orders."
+  "noOrders": "You have no orders.",
+  "recipient": {
+    "title": "Recipient Information",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone"
+  },
+  "delivery": {
+    "title": "Delivery Address",
+    "country": "Country",
+    "city": "City",
+    "street": "Street",
+    "buildingNumber": "Building Number",
+    "apartment": "Apartment",
+    "postalCode": "Postal Code"
+  }
 }
