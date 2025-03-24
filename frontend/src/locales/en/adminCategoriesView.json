@@ -20,5 +20,6 @@
   "addCategorySuccess": "Category was successfully added",
   "addCategoryError": "Failed to add category",
   "updateCategorySuccess": "Category was successfully updated",
-  "updateCategoryError": "Failed to update category"
+  "updateCategoryError": "Failed to update category",
+  "actions": "Actions"
 }

@@ -65,8 +65,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 
-import OrderTable from "@/components/admin/Orders/OrderTable.vue";
-import OrderModal from "@/components/admin/Orders/EditOrderModal.vue";
+import OrderTable from "@/components/admin/orders/OrderTable.vue";
+import OrderModal from "@/components/admin/orders/EditOrderModal.vue";
 
 import type { Order } from "@/types/orders";
 

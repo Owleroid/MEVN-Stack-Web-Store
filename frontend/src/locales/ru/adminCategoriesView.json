@@ -11,7 +11,7 @@
   "updateCategory": "Обновить категорию",
   "addCategory": "Добавить категорию",
   "chooseNewCategory": "Выберите новую категорию для связанных продуктов:",
-  "deleteConfirmation": "Категория может иметь связанные продукты. Выберите вариант:",
+  "deleteConfirmation": "Категория может иметь связанные продукты. Выберите опцию:",
   "fetchCategoriesError": "Не удалось получить категории",
   "removeCategorySuccess": "Категория успешно удалена",
   "removeCategoryError": "Не удалось удалить категорию",
@@ -20,5 +20,6 @@
   "addCategorySuccess": "Категория успешно добавлена",
   "addCategoryError": "Не удалось добавить категорию",
   "updateCategorySuccess": "Категория успешно обновлена",
-  "updateCategoryError": "Не удалось обновить категорию"
+  "updateCategoryError": "Не удалось обновить категорию",
+  "actions": "Действия"
 }

@@ -1,6 +1,7 @@
 <template>
   <div v-if="show" class="modal">
     <div class="modal-content">
+      <span class="close" @click="close">&times;</span>
       <h3>
         {{
           $t("adminProductsView.changeCategoryFor", {
@@ -8,20 +9,27 @@
           })
         }}
       </h3>
-      <select v-model="selectedNewCategory">
-        <option
-          v-for="category in filteredCategories"
-          :key="category._id"
-          :value="category._id"
-        >
-          {{ category.name }}
-        </option>
-      </select>
+      <div class="form-group">
+        <label for="newCategory">{{
+          $t("adminProductsView.chooseNewCategory")
+        }}</label>
+        <select id="newCategory" v-model="selectedNewCategory">
+          <option
+            v-for="category in filteredCategories"
+            :key="category._id"
+            :value="category._id"
+          >
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
       <div class="form-actions">
         <button @click="changeCategory(selectedNewCategory)">
           {{ $t("adminProductsView.change") }}
         </button>
-        <button @click="close">{{ $t("adminProductsView.cancel") }}</button>
+        <button type="button" @click="close">
+          {{ $t("adminProductsView.cancel") }}
+        </button>
       </div>
     </div>
   </div>
@@ -78,37 +86,81 @@ const changeCategory = (newCategoryId: string) => {
 .modal-content {
   background-color: white;
   padding: 20px;
-  border-radius: 5px;
+  border-radius: 8px;
   width: 90%;
   max-width: 500px;
   max-height: 90%;
   overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+h3 {
+  margin-top: 0;
+  font-size: 24px;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 .form-actions {
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
   margin-top: 20px;
 }
 
-button {
+.form-actions button {
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
   background-color: #007bff;
   color: white;
   cursor: pointer;
+  width: fit-content;
 }
 
-button:hover {
-  background-color: #0056b3;
-}
-
-button[type="button"] {
+.form-actions button[type="button"] {
   background-color: #6c757d;
 }
 
-button[type="button"]:hover {
+.form-actions button:hover {
+  background-color: #0056b3;
+}
+
+.form-actions button[type="button"]:hover {
   background-color: #5a6268;
 }
 </style>
