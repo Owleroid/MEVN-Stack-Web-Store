@@ -38,5 +38,6 @@
   "selectNewCategory": "Please select a new category",
   "productCategoryUpdatedSuccessfully": "Product category updated successfully",
   "failedToUpdateProductCategory": "Failed to update product category",
-  "actions": "Actions"
+  "actions": "Actions",
+  "chooseNewCategory": "Choose new category"
 }

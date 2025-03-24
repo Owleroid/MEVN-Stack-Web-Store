@@ -19,7 +19,7 @@
   "size": "Размер",
   "material": "Материал",
   "parts": "Части",
-  "boxArt": "Оформление коробки",
+  "boxArt": "Иллюстрация на коробке",
   "description": "Описание",
   "mainImageUrl": "URL основного изображения",
   "secondaryImageUrls": "URL дополнительных изображений",
@@ -38,5 +38,6 @@
   "selectNewCategory": "Пожалуйста, выберите новую категорию",
   "productCategoryUpdatedSuccessfully": "Категория продукта успешно обновлена",
   "failedToUpdateProductCategory": "Не удалось обновить категорию продукта",
-  "actions": "Действия"
+  "actions": "Действия",
+  "chooseNewCategory": "Выберите новую категорию"
 }

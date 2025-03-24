@@ -124,8 +124,8 @@
 <script setup lang="ts">
 import { ref, computed, defineProps, defineEmits } from "vue";
 
-import ProductList from "@/components/admin/Orders/ProductList.vue";
-import AddProductFields from "@/components/admin/Orders/AddProductFields.vue";
+import ProductList from "@/components/admin/orders/ProductList.vue";
+import AddProductFields from "@/components/admin/orders/AddProductFields.vue";
 
 import type { Product, Order } from "@/types/orders";
 

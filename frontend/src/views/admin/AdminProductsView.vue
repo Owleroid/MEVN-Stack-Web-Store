@@ -92,8 +92,8 @@ import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 
-import ChangeCategoryModal from "@/components/admin/Products/ChangeCategoryModal.vue";
-import AddEditProductModal from "@/components/admin/Products/AddEditProductModal.vue";
+import ChangeCategoryModal from "@/components/admin/products/ChangeCategoryModal.vue";
+import AddEditProductModal from "@/components/admin/products/AddEditProductModal.vue";
 
 import type { Product } from "@/types/products";
 import type { Category } from "@/types/categories";
