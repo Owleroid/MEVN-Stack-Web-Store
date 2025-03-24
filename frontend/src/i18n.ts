@@ -15,6 +15,7 @@ import enUserSettingsView from "./locales/en/userSettingsView.json";
 import enAdminCategoriesView from "./locales/en/adminCategoriesView.json";
 import enAdminProductsView from "./locales/en/adminProductsView.json";
 import enAdminNavbar from "./locales/en/adminNavbar.json";
+import enAdminOrdersView from "./locales/en/adminOrdersView.json";
 
 import ruNavbar from "./locales/ru/navbar.json";
 import ruAddToCartButton from "./locales/ru/addToCartButton.json";
@@ -31,6 +32,7 @@ import ruUserSettingsView from "./locales/ru/userSettingsView.json";
 import ruAdminCategoriesView from "./locales/ru/adminCategoriesView.json";
 import ruAdminProductsView from "./locales/ru/adminProductsView.json";
 import ruAdminNavbar from "./locales/ru/adminNavbar.json";
+import ruAdminOrdersView from "./locales/ru/adminOrdersView.json";
 
 const messages = {
   en: {
@@ -48,6 +50,7 @@ const messages = {
     adminCategoriesView: enAdminCategoriesView,
     adminProductsView: enAdminProductsView,
     adminNavbar: enAdminNavbar,
+    adminOrdersView: enAdminOrdersView,
   },
   ru: {
     navbar: ruNavbar,
@@ -64,6 +67,7 @@ const messages = {
     adminCategoriesView: ruAdminCategoriesView,
     adminProductsView: ruAdminProductsView,
     adminNavbar: ruAdminNavbar,
+    adminOrdersView: ruAdminOrdersView,
   },
 };
 

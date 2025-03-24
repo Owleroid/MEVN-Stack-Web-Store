@@ -21,7 +21,7 @@ import UserSettingsView from "../views/UserSettingsView.vue";
 import AdminPanelView from "../views/admin/AdminPanelView.vue";
 import AdminCategoriesView from "../views/admin/categories/AdminCategoriesView.vue";
 import AdminProductsView from "../views/admin/products/AdminProductsView.vue";
-import AdminOrdersView from "../views/admin/orders/AdminOrdersView.vue";
+import AdminOrdersView from "../views/admin/AdminOrdersView.vue";
 import AdminWarehouseView from "../views/admin/AdminWarehouseView.vue";
 import AdminClientsView from "../views/admin/AdminClientsView.vue";
 import AdminNewsView from "../views/admin/AdminNewsView.vue";
