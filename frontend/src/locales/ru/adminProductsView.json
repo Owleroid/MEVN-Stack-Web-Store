@@ -19,10 +19,10 @@
   "size": "Размер",
   "material": "Материал",
   "parts": "Части",
-  "boxArt": "Искусство коробки",
+  "boxArt": "Оформление коробки",
   "description": "Описание",
-  "mainImageUrl": "URL главного изображения",
-  "secondaryImageUrls": "URL вторичных изображений",
+  "mainImageUrl": "URL основного изображения",
+  "secondaryImageUrls": "URL дополнительных изображений",
   "addProduct": "Добавить продукт",
   "editProduct": "Редактировать продукт",
   "updateProduct": "Обновить продукт",
@@ -37,5 +37,6 @@
   "failedToDeleteProduct": "Не удалось удалить продукт",
   "selectNewCategory": "Пожалуйста, выберите новую категорию",
   "productCategoryUpdatedSuccessfully": "Категория продукта успешно обновлена",
-  "failedToUpdateProductCategory": "Не удалось обновить категорию продукта"
+  "failedToUpdateProductCategory": "Не удалось обновить категорию продукта",
+  "actions": "Действия"
 }

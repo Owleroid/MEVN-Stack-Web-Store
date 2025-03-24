@@ -1,30 +1,32 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useAuthStore } from "../stores/authStore";
-import { getUserLocation, getUserRegion } from "../services/geolocationService";
 
-import HomeView from "../views/HomeView.vue";
-import StoreView from "../views/StoreView.vue";
-import AboutView from "../views/AboutView.vue";
-import ContactView from "../views/ContactView.vue";
-import NewsView from "../views/NewsView.vue";
-import NotFoundView from "../views/NotFoundView.vue";
+import { useAuthStore } from "@/stores/authStore";
 
-import CartView from "../views/CartView.vue";
-import CheckoutView from "../views/CheckoutView.vue";
+import { getUserLocation, getUserRegion } from "@/services/geolocationService";
 
-import LoginView from "../views/LoginView.vue";
-import SignupView from "../views/SignupView.vue";
-import PasswordResetView from "../views/PasswordResetView.vue";
-import UserOrdersView from "../views/UserOrdersView.vue";
-import UserSettingsView from "../views/UserSettingsView.vue";
+import HomeView from "@/views/HomeView.vue";
+import StoreView from "@/views/StoreView.vue";
+import AboutView from "@/views/AboutView.vue";
+import ContactView from "@/views/ContactView.vue";
+import NewsView from "@/views/NewsView.vue";
+import NotFoundView from "@/views/NotFoundView.vue";
 
-import AdminPanelView from "../views/admin/AdminPanelView.vue";
-import AdminCategoriesView from "../views/admin/categories/AdminCategoriesView.vue";
-import AdminProductsView from "../views/admin/products/AdminProductsView.vue";
-import AdminOrdersView from "../views/admin/AdminOrdersView.vue";
-import AdminWarehouseView from "../views/admin/AdminWarehouseView.vue";
-import AdminClientsView from "../views/admin/AdminClientsView.vue";
-import AdminNewsView from "../views/admin/AdminNewsView.vue";
+import CartView from "@/views/CartView.vue";
+import CheckoutView from "@/views/CheckoutView.vue";
+
+import LoginView from "@/views/LoginView.vue";
+import SignupView from "@/views/SignupView.vue";
+import PasswordResetView from "@/views/PasswordResetView.vue";
+import UserOrdersView from "@/views/UserOrdersView.vue";
+import UserSettingsView from "@/views/UserSettingsView.vue";
+
+import AdminPanelView from "@/views/admin/AdminPanelView.vue";
+import AdminCategoriesView from "@/views/admin/categories/AdminCategoriesView.vue";
+import AdminProductsView from "@/views/admin/AdminProductsView.vue";
+import AdminOrdersView from "@/views/admin/AdminOrdersView.vue";
+import AdminWarehouseView from "@/views/admin/AdminWarehouseView.vue";
+import AdminClientsView from "@/views/admin/AdminClientsView.vue";
+import AdminNewsView from "@/views/admin/AdminNewsView.vue";
 
 const routes = [
   { path: "/", component: HomeView },

@@ -87,18 +87,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 
-import ChangeCategoryModal from "../../../components/admin/ChangeCategoryModal.vue";
-import AddEditProductModal from "../../../components/admin/AddEditProductModal.vue";
+import ChangeCategoryModal from "@/components/admin/Products/ChangeCategoryModal.vue";
+import AddEditProductModal from "@/components/admin/Products/AddEditProductModal.vue";
 
-import type { Product } from "../../../types/products";
-import type { Category } from "../../../types/categories";
+import type { Product } from "@/types/products";
+import type { Category } from "@/types/categories";
 
-import { getAllCategories } from "../../../services/categoryService";
+import { getAllCategories } from "@/services/categoryService";
 import {
   getProductsByCategory,
   deleteProduct as deleteProductService,
@@ -106,9 +106,9 @@ import {
   addProduct,
   getProductById,
   updateProduct,
-} from "../../../services/productService";
+} from "@/services/productService";
 
-import { useEventBus } from "../../../utils/eventBus";
+import { useEventBus } from "@/utils/eventBus";
 
 const { t } = useI18n();
 
@@ -152,12 +152,6 @@ const editProduct = ref({
   description: "",
   mainImageUrl: "",
   secondaryImageUrls: "",
-});
-
-const filteredCategories = computed(() => {
-  return categories.value.filter(
-    (category) => category._id !== productToChangeCategory.value?.category
-  );
 });
 
 const fetchCategories = async () => {
@@ -350,10 +344,6 @@ const changeCategory = async (newCategoryId: string) => {
 
 watch(selectedCategory, (newCategoryId) => {
   if (newCategoryId) {
-    router.push({
-      name: "AdminProducts",
-      params: { categoryId: newCategoryId },
-    });
     fetchProducts();
   }
 });

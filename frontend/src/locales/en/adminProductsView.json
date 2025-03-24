@@ -37,5 +37,6 @@
   "failedToDeleteProduct": "Failed to delete product",
   "selectNewCategory": "Please select a new category",
   "productCategoryUpdatedSuccessfully": "Product category updated successfully",
-  "failedToUpdateProductCategory": "Failed to update product category"
+  "failedToUpdateProductCategory": "Failed to update product category",
+  "actions": "Actions"
 }

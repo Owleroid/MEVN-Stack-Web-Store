@@ -28,8 +28,9 @@
 </template>
 
 <script setup lang="ts">
-import type { Category } from "@/types/categories";
 import { ref, computed, defineProps, defineEmits } from "vue";
+
+import type { Category } from "@/types/categories";
 
 const props = defineProps({
   show: Boolean,
