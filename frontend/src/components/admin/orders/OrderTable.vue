@@ -50,8 +50,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
-
 import type { Order } from "@/types/orders";
 
 const props = defineProps<{

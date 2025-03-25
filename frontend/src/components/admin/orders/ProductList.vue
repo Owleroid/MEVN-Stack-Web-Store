@@ -17,8 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
-
 import type { Product } from "@/types/orders";
 
 const props = defineProps<{

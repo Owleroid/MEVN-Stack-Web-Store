@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 
-import { getUserLocation } from "../services/geolocationService";
-import { login, logout, signup, passwordReset } from "../services/authService";
+import { getUserLocation } from "@/services/geolocationService";
+import { login, logout, signup, passwordReset } from "@/services/authService";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({

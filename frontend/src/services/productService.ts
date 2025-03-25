@@ -1,5 +1,6 @@
 import axios from "axios";
-import type { ProductInput } from "../types/products";
+
+import type { ProductInput } from "@/types/products";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 

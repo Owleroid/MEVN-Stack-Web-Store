@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import type { Warehouse } from "@/types/warehouse";
 
 const apiUrl = import.meta.env.VITE_API_URL;

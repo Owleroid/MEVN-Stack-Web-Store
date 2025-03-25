@@ -1,5 +1,6 @@
 import axios from "axios";
-import type { OrderData } from "../types/orders";
+
+import type { OrderData } from "@/types/orders";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 

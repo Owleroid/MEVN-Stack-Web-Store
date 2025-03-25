@@ -122,7 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits } from "vue";
+import { ref, computed } from "vue";
 
 import ProductList from "@/components/admin/orders/ProductList.vue";
 import AddProductFields from "@/components/admin/orders/AddProductFields.vue";

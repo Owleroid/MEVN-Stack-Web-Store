@@ -20,18 +20,40 @@
       </div>
       <div class="form-group">
         <h2>{{ $t("userSettingsView.deliveryData.title") }}</h2>
-        <label for="country">{{ $t("userSettingsView.deliveryData.country") }}</label>
+        <label for="country">{{
+          $t("userSettingsView.deliveryData.country")
+        }}</label>
         <input type="text" id="country" v-model="user.deliveryData.country" />
         <label for="city">{{ $t("userSettingsView.deliveryData.city") }}</label>
         <input type="text" id="city" v-model="user.deliveryData.city" />
-        <label for="street">{{ $t("userSettingsView.deliveryData.street") }}</label>
+        <label for="street">{{
+          $t("userSettingsView.deliveryData.street")
+        }}</label>
         <input type="text" id="street" v-model="user.deliveryData.street" />
-        <label for="buildingNumber">{{ $t("userSettingsView.deliveryData.buildingNumber") }}</label>
-        <input type="text" id="buildingNumber" v-model="user.deliveryData.buildingNumber" />
-        <label for="apartment">{{ $t("userSettingsView.deliveryData.apartment") }}</label>
-        <input type="text" id="apartment" v-model="user.deliveryData.apartment" />
-        <label for="postalCode">{{ $t("userSettingsView.deliveryData.postalCode") }}</label>
-        <input type="text" id="postalCode" v-model="user.deliveryData.postalCode" />
+        <label for="buildingNumber">{{
+          $t("userSettingsView.deliveryData.buildingNumber")
+        }}</label>
+        <input
+          type="text"
+          id="buildingNumber"
+          v-model="user.deliveryData.buildingNumber"
+        />
+        <label for="apartment">{{
+          $t("userSettingsView.deliveryData.apartment")
+        }}</label>
+        <input
+          type="text"
+          id="apartment"
+          v-model="user.deliveryData.apartment"
+        />
+        <label for="postalCode">{{
+          $t("userSettingsView.deliveryData.postalCode")
+        }}</label>
+        <input
+          type="text"
+          id="postalCode"
+          v-model="user.deliveryData.postalCode"
+        />
       </div>
       <button type="submit">{{ $t("userSettingsView.update") }}</button>
     </form>
@@ -39,14 +61,34 @@
     <form @submit.prevent="changePassword">
       <div class="form-group">
         <h2>{{ $t("userSettingsView.changePassword.title") }}</h2>
-        <label for="currentPassword">{{ $t("userSettingsView.changePassword.currentPassword") }}</label>
-        <input type="password" id="currentPassword" v-model="passwords.currentPassword" />
-        <label for="newPassword">{{ $t("userSettingsView.changePassword.newPassword") }}</label>
-        <input type="password" id="newPassword" v-model="passwords.newPassword" />
-        <label for="confirmPassword">{{ $t("userSettingsView.changePassword.confirmPassword") }}</label>
-        <input type="password" id="confirmPassword" v-model="passwords.confirmPassword" />
+        <label for="currentPassword">{{
+          $t("userSettingsView.changePassword.currentPassword")
+        }}</label>
+        <input
+          type="password"
+          id="currentPassword"
+          v-model="passwords.currentPassword"
+        />
+        <label for="newPassword">{{
+          $t("userSettingsView.changePassword.newPassword")
+        }}</label>
+        <input
+          type="password"
+          id="newPassword"
+          v-model="passwords.newPassword"
+        />
+        <label for="confirmPassword">{{
+          $t("userSettingsView.changePassword.confirmPassword")
+        }}</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          v-model="passwords.confirmPassword"
+        />
       </div>
-      <button type="submit">{{ $t("userSettingsView.changePassword.update") }}</button>
+      <button type="submit">
+        {{ $t("userSettingsView.changePassword.update") }}
+      </button>
     </form>
   </div>
 </template>
@@ -56,9 +98,13 @@ import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 
-import { useAuthStore } from "../stores/authStore";
+import { useAuthStore } from "@/stores/authStore";
 
-import { getUserData, updateUserData, changeUserPassword } from "../services/authService";
+import {
+  getUserData,
+  updateUserData,
+  changeUserPassword,
+} from "@/services/authService";
 
 const { t } = useI18n();
 const toast = useToast();
@@ -74,14 +120,14 @@ const user = ref({
     street: "",
     buildingNumber: "",
     apartment: "",
-    postalCode: ""
-  }
+    postalCode: "",
+  },
 });
 
 const passwords = ref({
   currentPassword: "",
   newPassword: "",
-  confirmPassword: ""
+  confirmPassword: "",
 });
 
 onMounted(async () => {
@@ -104,7 +150,11 @@ const updateUserSettings = async () => {
 const changePassword = async () => {
   try {
     if (passwords.value.newPassword === passwords.value.confirmPassword) {
-      await changeUserPassword(authStore.userId, passwords.value.currentPassword, passwords.value.newPassword);
+      await changeUserPassword(
+        authStore.userId,
+        passwords.value.currentPassword,
+        passwords.value.newPassword
+      );
       toast.success(t("userSettingsView.passwordChangeSuccess"));
     } else {
       toast.error(t("userSettingsView.passwordMismatch"));

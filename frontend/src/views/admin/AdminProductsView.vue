@@ -344,6 +344,10 @@ const changeCategory = async (newCategoryId: string) => {
 
 watch(selectedCategory, (newCategoryId) => {
   if (newCategoryId) {
+    router.push({
+      name: "AdminProducts",
+      params: { categoryId: newCategoryId },
+    });
     fetchProducts();
   }
 });

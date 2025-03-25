@@ -1,5 +1,5 @@
-import type { Product } from "../types/products";
-import type { CartItem } from "../types/cart";
+import type { Product } from "@/types/products";
+import type { CartItem } from "@/types/cart";
 
 const CART_KEY = import.meta.env.VITE_CART_KEY;
 
