@@ -2,16 +2,16 @@
   <div v-if="show" class="modal">
     <div class="modal-content">
       <span class="close" @click="cancelRemove">&times;</span>
-      <p>{{ $t("adminCategoriesView.deleteConfirmation") }}</p>
+      <p>{{ $t("deleteCategoryModal.deleteConfirmation") }}</p>
       <div class="form-actions">
         <button @click="confirmDelete">
-          {{ $t("adminCategoriesView.deleteWithProducts") }}
+          {{ $t("deleteCategoryModal.deleteWithProducts") }}
         </button>
         <button @click="openReassignModal">
-          {{ $t("adminCategoriesView.reassignAndDelete") }}
+          {{ $t("deleteCategoryModal.reassignAndDelete") }}
         </button>
         <button @click="cancelRemove">
-          {{ $t("adminCategoriesView.cancel") }}
+          {{ $t("deleteCategoryModal.cancel") }}
         </button>
       </div>
     </div>

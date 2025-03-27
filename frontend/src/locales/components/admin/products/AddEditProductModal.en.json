@@ -1,0 +1,18 @@
+{
+  "addNewProduct": "Add New Product",
+  "editProduct": "Edit Product",
+  "productName": "Product Name",
+  "priceRubles": "Price (Rubles)",
+  "priceEuros": "Price (Euros)",
+  "artist": "Artist",
+  "size": "Size",
+  "material": "Material",
+  "parts": "Parts",
+  "boxArt": "Box Art",
+  "description": "Description",
+  "mainImageUrl": "Main Image URL",
+  "secondaryImageUrls": "Secondary Image URLs",
+  "addProduct": "Add Product",
+  "updateProduct": "Update Product",
+  "cancel": "Cancel"
+}

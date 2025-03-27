@@ -1,0 +1,15 @@
+{
+  "orderId": "Order ID",
+  "products": "Products",
+  "recipientEmail": "Recipient Email",
+  "recipientPhone": "Recipient Phone",
+  "date": "Date",
+  "status": "Status",
+  "actions": "Actions",
+  "waitingConfirmation": "Waiting Confirmation",
+  "packing": "Packing",
+  "sended": "Sent",
+  "delivered": "Delivered",
+  "canceled": "Canceled",
+  "edit": "Edit"
+}

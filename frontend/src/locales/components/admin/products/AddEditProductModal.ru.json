@@ -1,0 +1,18 @@
+{
+  "addNewProduct": "Добавить новый продукт",
+  "editProduct": "Редактировать продукт",
+  "productName": "Название продукта",
+  "priceRubles": "Цена (в рублях)",
+  "priceEuros": "Цена (в евро)",
+  "artist": "Художник",
+  "size": "Размер",
+  "material": "Материал",
+  "parts": "Части",
+  "boxArt": "Оформление коробки",
+  "description": "Описание",
+  "mainImageUrl": "URL главного изображения",
+  "secondaryImageUrls": "URL дополнительных изображений",
+  "addProduct": "Добавить продукт",
+  "updateProduct": "Обновить продукт",
+  "cancel": "Отмена"
+}

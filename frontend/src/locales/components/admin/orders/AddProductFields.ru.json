@@ -1,0 +1,7 @@
+{
+  "newProductName": "Название продукта",
+  "amount": "Количество",
+  "addProduct": "Добавить продукт",
+  "searchPlaceholder": "Поиск продукта...",
+  "noResultsFound": "Результаты не найдены."
+}

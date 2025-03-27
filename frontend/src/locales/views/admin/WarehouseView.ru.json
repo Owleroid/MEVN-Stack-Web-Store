@@ -1,0 +1,21 @@
+{
+  "addWarehouse": "Добавить склад",
+  "noWarehousesFound": "Склады не найдены.",
+  "deleteWarehouse": "Удалить склад",
+  "categories": "Категории",
+  "noProductsFound": "Продукты в этой категории не найдены.",
+  "addNewProduct": "Добавить новый продукт",
+  "productName": "Название продукта",
+  "amount": "Количество",
+  "action": "Действие",
+  "updateAmount": "Обновить количество",
+  "failedToFetchWarehouses": "Не удалось загрузить склады.",
+  "failedToFetchCategories": "Не удалось загрузить категории.",
+  "failedToFetchProducts": "Не удалось загрузить продукты по категории.",
+  "failedToAddWarehouse": "Не удалось добавить склад.",
+  "failedToDeleteWarehouse": "Не удалось удалить склад.",
+  "failedToUpdateProductAmount": "Не удалось обновить количество продукта.",
+  "warehouseAddedSuccessfully": "Склад успешно добавлен.",
+  "warehouseDeletedSuccessfully": "Склад успешно удален.",
+  "productAmountUpdatedSuccessfully": "Количество продукта успешно обновлено."
+}

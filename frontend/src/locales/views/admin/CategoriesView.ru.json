@@ -1,0 +1,18 @@
+{
+  "categories": "Категории",
+  "noCategories": "Категории отсутствуют.",
+  "addNewCategory": "Добавить новую категорию",
+  "categoryName": "Название категории",
+  "actions": "Действия",
+  "editCategory": "Редактировать категорию",
+  "delete": "Удалить",
+  "fetchCategoriesError": "Не удалось загрузить категории.",
+  "removeCategorySuccess": "Категория успешно удалена.",
+  "removeCategoryError": "Не удалось удалить категорию.",
+  "reassignAndRemoveCategorySuccess": "Категория успешно переназначена и удалена.",
+  "reassignAndRemoveCategoryError": "Не удалось переназначить и удалить категорию.",
+  "addCategorySuccess": "Категория успешно добавлена.",
+  "addCategoryError": "Не удалось добавить категорию.",
+  "updateCategorySuccess": "Категория успешно обновлена.",
+  "updateCategoryError": "Не удалось обновить категорию."
+}

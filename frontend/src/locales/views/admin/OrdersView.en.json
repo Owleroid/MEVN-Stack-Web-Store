@@ -1,0 +1,23 @@
+{
+  "orders": "Orders",
+  "newOrders": "New Orders",
+  "noNewOrders": "No new orders",
+  "allOrders": "All Orders",
+  "sortByDate": "Sort by Date:",
+  "newestToOldest": "Newest to Oldest",
+  "oldestToNewest": "Oldest to Newest",
+  "filterByStatus": "Filter by Status:",
+  "all": "All",
+  "waitingConfirmation": "Waiting Confirmation",
+  "packing": "Packing",
+  "sended": "Sended",
+  "delivered": "Delivered",
+  "canceled": "Canceled",
+  "noOrdersFound": "No orders found",
+  "viewOrder": "View Order",
+  "editOrder": "Edit Order",
+  "updateOrderStatus": "Update Order Status",
+  "errorFetchingOrders": "Error fetching orders",
+  "errorUpdatingOrder": "Error updating order",
+  "errorUpdatingOrderStatus": "Error updating order status"
+}

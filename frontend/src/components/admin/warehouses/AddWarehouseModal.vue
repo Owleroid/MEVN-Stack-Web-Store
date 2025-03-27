@@ -2,9 +2,11 @@
   <div v-if="show" class="modal">
     <div class="modal-content">
       <span class="close" @click="cancelAdd">&times;</span>
-      <h2>Add New Warehouse</h2>
+      <h2>{{ $t("addWarehouseModal.addNewWarehouse") }}</h2>
       <div class="form-group">
-        <label for="newWarehouseName">Warehouse Name</label>
+        <label for="newWarehouseName">{{
+          $t("addWarehouseModal.warehouseName")
+        }}</label>
         <input
           type="text"
           id="newWarehouseName"
@@ -13,8 +15,12 @@
         />
       </div>
       <div class="form-actions">
-        <button @click="submitAddForm">Save</button>
-        <button type="button" @click="cancelAdd">Cancel</button>
+        <button @click="submitAddForm">
+          {{ $t("addWarehouseModal.save") }}
+        </button>
+        <button type="button" @click="cancelAdd">
+          {{ $t("addWarehouseModal.cancel") }}
+        </button>
       </div>
     </div>
   </div>

@@ -1,7 +1,7 @@
 <template>
   <div class="add-product-fields">
     <label for="newProductName"
-      >{{ $t("adminOrdersView.newProductName") }}:</label
+      >{{ $t("addProductFields.newProductName") }}:</label
     >
     <input
       type="text"
@@ -18,7 +18,7 @@
         {{ product.name }}
       </li>
     </ul>
-    <label for="newProductAmount">{{ $t("adminOrdersView.amount") }}:</label>
+    <label for="newProductAmount">{{ $t("addProductFields.amount") }}:</label>
     <input
       type="number"
       v-model.number="newProductAmount"
@@ -26,7 +26,7 @@
       min="1"
     />
     <button type="button" @click="addProduct">
-      {{ $t("adminOrdersView.addProduct") }}
+      {{ $t("addProductFields.addProduct") }}
     </button>
   </div>
 </template>

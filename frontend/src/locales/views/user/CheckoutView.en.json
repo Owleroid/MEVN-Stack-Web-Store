@@ -1,0 +1,22 @@
+{
+  "checkout": "Checkout",
+  "orderSummary": "Order Summary",
+  "total": "Total",
+  "deliveryInfo": "Delivery Information",
+  "name": "Name",
+  "surname": "Surname",
+  "phone": "Phone",
+  "email": "Email",
+  "country": "Country",
+  "city": "City",
+  "street": "Street",
+  "buildingNumber": "Building Number",
+  "apartment": "Apartment",
+  "postalCode": "Postal Code",
+  "placeOrder": "Place Order",
+  "confirmOrder": "Confirm Order",
+  "deliveryInfoFromProfile": "Delivery information will be taken from your profile.",
+  "orderPlacedSuccess": "Order placed successfully!",
+  "orderPlacedError": "An error occurred while placing the order. Please try again.",
+  "emailAlreadyRegistered": "Email is already registered. Please log in to continue."
+}

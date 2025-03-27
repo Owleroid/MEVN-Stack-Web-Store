@@ -4,19 +4,19 @@
       <h3>
         {{
           isEdit
-            ? $t("adminProductsView.editProduct")
-            : $t("adminProductsView.addNewProduct")
+            ? $t("addEditProductModal.editProduct")
+            : $t("addEditProductModal.addNewProduct")
         }}
       </h3>
       <form @submit.prevent="submitForm">
         <!-- Add/Edit Product Form Fields -->
         <div class="form-group">
-          <label for="name">{{ $t("adminProductsView.productName") }}:</label>
+          <label for="name">{{ $t("addEditProductModal.productName") }}:</label>
           <input type="text" id="name" v-model="product.name" required />
         </div>
         <div class="form-group">
           <label for="priceRubles"
-            >{{ $t("adminProductsView.priceRubles") }}:</label
+            >{{ $t("addEditProductModal.priceRubles") }}:</label
           >
           <input
             type="number"
@@ -27,7 +27,7 @@
         </div>
         <div class="form-group">
           <label for="priceEuros"
-            >{{ $t("adminProductsView.priceEuros") }}:</label
+            >{{ $t("addEditProductModal.priceEuros") }}:</label
           >
           <input
             type="number"
@@ -37,15 +37,17 @@
           />
         </div>
         <div class="form-group">
-          <label for="artist">{{ $t("adminProductsView.artist") }}:</label>
+          <label for="artist">{{ $t("addEditProductModal.artist") }}:</label>
           <input type="text" id="artist" v-model="product.artist" required />
         </div>
         <div class="form-group">
-          <label for="size">{{ $t("adminProductsView.size") }}:</label>
+          <label for="size">{{ $t("addEditProductModal.size") }}:</label>
           <input type="text" id="size" v-model="product.size" required />
         </div>
         <div class="form-group">
-          <label for="material">{{ $t("adminProductsView.material") }}:</label>
+          <label for="material"
+            >{{ $t("addEditProductModal.material") }}:</label
+          >
           <input
             type="text"
             id="material"
@@ -54,28 +56,28 @@
           />
         </div>
         <div class="form-group">
-          <label for="parts">{{ $t("adminProductsView.parts") }}:</label>
+          <label for="parts">{{ $t("addEditProductModal.parts") }}:</label>
           <input type="text" id="parts" v-model="product.parts" />
         </div>
         <div class="form-group">
-          <label for="boxArt">{{ $t("adminProductsView.boxArt") }}:</label>
+          <label for="boxArt">{{ $t("addEditProductModal.boxArt") }}:</label>
           <input type="text" id="boxArt" v-model="product.boxArt" required />
         </div>
         <div class="form-group">
           <label for="description"
-            >{{ $t("adminProductsView.description") }}:</label
+            >{{ $t("addEditProductModal.description") }}:</label
           >
           <textarea id="description" v-model="product.description"></textarea>
         </div>
         <div class="form-group">
           <label for="mainImageUrl"
-            >{{ $t("adminProductsView.mainImageUrl") }}:</label
+            >{{ $t("addEditProductModal.mainImageUrl") }}:</label
           >
           <input type="text" id="mainImageUrl" v-model="product.mainImageUrl" />
         </div>
         <div class="form-group">
           <label for="secondaryImageUrls"
-            >{{ $t("adminProductsView.secondaryImageUrls") }}:</label
+            >{{ $t("addEditProductModal.secondaryImageUrls") }}:</label
           >
           <textarea
             id="secondaryImageUrls"
@@ -86,12 +88,12 @@
           <button type="submit">
             {{
               isEdit
-                ? $t("adminProductsView.updateProduct")
-                : $t("adminProductsView.addProduct")
+                ? $t("addEditProductModal.updateProduct")
+                : $t("addEditProductModal.addProduct")
             }}
           </button>
           <button type="button" @click="close">
-            {{ $t("adminProductsView.cancel") }}
+            {{ $t("addEditProductModal.cancel") }}
           </button>
         </div>
       </form>

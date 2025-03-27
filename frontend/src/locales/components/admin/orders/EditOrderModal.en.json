@@ -1,0 +1,21 @@
+{
+  "editOrder": "Edit Order",
+  "orderDetails": "Order Details",
+  "orderId": "Order ID",
+  "date": "Date",
+  "status": "Status",
+  "checked": "Checked",
+  "yes": "Yes",
+  "no": "No",
+  "products": "Products",
+  "recipientEmail": "Recipient Email",
+  "recipientPhone": "Recipient Phone",
+  "waitingConfirmation": "Waiting Confirmation",
+  "packing": "Packing",
+  "sended": "Sended",
+  "delivered": "Delivered",
+  "canceled": "Canceled",
+  "updateOrder": "Update Order",
+  "cancel": "Cancel",
+  "addProduct": "Add Product"
+}

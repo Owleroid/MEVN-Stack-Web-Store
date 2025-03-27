@@ -1,0 +1,18 @@
+{
+  "categories": "Categories",
+  "noCategories": "No categories available.",
+  "addNewCategory": "Add New Category",
+  "categoryName": "Category Name",
+  "actions": "Actions",
+  "editCategory": "Edit Category",
+  "delete": "Delete",
+  "fetchCategoriesError": "Failed to fetch categories.",
+  "removeCategorySuccess": "Category removed successfully.",
+  "removeCategoryError": "Failed to remove category.",
+  "reassignAndRemoveCategorySuccess": "Category reassigned and removed successfully.",
+  "reassignAndRemoveCategoryError": "Failed to reassign and remove category.",
+  "addCategorySuccess": "Category added successfully.",
+  "addCategoryError": "Failed to add category.",
+  "updateCategorySuccess": "Category updated successfully.",
+  "updateCategoryError": "Failed to update category."
+}

@@ -2,11 +2,11 @@
   <div v-if="show" class="modal">
     <div class="modal-content">
       <span class="close" @click="cancelAdd">&times;</span>
-      <h2>{{ $t("adminCategoriesView.addNewCategory") }}</h2>
+      <h2>{{ $t("addCategoryModal.addNewCategory") }}</h2>
       <form @submit.prevent="submitAddForm">
         <div class="form-group">
           <label for="newCategoryName">{{
-            $t("adminCategoriesView.categoryName")
+            $t("addCategoryModal.categoryName")
           }}</label>
           <input
             type="text"
@@ -17,10 +17,10 @@
         </div>
         <div class="form-actions">
           <button type="submit">
-            {{ $t("adminCategoriesView.addCategory") }}
+            {{ $t("addCategoryModal.addCategory") }}
           </button>
           <button type="button" @click="cancelAdd">
-            {{ $t("adminCategoriesView.cancel") }}
+            {{ $t("addCategoryModal.cancel") }}
           </button>
         </div>
       </form>

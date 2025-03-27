@@ -1,0 +1,26 @@
+{
+  "title": "Your Orders",
+  "order": "Order",
+  "date": "Date",
+  "total": "Total",
+  "status": "Status",
+  "recipient": {
+    "title": "Recipient Information",
+    "email": "Email",
+    "name": "Name",
+    "surname": "Surname",
+    "phone": "Phone"
+  },
+  "delivery": {
+    "title": "Delivery Information",
+    "country": "Country",
+    "city": "City",
+    "street": "Street",
+    "buildingNumber": "Building Number",
+    "apartment": "Apartment",
+    "postalCode": "Postal Code"
+  },
+  "notes": "Order Notes",
+  "trackingNumber": "Tracking Number",
+  "noOrders": "You have no orders."
+}

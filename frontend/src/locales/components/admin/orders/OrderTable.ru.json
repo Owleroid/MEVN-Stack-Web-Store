@@ -1,0 +1,15 @@
+{
+  "orderId": "ID заказа",
+  "products": "Продукты",
+  "recipientEmail": "Электронная почта получателя",
+  "recipientPhone": "Телефон получателя",
+  "date": "Дата",
+  "status": "Статус",
+  "actions": "Действия",
+  "waitingConfirmation": "Ожидание подтверждения",
+  "packing": "Упаковка",
+  "sended": "Отправлено",
+  "delivered": "Доставлено",
+  "canceled": "Отменено",
+  "edit": "Редактировать"
+}

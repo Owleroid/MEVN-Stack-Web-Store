@@ -1,0 +1,21 @@
+{
+  "editOrder": "Редактировать заказ",
+  "orderDetails": "Детали заказа",
+  "orderId": "ID заказа",
+  "date": "Дата",
+  "status": "Статус",
+  "checked": "Проверено",
+  "yes": "Да",
+  "no": "Нет",
+  "products": "Продукты",
+  "recipientEmail": "Электронная почта получателя",
+  "recipientPhone": "Телефон получателя",
+  "waitingConfirmation": "Ожидает подтверждения",
+  "packing": "Упаковка",
+  "sended": "Отправлено",
+  "delivered": "Доставлено",
+  "canceled": "Отменено",
+  "updateOrder": "Обновить заказ",
+  "cancel": "Отмена",
+  "addProduct": "Добавить продукт"
+}

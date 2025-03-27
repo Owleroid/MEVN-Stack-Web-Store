@@ -2,13 +2,13 @@
   <table class="orders-table">
     <thead>
       <tr>
-        <th>Order ID</th>
-        <th>Products</th>
-        <th>Recipient Email</th>
-        <th>Recipient Phone</th>
-        <th>Date</th>
-        <th>Status</th>
-        <th>Actions</th>
+        <th>{{ $t("orderTable.orderId") }}</th>
+        <th>{{ $t("orderTable.products") }}</th>
+        <th>{{ $t("orderTable.recipientEmail") }}</th>
+        <th>{{ $t("orderTable.recipientPhone") }}</th>
+        <th>{{ $t("orderTable.date") }}</th>
+        <th>{{ $t("orderTable.status") }}</th>
+        <th>{{ $t("orderTable.actions") }}</th>
       </tr>
     </thead>
     <tbody>
@@ -34,15 +34,19 @@
             v-model="order.status"
             @change="updateOrderStatus(order._id, order.status)"
           >
-            <option value="waiting confirmation">Waiting Confirmation</option>
-            <option value="packing">Packing</option>
-            <option value="sended">Sended</option>
-            <option value="delivered">Delivered</option>
-            <option value="canceled">Canceled</option>
+            <option value="waiting confirmation">
+              {{ $t("orderTable.waitingConfirmation") }}
+            </option>
+            <option value="packing">{{ $t("orderTable.packing") }}</option>
+            <option value="sended">{{ $t("orderTable.sended") }}</option>
+            <option value="delivered">{{ $t("orderTable.delivered") }}</option>
+            <option value="canceled">{{ $t("orderTable.canceled") }}</option>
           </select>
         </td>
         <td>
-          <button @click.stop="editOrder(order)">Edit</button>
+          <button @click.stop="editOrder(order)">
+            {{ $t("orderTable.edit") }}
+          </button>
         </td>
       </tr>
     </tbody>

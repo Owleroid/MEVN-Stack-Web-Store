@@ -4,14 +4,14 @@
       <span class="close" @click="close">&times;</span>
       <h3>
         {{
-          $t("adminProductsView.changeCategoryFor", {
+          $t("changeCategoryModal.changeCategoryFor", {
             name: productToChangeCategory?.name,
           })
         }}
       </h3>
       <div class="form-group">
         <label for="newCategory">{{
-          $t("adminProductsView.chooseNewCategory")
+          $t("changeCategoryModal.chooseNewCategory")
         }}</label>
         <select id="newCategory" v-model="selectedNewCategory">
           <option
@@ -25,10 +25,10 @@
       </div>
       <div class="form-actions">
         <button @click="changeCategory(selectedNewCategory)">
-          {{ $t("adminProductsView.change") }}
+          {{ $t("changeCategoryModal.change") }}
         </button>
         <button type="button" @click="close">
-          {{ $t("adminProductsView.cancel") }}
+          {{ $t("changeCategoryModal.cancel") }}
         </button>
       </div>
     </div>

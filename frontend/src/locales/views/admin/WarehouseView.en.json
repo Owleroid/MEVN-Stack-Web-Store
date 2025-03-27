@@ -1,0 +1,21 @@
+{
+  "addWarehouse": "Add Warehouse",
+  "noWarehousesFound": "No warehouses found.",
+  "deleteWarehouse": "Delete Warehouse",
+  "categories": "Categories",
+  "noProductsFound": "No products found in this category.",
+  "addNewProduct": "Add new product",
+  "productName": "Product Name",
+  "amount": "Amount",
+  "action": "Action",
+  "updateAmount": "Update Amount",
+  "failedToFetchWarehouses": "Failed to fetch warehouses.",
+  "failedToFetchCategories": "Failed to fetch categories.",
+  "failedToFetchProducts": "Failed to fetch products by category.",
+  "failedToAddWarehouse": "Failed to add warehouse.",
+  "failedToDeleteWarehouse": "Failed to delete warehouse.",
+  "failedToUpdateProductAmount": "Failed to update product amount.",
+  "warehouseAddedSuccessfully": "Warehouse added successfully.",
+  "warehouseDeletedSuccessfully": "Warehouse deleted successfully.",
+  "productAmountUpdatedSuccessfully": "Product amount updated successfully."
+}

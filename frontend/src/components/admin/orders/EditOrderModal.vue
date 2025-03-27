@@ -2,29 +2,29 @@
   <div v-if="show" class="modal">
     <div class="modal-content">
       <span class="close" @click="close">&times;</span>
-      <h2 v-if="isEditing">{{ $t("adminOrdersView.editOrder") }}</h2>
-      <h2 v-else>{{ $t("adminOrdersView.orderDetails") }}</h2>
+      <h2 v-if="isEditing">{{ $t("editOrderModal.editOrder") }}</h2>
+      <h2 v-else>{{ $t("editOrderModal.orderDetails") }}</h2>
       <div v-if="order">
         <p>
-          <strong>{{ $t("adminOrdersView.orderId") }}:</strong>
+          <strong>{{ $t("editOrderModal.orderId") }}:</strong>
           {{ order.orderNumber }}
         </p>
         <p>
-          <strong>{{ $t("adminOrdersView.date") }}:</strong>
+          <strong>{{ $t("editOrderModal.date") }}:</strong>
           {{ new Date(order.dateOfCreation).toLocaleString() }}
         </p>
         <p>
-          <strong>{{ $t("adminOrdersView.status") }}:</strong>
+          <strong>{{ $t("editOrderModal.status") }}:</strong>
           {{ order.status }}
         </p>
         <p>
-          <strong>{{ $t("adminOrdersView.checked") }}:</strong>
+          <strong>{{ $t("editOrderModal.checked") }}:</strong>
           {{
-            order.checked ? $t("adminOrdersView.yes") : $t("adminOrdersView.no")
+            order.checked ? $t("editOrderModal.yes") : $t("editOrderModal.no")
           }}
         </p>
         <p>
-          <strong>{{ $t("adminOrdersView.products") }}:</strong>
+          <strong>{{ $t("editOrderModal.products") }}:</strong>
         </p>
         <ProductList
           :products="order.products"
@@ -33,11 +33,11 @@
           @removeProduct="removeProduct"
         />
         <p>
-          <strong>{{ $t("adminOrdersView.recipientEmail") }}:</strong>
+          <strong>{{ $t("editOrderModal.recipientEmail") }}:</strong>
           {{ order.recipient?.email }}
         </p>
         <p>
-          <strong>{{ $t("adminOrdersView.recipientPhone") }}:</strong>
+          <strong>{{ $t("editOrderModal.recipientPhone") }}:</strong>
           {{ order.recipient?.phone }}
         </p>
 
@@ -45,32 +45,32 @@
         <div v-if="isEditing">
           <form @submit.prevent="submitForm">
             <div class="form-group">
-              <label for="status">{{ $t("adminOrdersView.status") }}:</label>
+              <label for="status">{{ $t("editOrderModal.status") }}:</label>
               <select v-model="order.status" id="status">
                 <option value="waiting confirmation">
-                  {{ $t("adminOrdersView.waitingConfirmation") }}
+                  {{ $t("editOrderModal.waitingConfirmation") }}
                 </option>
                 <option value="packing">
-                  {{ $t("adminOrdersView.packing") }}
+                  {{ $t("editOrderModal.packing") }}
                 </option>
                 <option value="sended">
-                  {{ $t("adminOrdersView.sended") }}
+                  {{ $t("editOrderModal.sended") }}
                 </option>
                 <option value="delivered">
-                  {{ $t("adminOrdersView.delivered") }}
+                  {{ $t("editOrderModal.delivered") }}
                 </option>
                 <option value="canceled">
-                  {{ $t("adminOrdersView.canceled") }}
+                  {{ $t("editOrderModal.canceled") }}
                 </option>
               </select>
             </div>
             <div class="form-group">
-              <label for="checked">{{ $t("adminOrdersView.checked") }}:</label>
+              <label for="checked">{{ $t("editOrderModal.checked") }}:</label>
               <input type="checkbox" v-model="order.checked" id="checked" />
             </div>
             <div class="form-group">
               <label for="recipientEmail"
-                >{{ $t("adminOrdersView.recipientEmail") }}:</label
+                >{{ $t("editOrderModal.recipientEmail") }}:</label
               >
               <input
                 type="email"
@@ -80,14 +80,12 @@
             </div>
             <div class="form-group">
               <label for="recipientPhone"
-                >{{ $t("adminOrdersView.recipientPhone") }}:</label
+                >{{ $t("editOrderModal.recipientPhone") }}:</label
               >
               <input type="tel" v-model="recipientPhone" id="recipientPhone" />
             </div>
             <div class="form-group">
-              <label for="products"
-                >{{ $t("adminOrdersView.products") }}:</label
-              >
+              <label for="products">{{ $t("editOrderModal.products") }}:</label>
               <ProductList
                 :products="order.products"
                 :isEditing="isEditing"
@@ -108,10 +106,10 @@
             </div>
             <div class="form-actions">
               <button type="submit">
-                {{ $t("adminOrdersView.updateOrder") }}
+                {{ $t("editOrderModal.updateOrder") }}
               </button>
               <button type="button" @click="cancelEdit">
-                {{ $t("adminOrdersView.cancel") }}
+                {{ $t("editOrderModal.cancel") }}
               </button>
             </div>
           </form>
