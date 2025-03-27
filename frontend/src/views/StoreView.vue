@@ -43,7 +43,7 @@ import {
 } from "@/services/storeService";
 import { getUserLocation, getUserRegion } from "@/services/geolocationService";
 
-import AddToCartButton from "@/components/AddToCartButton.vue";
+import AddToCartButton from "@/components/general/AddToCartButton.vue";
 
 const categories = ref<Category[]>([]);
 const products = ref<Product[]>([]);

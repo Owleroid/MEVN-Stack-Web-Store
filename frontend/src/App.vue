@@ -10,8 +10,8 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 
-import Navbar from "@/components/Navbar.vue";
-import AdminNavbar from "@/components/AdminNavbar.vue";
+import Navbar from "@/components/general/Navbar.vue";
+import AdminNavbar from "@/components/admin/AdminNavbar.vue";
 
 const route = useRoute();
 

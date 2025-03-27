@@ -11,29 +11,29 @@ import ContactView from "@/views/ContactView.vue";
 import NewsView from "@/views/NewsView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
 
-import CartView from "@/views/CartView.vue";
-import CheckoutView from "@/views/CheckoutView.vue";
+import CartView from "@/views/user/CartView.vue";
+import CheckoutView from "@/views/user/CheckoutView.vue";
 
 import LoginView from "@/views/LoginView.vue";
 import SignupView from "@/views/SignupView.vue";
 import PasswordResetView from "@/views/PasswordResetView.vue";
-import UserOrdersView from "@/views/UserOrdersView.vue";
-import UserSettingsView from "@/views/UserSettingsView.vue";
+import UserOrdersView from "@/views/user/UserOrdersView.vue";
+import UserSettingsView from "@/views/user/UserSettingsView.vue";
 
-import AdminPanelView from "@/views/admin/AdminPanelView.vue";
-import AdminCategoriesView from "@/views/admin/AdminCategoriesView.vue";
-import AdminProductsView from "@/views/admin/AdminProductsView.vue";
-import AdminOrdersView from "@/views/admin/AdminOrdersView.vue";
-import AdminWarehouseView from "@/views/admin/AdminWarehouseView.vue";
-import AdminClientsView from "@/views/admin/AdminClientsView.vue";
-import AdminNewsView from "@/views/admin/AdminNewsView.vue";
+import AdminPanelView from "@/views/admin/PanelView.vue";
+import AdminCategoriesView from "@/views/admin/CategoriesView.vue";
+import AdminProductsView from "@/views/admin/ProductsView.vue";
+import AdminOrdersView from "@/views/admin/OrdersView.vue";
+import AdminWarehouseView from "@/views/admin/WarehouseView.vue";
+import AdminClientsView from "@/views/admin/ClientsView.vue";
+import AdminNewsView from "@/views/admin/NewsView.vue";
 
 const routes = [
   { path: "/", component: HomeView },
   { path: "/login", component: LoginView },
   { path: "/signup", component: SignupView },
   { path: "/password-reset", component: PasswordResetView },
-  { path: "/categories", component: StoreView },
+  { path: "/collections", component: StoreView },
   { path: "/about", component: AboutView },
   { path: "/contact", component: ContactView },
   { path: "/news", component: NewsView },

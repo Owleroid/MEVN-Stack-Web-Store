@@ -5,7 +5,9 @@
         <router-link to="/">{{ $t("navbar.mainPage") }}</router-link>
       </li>
       <li>
-        <router-link to="/categories">{{ $t("navbar.store") }}</router-link>
+        <router-link to="/collections">{{
+          $t("navbar.collections")
+        }}</router-link>
       </li>
       <li>
         <router-link to="/news">{{ $t("navbar.news") }}</router-link>
