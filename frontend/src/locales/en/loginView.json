@@ -1,8 +1,0 @@
-{
-  "login": "Login",
-  "email": "Email",
-  "password": "Password",
-  "forgotPassword": "Forgot Password?",
-  "loginSuccess": "Login successful.",
-  "loginFailed": "Failed to login."
-}
