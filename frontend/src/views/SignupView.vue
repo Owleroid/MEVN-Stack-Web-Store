@@ -1,28 +1,28 @@
 <template>
   <div class="signup">
-    <h1>{{ $t("signupView.signup") }}</h1>
+    <h1>{{ $t("signup") }}</h1>
     <form @submit.prevent="handleSignup">
       <div class="form-group">
-        <label for="email">{{ $t("signupView.email") }}</label>
+        <label for="email">{{ $t("email") }}</label>
         <input
           v-model="email"
           type="email"
           id="email"
-          :placeholder="$t('signupView.email')"
+          :placeholder="$t('email')"
           required
         />
       </div>
       <div class="form-group">
-        <label for="password">{{ $t("signupView.password") }}</label>
+        <label for="password">{{ $t("password") }}</label>
         <input
           v-model="password"
           type="password"
           id="password"
-          :placeholder="$t('signupView.password')"
+          :placeholder="$t('password')"
           required
         />
       </div>
-      <button type="submit">{{ $t("signupView.signup") }}</button>
+      <button type="submit">{{ $t("signup") }}</button>
     </form>
     <p v-if="error">{{ error }}</p>
   </div>
@@ -48,9 +48,9 @@ const handleSignup = async () => {
   try {
     await authStore.signup(email.value, password.value);
     router.push("/login");
-    toast.success(t("signupView.signupSuccess"));
+    toast.success(t("signupSuccess"));
   } catch (err) {
-    error.value = t("signupView.signupFailed");
+    error.value = t("signupFailed");
     toast.error(error.value);
   }
 };

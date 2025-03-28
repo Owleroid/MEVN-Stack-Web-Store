@@ -2,11 +2,9 @@
   <div v-if="show" class="modal">
     <div class="modal-content">
       <span class="close" @click="cancelRemove">&times;</span>
-      <h2>{{ $t("reassignCategoryModal.chooseNewCategory") }}</h2>
+      <h2>{{ $t("chooseNewCategory") }}</h2>
       <div class="form-group">
-        <label for="newCategory">{{
-          $t("reassignCategoryModal.chooseNewCategory")
-        }}</label>
+        <label for="newCategory">{{ $t("chooseNewCategory") }}</label>
         <select id="newCategory" v-model="newCategoryId">
           <option
             v-for="category in categories"
@@ -19,10 +17,10 @@
       </div>
       <div class="form-actions">
         <button @click="reassignAndRemoveCategory">
-          {{ $t("reassignCategoryModal.reassignAndDelete") }}
+          {{ $t("reassignAndDelete") }}
         </button>
         <button type="button" @click="cancelRemove">
-          {{ $t("reassignCategoryModal.cancel") }}
+          {{ $t("cancel") }}
         </button>
       </div>
     </div>

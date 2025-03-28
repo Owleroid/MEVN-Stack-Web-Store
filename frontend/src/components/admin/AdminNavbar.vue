@@ -1,47 +1,53 @@
 <template>
-  <nav>
+  <nav v-if="!translationsLoading">
     <ul class="left">
       <li>
-        <router-link to="/admin/categories">{{
-          $t("adminNavbar.categories")
-        }}</router-link>
+        <router-link to="/admin/categories">
+          {{ $t("categories") }}
+        </router-link>
       </li>
       <li>
-        <router-link to="/admin/products">{{
-          $t("adminNavbar.products")
-        }}</router-link>
+        <router-link to="/admin/products">
+          {{ $t("products") }}
+        </router-link>
       </li>
       <li>
-        <router-link to="/admin/warehouse">{{
-          $t("adminNavbar.warehouse")
-        }}</router-link>
+        <router-link to="/admin/warehouse">
+          {{ $t("warehouse") }}
+        </router-link>
       </li>
       <li>
-        <router-link to="/admin/orders">{{
-          $t("adminNavbar.orders")
-        }}</router-link>
+        <router-link to="/admin/orders">
+          {{ $t("orders") }}
+        </router-link>
       </li>
       <li>
-        <router-link to="/admin/clients">{{
-          $t("adminNavbar.clients")
-        }}</router-link>
+        <router-link to="/admin/clients">
+          {{ $t("clients") }}
+        </router-link>
       </li>
       <li>
-        <router-link to="/admin/news">{{ $t("adminNavbar.news") }}</router-link>
+        <router-link to="/admin/news">
+          {{ $t("news") }}
+        </router-link>
       </li>
     </ul>
     <ul class="right">
       <li>
-        <router-link to="/">{{ $t("adminNavbar.home") }}</router-link>
+        <router-link to="/">
+          {{ $t("home") }}
+        </router-link>
       </li>
     </ul>
   </nav>
+  <div v-else>Loading translations...</div>
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
+import { computed } from "vue";
+import { translationsLoaded } from "@/i18n";
 
-const { t } = useI18n();
+const translationsLoading = computed(() => !translationsLoaded.value);
 </script>
 
 <style scoped>

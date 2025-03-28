@@ -2,7 +2,7 @@
   <div class="store-view">
     <div class="categories">
       <div v-if="categories.length === 0" class="no-categories">
-        {{ $t("storeView.underConstruction") }}
+        {{ $t("underConstruction") }}
       </div>
       <div v-else>
         <button
@@ -16,7 +16,7 @@
     </div>
     <div v-if="categories.length > 0" class="products">
       <div v-if="products.length === 0" class="no-products">
-        {{ $t("storeView.noProducts") }}
+        {{ $t("noProducts") }}
       </div>
       <div v-else>
         <div v-for="product in products" :key="product._id" class="product">

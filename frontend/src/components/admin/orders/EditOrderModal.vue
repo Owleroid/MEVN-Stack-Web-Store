@@ -2,29 +2,27 @@
   <div v-if="show" class="modal">
     <div class="modal-content">
       <span class="close" @click="close">&times;</span>
-      <h2 v-if="isEditing">{{ $t("editOrderModal.editOrder") }}</h2>
-      <h2 v-else>{{ $t("editOrderModal.orderDetails") }}</h2>
+      <h2 v-if="isEditing">{{ $t("editOrder") }}</h2>
+      <h2 v-else>{{ $t("orderDetails") }}</h2>
       <div v-if="order">
         <p>
-          <strong>{{ $t("editOrderModal.orderId") }}:</strong>
+          <strong>{{ $t("orderId") }}:</strong>
           {{ order.orderNumber }}
         </p>
         <p>
-          <strong>{{ $t("editOrderModal.date") }}:</strong>
+          <strong>{{ $t("date") }}:</strong>
           {{ new Date(order.dateOfCreation).toLocaleString() }}
         </p>
         <p>
-          <strong>{{ $t("editOrderModal.status") }}:</strong>
+          <strong>{{ $t("status") }}:</strong>
           {{ order.status }}
         </p>
         <p>
-          <strong>{{ $t("editOrderModal.checked") }}:</strong>
-          {{
-            order.checked ? $t("editOrderModal.yes") : $t("editOrderModal.no")
-          }}
+          <strong>{{ $t("checked") }}:</strong>
+          {{ order.checked ? $t("yes") : $t("no") }}
         </p>
         <p>
-          <strong>{{ $t("editOrderModal.products") }}:</strong>
+          <strong>{{ $t("products") }}:</strong>
         </p>
         <ProductList
           :products="order.products"
@@ -33,11 +31,11 @@
           @removeProduct="removeProduct"
         />
         <p>
-          <strong>{{ $t("editOrderModal.recipientEmail") }}:</strong>
+          <strong>{{ $t("recipientEmail") }}:</strong>
           {{ order.recipient?.email }}
         </p>
         <p>
-          <strong>{{ $t("editOrderModal.recipientPhone") }}:</strong>
+          <strong>{{ $t("recipientPhone") }}:</strong>
           {{ order.recipient?.phone }}
         </p>
 
@@ -45,33 +43,31 @@
         <div v-if="isEditing">
           <form @submit.prevent="submitForm">
             <div class="form-group">
-              <label for="status">{{ $t("editOrderModal.status") }}:</label>
+              <label for="status">{{ $t("status") }}:</label>
               <select v-model="order.status" id="status">
                 <option value="waiting confirmation">
-                  {{ $t("editOrderModal.waitingConfirmation") }}
+                  {{ $t("waitingConfirmation") }}
                 </option>
                 <option value="packing">
-                  {{ $t("editOrderModal.packing") }}
+                  {{ $t("packing") }}
                 </option>
                 <option value="sended">
-                  {{ $t("editOrderModal.sended") }}
+                  {{ $t("sended") }}
                 </option>
                 <option value="delivered">
-                  {{ $t("editOrderModal.delivered") }}
+                  {{ $t("delivered") }}
                 </option>
                 <option value="canceled">
-                  {{ $t("editOrderModal.canceled") }}
+                  {{ $t("canceled") }}
                 </option>
               </select>
             </div>
             <div class="form-group">
-              <label for="checked">{{ $t("editOrderModal.checked") }}:</label>
+              <label for="checked">{{ $t("checked") }}:</label>
               <input type="checkbox" v-model="order.checked" id="checked" />
             </div>
             <div class="form-group">
-              <label for="recipientEmail"
-                >{{ $t("editOrderModal.recipientEmail") }}:</label
-              >
+              <label for="recipientEmail">{{ $t("recipientEmail") }}:</label>
               <input
                 type="email"
                 v-model="recipientEmail"
@@ -79,13 +75,11 @@
               />
             </div>
             <div class="form-group">
-              <label for="recipientPhone"
-                >{{ $t("editOrderModal.recipientPhone") }}:</label
-              >
+              <label for="recipientPhone">{{ $t("recipientPhone") }}:</label>
               <input type="tel" v-model="recipientPhone" id="recipientPhone" />
             </div>
             <div class="form-group">
-              <label for="products">{{ $t("editOrderModal.products") }}:</label>
+              <label for="products">{{ $t("products") }}:</label>
               <ProductList
                 :products="order.products"
                 :isEditing="isEditing"
@@ -106,10 +100,10 @@
             </div>
             <div class="form-actions">
               <button type="submit">
-                {{ $t("editOrderModal.updateOrder") }}
+                {{ $t("updateOrder") }}
               </button>
               <button type="button" @click="cancelEdit">
-                {{ $t("editOrderModal.cancel") }}
+                {{ $t("cancel") }}
               </button>
             </div>
           </form>

@@ -1,9 +1,9 @@
 <template>
   <div class="cart-page">
-    <h1>{{ $t("cartView.yourCart") }}</h1>
+    <h1>{{ $t("yourCart") }}</h1>
     <div v-if="cart.length === 0">
-      <p>{{ $t("cartView.emptyCart") }}</p>
-      <button @click="redirectToStore">{{ $t("cartView.goToStore") }}</button>
+      <p>{{ $t("emptyCart") }}</p>
+      <button @click="redirectToStore">{{ $t("goToStore") }}</button>
     </div>
     <div v-else>
       <ul>
@@ -19,14 +19,14 @@
               min="1"
             />
             <button @click="deleteFromCart(item.product._id)">
-              {{ $t("cartView.remove") }}
+              {{ $t("remove") }}
             </button>
           </div>
         </li>
       </ul>
       <div class="cart-summary">
-        <p>{{ $t("cartView.total") }}: {{ totalPrice }} €</p>
-        <button @click="checkout">{{ $t("cartView.checkout") }}</button>
+        <p>{{ $t("total") }}: {{ totalPrice }} €</p>
+        <button @click="checkout">{{ $t("checkout") }}</button>
       </div>
     </div>
   </div>

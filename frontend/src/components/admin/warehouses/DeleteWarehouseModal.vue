@@ -2,12 +2,10 @@
   <div v-if="show" class="modal">
     <div class="modal-content">
       <span class="close" @click="cancelDelete">&times;</span>
-      <h2>{{ $t("deleteWarehouseModal.deleteWarehouse") }}</h2>
-      <p>{{ $t("deleteWarehouseModal.selectWarehouseToDelete") }}</p>
+      <h2>{{ $t("deleteWarehouse") }}</h2>
+      <p>{{ $t("selectWarehouseToDelete") }}</p>
       <div class="form-group">
-        <label for="warehouseSelect">{{
-          $t("deleteWarehouseModal.warehouse")
-        }}</label>
+        <label for="warehouseSelect">{{ $t("warehouse") }}</label>
         <select id="warehouseSelect" v-model="selectedWarehouseId">
           <option
             v-for="warehouse in warehouses"
@@ -20,10 +18,10 @@
       </div>
       <div class="form-actions">
         <button @click="confirmDelete">
-          {{ $t("deleteWarehouseModal.delete") }}
+          {{ $t("delete") }}
         </button>
         <button type="button" @click="cancelDelete">
-          {{ $t("deleteWarehouseModal.cancel") }}
+          {{ $t("cancel") }}
         </button>
       </div>
     </div>

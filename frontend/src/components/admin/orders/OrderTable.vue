@@ -2,13 +2,13 @@
   <table class="orders-table">
     <thead>
       <tr>
-        <th>{{ $t("orderTable.orderId") }}</th>
-        <th>{{ $t("orderTable.products") }}</th>
-        <th>{{ $t("orderTable.recipientEmail") }}</th>
-        <th>{{ $t("orderTable.recipientPhone") }}</th>
-        <th>{{ $t("orderTable.date") }}</th>
-        <th>{{ $t("orderTable.status") }}</th>
-        <th>{{ $t("orderTable.actions") }}</th>
+        <th>{{ $t("orderId") }}</th>
+        <th>{{ $t("products") }}</th>
+        <th>{{ $t("recipientEmail") }}</th>
+        <th>{{ $t("recipientPhone") }}</th>
+        <th>{{ $t("date") }}</th>
+        <th>{{ $t("status") }}</th>
+        <th>{{ $t("actions") }}</th>
       </tr>
     </thead>
     <tbody>
@@ -35,17 +35,17 @@
             @change="updateOrderStatus(order._id, order.status)"
           >
             <option value="waiting confirmation">
-              {{ $t("orderTable.waitingConfirmation") }}
+              {{ $t("waitingConfirmation") }}
             </option>
-            <option value="packing">{{ $t("orderTable.packing") }}</option>
-            <option value="sended">{{ $t("orderTable.sended") }}</option>
-            <option value="delivered">{{ $t("orderTable.delivered") }}</option>
-            <option value="canceled">{{ $t("orderTable.canceled") }}</option>
+            <option value="packing">{{ $t("packing") }}</option>
+            <option value="sended">{{ $t("sended") }}</option>
+            <option value="delivered">{{ $t("delivered") }}</option>
+            <option value="canceled">{{ $t("canceled") }}</option>
           </select>
         </td>
         <td>
           <button @click.stop="editOrder(order)">
-            {{ $t("orderTable.edit") }}
+            {{ $t("edit") }}
           </button>
         </td>
       </tr>

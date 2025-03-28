@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
+import i18n from "@/i18n"; // Import the i18n instance
 
 import { getUserLocation } from "@/services/geolocationService";
 import { login, logout, signup, passwordReset } from "@/services/authService";
@@ -41,13 +42,12 @@ export const useAuthStore = defineStore("auth", {
 
           // Set language and currency based on user region
           if (location.country_code === "RU") {
-            this.language = "ru";
+            this.setLanguage("ru");
             this.currency = "rubles";
           } else {
-            this.language = "en";
+            this.setLanguage("en");
             this.currency = "euros";
           }
-          sessionStorage.setItem("language", this.language);
           sessionStorage.setItem("currency", this.currency);
         }
       } catch (error) {
@@ -65,7 +65,7 @@ export const useAuthStore = defineStore("auth", {
         this.userEmail = "";
         this.isAdmin = false;
         this.userRegion = "";
-        this.language = "en";
+        this.setLanguage("en"); // Reset language to default
         this.currency = "euros";
 
         sessionStorage.removeItem("isAuthenticated");
@@ -105,6 +105,9 @@ export const useAuthStore = defineStore("auth", {
       this.language = language;
       sessionStorage.setItem("language", language);
       document.documentElement.lang = language;
+
+      // Update the i18n locale dynamically
+      i18n.global.locale.value = language;
     },
   },
 });

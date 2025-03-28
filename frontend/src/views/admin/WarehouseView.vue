@@ -3,10 +3,10 @@
     <div class="top-center">
       <!-- Block 1: Top Center -->
       <button @click="toggleAddWarehouseForm">
-        {{ $t("adminWarehouseView.addWarehouse") }}
+        {{ $t("addWarehouse") }}
       </button>
       <div v-if="warehouses.length === 0">
-        <p>{{ $t("adminWarehouseView.noWarehousesFound") }}</p>
+        <p>{{ $t("noWarehousesFound") }}</p>
       </div>
       <div v-else class="warehouse-actions">
         <select v-model="selectedWarehouseId">
@@ -19,7 +19,7 @@
           </option>
         </select>
         <button @click="toggleDeleteWarehouseModal">
-          {{ $t("adminWarehouseView.deleteWarehouse") }}
+          {{ $t("deleteWarehouse") }}
         </button>
       </div>
     </div>
@@ -40,18 +40,18 @@
       <!-- Block 3: Right -->
       <div class="right">
         <div v-if="filteredProducts.length === 0">
-          <p>{{ $t("adminWarehouseView.noProductsFound") }}</p>
+          <p>{{ $t("noProductsFound") }}</p>
           <button @click="redirectToAdminProductPage">
-            {{ $t("adminWarehouseView.addNewProduct") }}
+            {{ $t("addNewProduct") }}
           </button>
         </div>
         <div v-else>
           <table>
             <thead>
               <tr>
-                <th>{{ $t("adminWarehouseView.productName") }}</th>
-                <th>{{ $t("adminWarehouseView.amount") }}</th>
-                <th>{{ $t("adminWarehouseView.action") }}</th>
+                <th>{{ $t("productName") }}</th>
+                <th>{{ $t("amount") }}</th>
+                <th>{{ $t("action") }}</th>
               </tr>
             </thead>
             <tbody>
@@ -69,7 +69,7 @@
                     @click="updateProductAmount(product)"
                     :disabled="!hasAmountChanged(product)"
                   >
-                    {{ $t("adminWarehouseView.updateAmount") }}
+                    {{ $t("updateAmount") }}
                   </button>
                 </td>
               </tr>
@@ -152,29 +152,29 @@ const toggleDeleteWarehouseModal = () => {
 
 const addNewWarehouse = async (newWarehouseName: string) => {
   if (!newWarehouseName) {
-    toast.error(t("adminWarehouseView.failedToAddWarehouse"));
+    toast.error(t("failedToAddWarehouse"));
     return;
   }
   try {
     await addWarehouse(newWarehouseName);
-    toast.success(t("adminWarehouseView.warehouseAddedSuccessfully"));
+    toast.success(t("warehouseAddedSuccessfully"));
     showAddWarehouseForm.value = false;
     await fetchWarehouses();
   } catch (error) {
     console.error("Failed to add warehouse:", error);
-    toast.error(t("adminWarehouseView.failedToAddWarehouse"));
+    toast.error(t("failedToAddWarehouse"));
   }
 };
 
 const removeWarehouse = async (warehouseId: string) => {
   try {
     await deleteWarehouse(warehouseId);
-    toast.success(t("adminWarehouseView.warehouseDeletedSuccessfully"));
+    toast.success(t("warehouseDeletedSuccessfully"));
     await fetchWarehouses();
     showDeleteWarehouseModal.value = false;
   } catch (error) {
     console.error("Failed to delete warehouse:", error);
-    toast.error(t("adminWarehouseView.failedToDeleteWarehouse"));
+    toast.error(t("failedToDeleteWarehouse"));
   }
 };
 
@@ -208,7 +208,7 @@ const updateProductAmount = async (product: {
     await fetchWarehouses();
   } catch (error) {
     console.error("Failed to update product amount:", error);
-    toast.error(t("adminWarehouseView.failedToUpdateProductAmount"));
+    toast.error(t("failedToUpdateProductAmount"));
   }
 };
 
@@ -223,7 +223,7 @@ const fetchProducts = async () => {
     }
   } catch (error) {
     console.error("Failed to fetch products by category:", error);
-    toast.error(t("adminWarehouseView.failedToFetchProducts"));
+    toast.error(t("failedToFetchProducts"));
   }
 };
 
@@ -236,7 +236,7 @@ const fetchWarehouses = async () => {
     }
   } catch (error) {
     console.error("Failed to fetch warehouses:", error);
-    toast.error(t("adminWarehouseView.failedToFetchWarehouses"));
+    toast.error(t("failedToFetchWarehouses"));
   }
 };
 
@@ -250,7 +250,7 @@ const fetchCategories = async () => {
     }
   } catch (error) {
     console.error("Failed to fetch categories:", error);
-    toast.error(t("adminWarehouseView.failedToFetchCategories"));
+    toast.error(t("failedToFetchCategories"));
   }
 };
 

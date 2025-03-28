@@ -1,35 +1,35 @@
 <template>
   <div class="login">
-    <h1>{{ $t("loginView.login") }}</h1>
+    <h1>{{ $t("login") }}</h1>
     <form @submit.prevent="handleLogin">
       <div class="form-group">
-        <label for="email">{{ $t("loginView.email") }}</label>
+        <label for="email">{{ $t("email") }}</label>
         <input
           v-model="email"
           type="email"
           id="email"
-          :placeholder="$t('loginView.email')"
+          :placeholder="$t('email')"
           required
         />
       </div>
       <div class="form-group">
-        <label for="password">{{ $t("loginView.password") }}</label>
+        <label for="password">{{ $t("password") }}</label>
         <input
           v-model="password"
           type="password"
           id="password"
-          :placeholder="$t('loginView.password')"
+          :placeholder="$t('password')"
           required
         />
       </div>
       <div class="form-actions">
-        <button type="submit">{{ $t("loginView.login") }}</button>
+        <button type="submit">{{ $t("login") }}</button>
         <button
           @click="goToPasswordReset"
           type="button"
           class="forgot-password"
         >
-          {{ $t("loginView.forgotPassword") }}
+          {{ $t("forgotPassword") }}
         </button>
       </div>
     </form>
@@ -55,10 +55,10 @@ async function handleLogin() {
   try {
     await authStore.login(email.value, password.value);
     router.push("/");
-    toast.success(t("loginView.loginSuccess"));
+    toast.success(t("loginSuccess"));
   } catch (error) {
     console.error("Login failed:", error);
-    toast.error(t("loginView.loginFailed"));
+    toast.error(t("loginFailed"));
   }
 }
 

@@ -10,7 +10,7 @@
         :disabled="!isEditing"
       />
       <button type="button" @click="removeProduct(index)" v-if="isEditing">
-        {{ $t("adminOrdersView.remove") }}
+        {{ $t("remove") }}
       </button>
     </li>
   </ul>

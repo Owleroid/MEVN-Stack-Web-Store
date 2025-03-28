@@ -1,18 +1,18 @@
 <template>
   <div class="password-reset">
-    <h1>{{ $t("passwordResetView.passwordReset") }}</h1>
+    <h1>{{ $t("passwordReset") }}</h1>
     <form @submit.prevent="handlePasswordReset">
       <div class="form-group">
-        <label for="email">{{ $t("passwordResetView.email") }}</label>
+        <label for="email">{{ $t("email") }}</label>
         <input
           v-model="email"
           type="email"
           id="email"
-          :placeholder="$t('passwordResetView.email')"
+          :placeholder="$t('email')"
           required
         />
       </div>
-      <button type="submit">{{ $t("passwordResetView.resetPassword") }}</button>
+      <button type="submit">{{ $t("resetPassword") }}</button>
     </form>
     <p v-if="error">{{ error }}</p>
   </div>
@@ -34,9 +34,9 @@ const { t } = useI18n();
 const handlePasswordReset = async () => {
   try {
     await authStore.resetPassword(email.value);
-    toast.success(t("passwordResetView.resetEmailSent"));
+    toast.success(t("resetEmailSent"));
   } catch (err) {
-    error.value = t("passwordResetView.resetFailed");
+    error.value = t("resetFailed");
     toast.error(error.value);
   }
 };

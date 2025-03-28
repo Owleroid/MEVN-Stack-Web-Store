@@ -2,14 +2,14 @@
   <div>
     <div class="admin-products-container">
       <div class="categories-menu">
-        <h2>{{ $t("adminProductsView.categories") }}</h2>
+        <h2>{{ $t("categories") }}</h2>
         <div v-if="loading">
-          <p>{{ $t("adminProductsView.loadingCategories") }}</p>
+          <p>{{ $t("loadingCategories") }}</p>
         </div>
         <div v-else-if="categories.length === 0">
-          <p>{{ $t("adminProductsView.noCategoriesFound") }}</p>
+          <p>{{ $t("noCategoriesFound") }}</p>
           <button @click="goToCategories">
-            {{ $t("adminProductsView.goToCategories") }}
+            {{ $t("goToCategories") }}
           </button>
         </div>
         <div v-else>
@@ -24,22 +24,22 @@
         </div>
       </div>
       <div v-if="categories.length > 0" class="products-list">
-        <h2>{{ $t("adminProductsView.products") }}</h2>
+        <h2>{{ $t("products") }}</h2>
         <div v-if="products.length === 0">
-          <p>{{ $t("adminProductsView.noProductsFound") }}</p>
+          <p>{{ $t("noProductsFound") }}</p>
           <button @click="openAddProductModal">
-            {{ $t("adminProductsView.addNewProduct") }}
+            {{ $t("addNewProduct") }}
           </button>
         </div>
         <div v-else>
           <button @click="openAddProductModal">
-            {{ $t("adminProductsView.addNewProduct") }}
+            {{ $t("addNewProduct") }}
           </button>
           <table>
             <thead>
               <tr>
-                <th>{{ $t("adminProductsView.productName") }}</th>
-                <th>{{ $t("adminProductsView.actions") }}</th>
+                <th>{{ $t("productName") }}</th>
+                <th>{{ $t("actions") }}</th>
               </tr>
             </thead>
             <tbody>
@@ -47,13 +47,13 @@
                 <td>{{ product.name }}</td>
                 <td class="actions">
                   <button @click="openChangeCategoryModal(product)">
-                    {{ $t("adminProductsView.changeCategory") }}
+                    {{ $t("changeCategory") }}
                   </button>
                   <button @click="openEditProductModal(product)">
-                    {{ $t("adminProductsView.edit") }}
+                    {{ $t("edit") }}
                   </button>
                   <button @click="deleteProduct(product._id)">
-                    {{ $t("adminProductsView.delete") }}
+                    {{ $t("delete") }}
                   </button>
                 </td>
               </tr>
@@ -165,7 +165,7 @@ const fetchCategories = async () => {
     }
   } catch (error) {
     console.error("Failed to fetch categories:", error);
-    toast.error(t("adminProductsView.failedToFetchCategories"));
+    toast.error(t("failedToFetchCategories"));
   } finally {
     loading.value = false;
   }
@@ -179,7 +179,7 @@ const fetchProducts = async () => {
     products.value = response.data.products;
   } catch (error) {
     console.error("Failed to fetch products:", error);
-    toast.error(t("adminProductsView.failedToFetchProducts"));
+    toast.error(t("failedToFetchProducts"));
   }
 };
 
@@ -220,11 +220,11 @@ const submitAddProductForm = async () => {
 
     await addProduct(product);
     emit("productAdded");
-    toast.success(t("adminProductsView.productAddedSuccessfully"));
+    toast.success(t("productAddedSuccessfully"));
     closeAddProductModal();
     fetchProducts();
   } catch (error) {
-    toast.error(t("adminProductsView.failedToAddProduct"));
+    toast.error(t("failedToAddProduct"));
     console.error("Failed to add product:", error);
   }
 };
@@ -252,7 +252,7 @@ const openEditProductModal = async (product: Product) => {
     showEditProductModal.value = true;
   } catch (error) {
     console.error("Failed to fetch product:", error);
-    toast.error(t("adminProductsView.failedToFetchProduct"));
+    toast.error(t("failedToFetchProduct"));
   }
 };
 
@@ -285,11 +285,11 @@ const submitEditProductForm = async () => {
 
     await updateProduct(editProduct.value.id, product);
     emit("productUpdated");
-    toast.success(t("adminProductsView.productUpdatedSuccessfully"));
+    toast.success(t("productUpdatedSuccessfully"));
     closeEditProductModal();
     fetchProducts();
   } catch (error) {
-    toast.error(t("adminProductsView.failedToUpdateProduct"));
+    toast.error(t("failedToUpdateProduct"));
     console.error("Failed to update product:", error);
   }
 };
@@ -298,10 +298,10 @@ const deleteProduct = async (id: string) => {
   try {
     await deleteProductService(id);
     fetchProducts(); // Refresh the list after deletion
-    toast.success(t("adminProductsView.productDeletedSuccessfully"));
+    toast.success(t("productDeletedSuccessfully"));
   } catch (error) {
     console.error("Failed to delete product:", error);
-    toast.error(t("adminProductsView.failedToDeleteProduct"));
+    toast.error(t("failedToDeleteProduct"));
   }
 };
 
@@ -324,7 +324,7 @@ const changeCategory = async (newCategoryId: string) => {
   if (!productToChangeCategory.value) return;
 
   if (!newCategoryId) {
-    toast.error(t("adminProductsView.selectNewCategory"));
+    toast.error(t("selectNewCategory"));
     return;
   }
 
@@ -334,11 +334,11 @@ const changeCategory = async (newCategoryId: string) => {
       newCategoryId
     );
     fetchProducts();
-    toast.success(t("adminProductsView.productCategoryUpdatedSuccessfully"));
+    toast.success(t("productCategoryUpdatedSuccessfully"));
     closeChangeCategoryModal();
   } catch (error) {
     console.error("Failed to update product category:", error);
-    toast.error(t("adminProductsView.failedToUpdateProductCategory"));
+    toast.error(t("failedToUpdateProductCategory"));
   }
 };
 

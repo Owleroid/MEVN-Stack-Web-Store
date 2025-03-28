@@ -1,84 +1,74 @@
 <template>
   <div class="user-settings">
-    <h1>{{ $t("userSettingsView.title") }}</h1>
+    <h1>{{ $t("title") }}</h1>
     <form @submit.prevent="updateUserSettings">
       <div class="form-group">
-        <label for="email">{{ $t("userSettingsView.email") }}</label>
+        <label for="email">{{ $t("email") }}</label>
         <input type="email" id="email" v-model="user.email" disabled />
       </div>
       <div class="form-group">
-        <label for="name">{{ $t("userSettingsView.name") }}</label>
+        <label for="name">{{ $t("name") }}</label>
         <input type="text" id="name" v-model="user.name" />
       </div>
       <div class="form-group">
-        <label for="surname">{{ $t("userSettingsView.surname") }}</label>
+        <label for="surname">{{ $t("surname") }}</label>
         <input type="text" id="surname" v-model="user.surname" />
       </div>
       <div class="form-group">
-        <label for="phone">{{ $t("userSettingsView.phone") }}</label>
+        <label for="phone">{{ $t("phone") }}</label>
         <input type="tel" id="phone" v-model="user.phone" />
       </div>
       <div class="form-group">
-        <h2>{{ $t("userSettingsView.deliveryData.title") }}</h2>
-        <label for="country">{{
-          $t("userSettingsView.deliveryData.country")
-        }}</label>
+        <h2>{{ $t("deliveryData.title") }}</h2>
+        <label for="country">{{ $t("deliveryData.country") }}</label>
         <input type="text" id="country" v-model="user.deliveryData.country" />
-        <label for="city">{{ $t("userSettingsView.deliveryData.city") }}</label>
+        <label for="city">{{ $t("deliveryData.city") }}</label>
         <input type="text" id="city" v-model="user.deliveryData.city" />
-        <label for="street">{{
-          $t("userSettingsView.deliveryData.street")
-        }}</label>
+        <label for="street">{{ $t("deliveryData.street") }}</label>
         <input type="text" id="street" v-model="user.deliveryData.street" />
         <label for="buildingNumber">{{
-          $t("userSettingsView.deliveryData.buildingNumber")
+          $t("deliveryData.buildingNumber")
         }}</label>
         <input
           type="text"
           id="buildingNumber"
           v-model="user.deliveryData.buildingNumber"
         />
-        <label for="apartment">{{
-          $t("userSettingsView.deliveryData.apartment")
-        }}</label>
+        <label for="apartment">{{ $t("deliveryData.apartment") }}</label>
         <input
           type="text"
           id="apartment"
           v-model="user.deliveryData.apartment"
         />
-        <label for="postalCode">{{
-          $t("userSettingsView.deliveryData.postalCode")
-        }}</label>
+        <label for="postalCode">{{ $t("deliveryData.postalCode") }}</label>
         <input
           type="text"
           id="postalCode"
           v-model="user.deliveryData.postalCode"
         />
       </div>
-      <button type="submit">{{ $t("userSettingsView.update") }}</button>
+      <button type="submit">{{ $t("update") }}</button>
     </form>
 
     <form @submit.prevent="changePassword">
       <div class="form-group">
-        <h2>{{ $t("userSettingsView.changePassword.title") }}</h2>
+        <h2>{{ $t("changePassword.title") }}</h2>
         <label for="currentPassword">{{
-          $t("userSettingsView.changePassword.currentPassword")
+          $t("changePassword.currentPassword")
         }}</label>
         <input
           type="password"
           id="currentPassword"
           v-model="passwords.currentPassword"
         />
-        <label for="newPassword">{{
-          $t("userSettingsView.changePassword.newPassword")
-        }}</label>
+        <label for="newPassword">{{ $t("changePassword.newPassword") }}</label>
         <input
           type="password"
           id="newPassword"
           v-model="passwords.newPassword"
         />
         <label for="confirmPassword">{{
-          $t("userSettingsView.changePassword.confirmPassword")
+          $t("changePassword.confirmPassword")
         }}</label>
         <input
           type="password"
@@ -87,7 +77,7 @@
         />
       </div>
       <button type="submit">
-        {{ $t("userSettingsView.changePassword.update") }}
+        {{ $t("changePassword.update") }}
       </button>
     </form>
   </div>
@@ -140,10 +130,10 @@ onMounted(async () => {
 const updateUserSettings = async () => {
   try {
     await updateUserData(authStore.userId, user.value);
-    toast.success(t("userSettingsView.success"));
+    toast.success(t("success"));
   } catch (error) {
     console.error("Failed to update user settings:", error);
-    toast.error(t("userSettingsView.error"));
+    toast.error(t("error"));
   }
 };
 
@@ -155,13 +145,13 @@ const changePassword = async () => {
         passwords.value.currentPassword,
         passwords.value.newPassword
       );
-      toast.success(t("userSettingsView.passwordChangeSuccess"));
+      toast.success(t("passwordChangeSuccess"));
     } else {
-      toast.error(t("userSettingsView.passwordMismatch"));
+      toast.error(t("passwordMismatch"));
     }
   } catch (error) {
     console.error("Failed to change password:", error);
-    toast.error(t("userSettingsView.passwordChangeError"));
+    toast.error(t("passwordChangeError"));
   }
 };
 </script>

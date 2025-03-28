@@ -1,10 +1,10 @@
 <template>
   <div class="checkout-page">
-    <h1>{{ $t("checkoutView.checkout") }}</h1>
+    <h1>{{ $t("checkout") }}</h1>
 
     <!-- Order Summary -->
     <div class="order-summary">
-      <h2>{{ $t("checkoutView.orderSummary") }}</h2>
+      <h2>{{ $t("orderSummary") }}</h2>
       <ul>
         <li v-for="item in cart" :key="item.product._id">
           <p>
@@ -14,7 +14,7 @@
         </li>
       </ul>
       <p>
-        {{ $t("checkoutView.total") }}: {{ totalPrice }}
+        {{ $t("total") }}: {{ totalPrice }}
         {{ currency === "euros" ? "€" : "₽" }}
       </p>
     </div>
@@ -22,14 +22,14 @@
     <!-- Delivery Information Form -->
     <div>
       <!-- <div v-if="!isAuthenticated"> -->
-      <h2>{{ $t("checkoutView.deliveryInfo") }}</h2>
+      <h2>{{ $t("deliveryInfo") }}</h2>
       <form @submit.prevent="handleCheckout">
         <div>
-          <label for="name">{{ $t("checkoutView.name") }}</label>
+          <label for="name">{{ $t("name") }}</label>
           <input v-model="recipient.name" type="text" id="name" required />
         </div>
         <div>
-          <label for="surname">{{ $t("checkoutView.surname") }}</label>
+          <label for="surname">{{ $t("surname") }}</label>
           <input
             v-model="recipient.surname"
             type="text"
@@ -38,15 +38,15 @@
           />
         </div>
         <div>
-          <label for="phone">{{ $t("checkoutView.phone") }}</label>
+          <label for="phone">{{ $t("phone") }}</label>
           <input v-model="recipient.phone" type="tel" id="phone" required />
         </div>
         <div>
-          <label for="email">{{ $t("checkoutView.email") }}</label>
+          <label for="email">{{ $t("email") }}</label>
           <input v-model="recipient.email" type="email" id="email" required />
         </div>
         <div>
-          <label for="country">{{ $t("checkoutView.country") }}</label>
+          <label for="country">{{ $t("country") }}</label>
           <input
             v-model="shippingAddress.country"
             type="text"
@@ -55,7 +55,7 @@
           />
         </div>
         <div>
-          <label for="city">{{ $t("checkoutView.city") }}</label>
+          <label for="city">{{ $t("city") }}</label>
           <input
             v-model="shippingAddress.city"
             type="text"
@@ -64,7 +64,7 @@
           />
         </div>
         <div>
-          <label for="street">{{ $t("checkoutView.street") }}</label>
+          <label for="street">{{ $t("street") }}</label>
           <input
             v-model="shippingAddress.street"
             type="text"
@@ -73,9 +73,7 @@
           />
         </div>
         <div>
-          <label for="buildingNumber">{{
-            $t("checkoutView.buildingNumber")
-          }}</label>
+          <label for="buildingNumber">{{ $t("buildingNumber") }}</label>
           <input
             v-model="shippingAddress.buildingNumber"
             type="text"
@@ -84,7 +82,7 @@
           />
         </div>
         <div>
-          <label for="apartment">{{ $t("checkoutView.apartment") }}</label>
+          <label for="apartment">{{ $t("apartment") }}</label>
           <input
             v-model="shippingAddress.apartment"
             type="text"
@@ -92,7 +90,7 @@
           />
         </div>
         <div>
-          <label for="postalCode">{{ $t("checkoutView.postalCode") }}</label>
+          <label for="postalCode">{{ $t("postalCode") }}</label>
           <input
             v-model="shippingAddress.postalCode"
             type="text"
@@ -100,7 +98,7 @@
             required
           />
         </div>
-        <button type="submit">{{ $t("checkoutView.placeOrder") }}</button>
+        <button type="submit">{{ $t("placeOrder") }}</button>
       </form>
     </div>
     <!-- <div v-else>
@@ -207,7 +205,8 @@ const handleCheckout = async () => {
       const { exists } = await checkEmail(recipient.value.email);
 
       if (exists) {
-        alert("Email is already registered. Please log in to continue.");
+        // Replace alert with a toast
+        toast.error(t("emailAlreadyRegistered"));
 
         // Save form data to local storage
         localStorage.setItem("recipient", JSON.stringify(recipient.value));
@@ -221,9 +220,7 @@ const handleCheckout = async () => {
       }
     } catch (error) {
       console.error("Error checking email:", error);
-      toast.error(
-        "An error occurred while checking the email. Please try again."
-      );
+      toast.error(t("checkEmailError"));
       return;
     }
   }
@@ -234,7 +231,7 @@ const handleCheckout = async () => {
       productId: item.product._id,
       name: item.product.name,
       amount: item.quantity,
-      productPrice: item.product.price[currency.value].amount, // Use the appropriate price based on the currency
+      productPrice: item.product.price[currency.value].amount,
     })),
     totalPrice: totalPrice.value,
     currency: currency.value,
@@ -251,12 +248,10 @@ const handleCheckout = async () => {
     localStorage.removeItem("shippingAddress");
     emit("cart-updated");
     router.push("/categories");
-    toast.success("Order placed successfully!");
+    toast.success(t("orderSuccess"));
   } catch (error) {
     console.error("Error creating order:", error);
-    toast.error(
-      "An error occurred while creating the order. Please try again."
-    );
+    toast.error(t("orderError"));
   }
 };
 </script>

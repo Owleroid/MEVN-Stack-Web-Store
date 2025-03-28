@@ -5,7 +5,7 @@
   "surname": "Surname",
   "phone": "Phone",
   "deliveryData": {
-    "title": "Delivery Information",
+    "title": "Delivery Data",
     "country": "Country",
     "city": "City",
     "street": "Street",
@@ -13,17 +13,17 @@
     "apartment": "Apartment",
     "postalCode": "Postal Code"
   },
-  "update": "Update Settings",
-  "success": "Settings updated successfully!",
-  "error": "Failed to update settings. Please try again.",
+  "update": "Update",
+  "success": "User settings updated successfully!",
+  "error": "Failed to update user settings.",
   "changePassword": {
     "title": "Change Password",
     "currentPassword": "Current Password",
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
-    "update": "Update Password",
-    "passwordChangeSuccess": "Password changed successfully!",
-    "passwordChangeError": "Failed to change password. Please try again.",
-    "passwordMismatch": "Passwords do not match. Please try again."
-  }
+    "update": "Update Password"
+  },
+  "passwordChangeSuccess": "Password changed successfully!",
+  "passwordMismatch": "Passwords do not match.",
+  "passwordChangeError": "Failed to change password."
 }

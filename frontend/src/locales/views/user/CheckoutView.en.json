@@ -14,9 +14,9 @@
   "apartment": "Apartment",
   "postalCode": "Postal Code",
   "placeOrder": "Place Order",
-  "confirmOrder": "Confirm Order",
-  "deliveryInfoFromProfile": "Delivery information will be taken from your profile.",
-  "orderPlacedSuccess": "Order placed successfully!",
-  "orderPlacedError": "An error occurred while placing the order. Please try again.",
-  "emailAlreadyRegistered": "Email is already registered. Please log in to continue."
+  "emailAlreadyRegistered": "Email is already registered. Please log in to continue.",
+  "fetchUserDataError": "An error occurred while fetching user data. Please try again.",
+  "checkEmailError": "An error occurred while checking the email. Please try again.",
+  "orderSuccess": "Order placed successfully!",
+  "orderError": "An error occurred while creating the order. Please try again."
 }

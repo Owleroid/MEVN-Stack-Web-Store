@@ -1,12 +1,12 @@
 <template>
   <div>
-    <h1>Orders</h1>
+    <h1>{{ $t("orders") }}</h1>
 
     <!-- Block for New Orders -->
     <div>
-      <h2>New Orders</h2>
+      <h2>{{ $t("newOrders") }}</h2>
       <div v-if="newOrders.length === 0">
-        <p>No new orders</p>
+        <p>{{ $t("noNewOrders") }}</p>
       </div>
       <div v-else>
         <OrderTable
@@ -20,27 +20,29 @@
 
     <!-- Block for All Orders with Filters -->
     <div>
-      <h2>All Orders</h2>
+      <h2>{{ $t("allOrders") }}</h2>
       <div class="filters">
-        <label for="sortOrder">Sort by Date:</label>
+        <label for="sortOrder">{{ $t("sortByDate") }}</label>
         <select v-model="sortOrder">
-          <option value="newest">Newest to Oldest</option>
-          <option value="oldest">Oldest to Newest</option>
+          <option value="newest">{{ $t("newestToOldest") }}</option>
+          <option value="oldest">{{ $t("oldestToNewest") }}</option>
         </select>
 
-        <label for="statusFilter">Filter by Status:</label>
+        <label for="statusFilter">{{ $t("filterByStatus") }}</label>
         <select v-model="statusFilter">
-          <option value="">All</option>
-          <option value="waiting confirmation">Waiting Confirmation</option>
-          <option value="packing">Packing</option>
-          <option value="sended">Sended</option>
-          <option value="delivered">Delivered</option>
-          <option value="canceled">Canceled</option>
+          <option value="">{{ $t("statuses.all") }}</option>
+          <option value="waiting confirmation">
+            {{ $t("statuses.waitingConfirmation") }}
+          </option>
+          <option value="packing">{{ $t("statuses.packing") }}</option>
+          <option value="sended">{{ $t("statuses.sended") }}</option>
+          <option value="delivered">{{ $t("statuses.delivered") }}</option>
+          <option value="canceled">{{ $t("statuses.canceled") }}</option>
         </select>
       </div>
 
       <div v-if="filteredOrders.length === 0">
-        <p>No orders found</p>
+        <p>{{ $t("noOrdersFound") }}</p>
       </div>
       <div v-else>
         <OrderTable
@@ -64,6 +66,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
+import { useI18n } from "vue-i18n";
+import { useToast } from "vue-toastification";
 
 import OrderTable from "@/components/admin/orders/OrderTable.vue";
 import OrderModal from "@/components/admin/orders/EditOrderModal.vue";
@@ -71,6 +75,9 @@ import OrderModal from "@/components/admin/orders/EditOrderModal.vue";
 import type { Order } from "@/types/orders";
 
 import { getAllOrders, editOrderById } from "@/services/orderService";
+
+const { t } = useI18n();
+const toast = useToast();
 
 const orders = ref<Order[]>([]);
 const sortOrder = ref("newest");
@@ -85,6 +92,7 @@ const fetchOrders = async () => {
     orders.value = response.data.orders;
   } catch (error) {
     console.error("Error fetching orders:", error);
+    toast.error(t("fetchOrdersError"));
   }
 };
 
@@ -140,8 +148,10 @@ const updateOrder = async () => {
       await editOrderById(selectedOrder.value._id, selectedOrder.value);
       fetchOrders();
       closeModal();
+      toast.success(t("orderUpdated"));
     } catch (error) {
       console.error("Error updating order:", error);
+      toast.error(t("orderUpdateError"));
     }
   }
 };
@@ -157,8 +167,10 @@ const updateOrderStatus = async (orderId: string, status: string) => {
         | "canceled",
     });
     fetchOrders();
+    toast.success(t("orderStatusUpdated"));
   } catch (error) {
     console.error("Error updating order status:", error);
+    toast.error(t("orderStatusUpdateError"));
   }
 };
 

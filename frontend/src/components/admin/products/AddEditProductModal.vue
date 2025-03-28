@@ -2,22 +2,16 @@
   <div v-if="show" class="modal">
     <div class="modal-content">
       <h3>
-        {{
-          isEdit
-            ? $t("addEditProductModal.editProduct")
-            : $t("addEditProductModal.addNewProduct")
-        }}
+        {{ isEdit ? $t("editProduct") : $t("addNewProduct") }}
       </h3>
       <form @submit.prevent="submitForm">
         <!-- Add/Edit Product Form Fields -->
         <div class="form-group">
-          <label for="name">{{ $t("addEditProductModal.productName") }}:</label>
+          <label for="name">{{ $t("productName") }}:</label>
           <input type="text" id="name" v-model="product.name" required />
         </div>
         <div class="form-group">
-          <label for="priceRubles"
-            >{{ $t("addEditProductModal.priceRubles") }}:</label
-          >
+          <label for="priceRubles">{{ $t("priceRubles") }}:</label>
           <input
             type="number"
             id="priceRubles"
@@ -26,9 +20,7 @@
           />
         </div>
         <div class="form-group">
-          <label for="priceEuros"
-            >{{ $t("addEditProductModal.priceEuros") }}:</label
-          >
+          <label for="priceEuros">{{ $t("priceEuros") }}:</label>
           <input
             type="number"
             id="priceEuros"
@@ -37,17 +29,15 @@
           />
         </div>
         <div class="form-group">
-          <label for="artist">{{ $t("addEditProductModal.artist") }}:</label>
+          <label for="artist">{{ $t("artist") }}:</label>
           <input type="text" id="artist" v-model="product.artist" required />
         </div>
         <div class="form-group">
-          <label for="size">{{ $t("addEditProductModal.size") }}:</label>
+          <label for="size">{{ $t("size") }}:</label>
           <input type="text" id="size" v-model="product.size" required />
         </div>
         <div class="form-group">
-          <label for="material"
-            >{{ $t("addEditProductModal.material") }}:</label
-          >
+          <label for="material">{{ $t("material") }}:</label>
           <input
             type="text"
             id="material"
@@ -56,28 +46,24 @@
           />
         </div>
         <div class="form-group">
-          <label for="parts">{{ $t("addEditProductModal.parts") }}:</label>
+          <label for="parts">{{ $t("parts") }}:</label>
           <input type="text" id="parts" v-model="product.parts" />
         </div>
         <div class="form-group">
-          <label for="boxArt">{{ $t("addEditProductModal.boxArt") }}:</label>
+          <label for="boxArt">{{ $t("boxArt") }}:</label>
           <input type="text" id="boxArt" v-model="product.boxArt" required />
         </div>
         <div class="form-group">
-          <label for="description"
-            >{{ $t("addEditProductModal.description") }}:</label
-          >
+          <label for="description">{{ $t("description") }}:</label>
           <textarea id="description" v-model="product.description"></textarea>
         </div>
         <div class="form-group">
-          <label for="mainImageUrl"
-            >{{ $t("addEditProductModal.mainImageUrl") }}:</label
-          >
+          <label for="mainImageUrl">{{ $t("mainImageUrl") }}:</label>
           <input type="text" id="mainImageUrl" v-model="product.mainImageUrl" />
         </div>
         <div class="form-group">
           <label for="secondaryImageUrls"
-            >{{ $t("addEditProductModal.secondaryImageUrls") }}:</label
+            >{{ $t("secondaryImageUrls") }}:</label
           >
           <textarea
             id="secondaryImageUrls"
@@ -86,14 +72,10 @@
         </div>
         <div class="form-actions">
           <button type="submit">
-            {{
-              isEdit
-                ? $t("addEditProductModal.updateProduct")
-                : $t("addEditProductModal.addProduct")
-            }}
+            {{ isEdit ? $t("updateProduct") : $t("addProduct") }}
           </button>
           <button type="button" @click="close">
-            {{ $t("addEditProductModal.cancel") }}
+            {{ $t("cancel") }}
           </button>
         </div>
       </form>

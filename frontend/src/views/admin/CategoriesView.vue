@@ -1,21 +1,21 @@
 <template>
   <div>
-    <h1>{{ $t("adminCategoriesView.categories") }}</h1>
+    <h1>{{ $t("categories") }}</h1>
     <div v-if="categories.length === 0">
-      <p>{{ $t("adminCategoriesView.noCategories") }}</p>
+      <p>{{ $t("noCategories") }}</p>
       <button @click="showAddModal = true">
-        {{ $t("adminCategoriesView.addNewCategory") }}
+        {{ $t("addNewCategory") }}
       </button>
     </div>
     <div v-else>
       <button @click="showAddModal = true" class="add-category-button">
-        {{ $t("adminCategoriesView.addNewCategory") }}
+        {{ $t("addNewCategory") }}
       </button>
       <table class="categories-table">
         <thead>
           <tr>
-            <th>{{ $t("adminCategoriesView.categoryName") }}</th>
-            <th>{{ $t("adminCategoriesView.actions") }}</th>
+            <th>{{ $t("categoryName") }}</th>
+            <th>{{ $t("actions") }}</th>
           </tr>
         </thead>
         <tbody>
@@ -23,10 +23,10 @@
             <td>{{ category.name }}</td>
             <td class="actions">
               <button @click="openEditModal(category)">
-                {{ $t("adminCategoriesView.editCategory") }}
+                {{ $t("editCategory") }}
               </button>
               <button @click="confirmRemoveCategory(category._id ?? '')">
-                {{ $t("adminCategoriesView.delete") }}
+                {{ $t("delete") }}
               </button>
             </td>
           </tr>
@@ -107,7 +107,7 @@ const fetchCategories = async () => {
     const response = await getAllCategories();
     categories.value = response.data.categories;
   } catch (error) {
-    toast.error(t("adminCategoriesView.fetchCategoriesError"));
+    toast.error(t("fetchCategoriesError"));
     console.error("Failed to fetch categories:", error);
   }
 };
@@ -127,9 +127,9 @@ const removeCategory = async (id: string) => {
   try {
     await deleteCategory(id);
     fetchCategories();
-    toast.success(t("adminCategoriesView.removeCategorySuccess"));
+    toast.success(t("removeCategorySuccess"));
   } catch (error) {
-    toast.error(t("adminCategoriesView.removeCategoryError"));
+    toast.error(t("removeCategoryError"));
     console.error("Failed to remove category:", error);
   } finally {
     showDeleteModal.value = false;
@@ -144,13 +144,13 @@ const reassignAndRemoveCategory = async (newCategoryId: string) => {
         newCategoryId
       );
       fetchCategories();
-      toast.success(t("adminCategoriesView.reassignAndRemoveCategorySuccess"));
+      toast.success(t("reassignAndRemoveCategorySuccess"));
       showReassignModal.value = false;
     } else {
-      toast.error(t("adminCategoriesView.reassignAndRemoveCategoryError"));
+      toast.error(t("reassignAndRemoveCategoryError"));
     }
   } catch (error) {
-    toast.error(t("adminCategoriesView.reassignAndRemoveCategoryError"));
+    toast.error(t("reassignAndRemoveCategoryError"));
     console.error("Failed to reassign and remove category:", error);
   }
 };
@@ -159,10 +159,10 @@ const submitAddForm = async (newCategoryName: string) => {
   try {
     await createCategory({ name: newCategoryName });
     fetchCategories();
-    toast.success(t("adminCategoriesView.addCategorySuccess"));
+    toast.success(t("addCategorySuccess"));
     showAddModal.value = false;
   } catch (error) {
-    toast.error(t("adminCategoriesView.addCategoryError"));
+    toast.error(t("addCategoryError"));
     console.error("Failed to add category:", error);
   }
 };
@@ -174,12 +174,12 @@ const submitEditForm = async (editCategoryName: string) => {
         name: editCategoryName,
       });
       fetchCategories();
-      toast.success(t("adminCategoriesView.updateCategorySuccess"));
+      toast.success(t("updateCategorySuccess"));
       showEditModal.value = false;
       selectedCategoryId.value = undefined;
     }
   } catch (error) {
-    toast.error(t("adminCategoriesView.updateCategoryError"));
+    toast.error(t("updateCategoryError"));
     console.error("Failed to update category:", error);
   }
 };

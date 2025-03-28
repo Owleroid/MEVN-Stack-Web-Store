@@ -4,15 +4,13 @@
       <span class="close" @click="close">&times;</span>
       <h3>
         {{
-          $t("changeCategoryModal.changeCategoryFor", {
+          $t("changeCategoryFor", {
             name: productToChangeCategory?.name,
           })
         }}
       </h3>
       <div class="form-group">
-        <label for="newCategory">{{
-          $t("changeCategoryModal.chooseNewCategory")
-        }}</label>
+        <label for="newCategory">{{ $t("chooseNewCategory") }}</label>
         <select id="newCategory" v-model="selectedNewCategory">
           <option
             v-for="category in filteredCategories"
@@ -25,10 +23,10 @@
       </div>
       <div class="form-actions">
         <button @click="changeCategory(selectedNewCategory)">
-          {{ $t("changeCategoryModal.change") }}
+          {{ $t("change") }}
         </button>
         <button type="button" @click="close">
-          {{ $t("changeCategoryModal.cancel") }}
+          {{ $t("cancel") }}
         </button>
       </div>
     </div>

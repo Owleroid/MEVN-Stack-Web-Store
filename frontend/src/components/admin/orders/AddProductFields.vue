@@ -1,8 +1,6 @@
 <template>
   <div class="add-product-fields">
-    <label for="newProductName"
-      >{{ $t("addProductFields.newProductName") }}:</label
-    >
+    <label for="newProductName">{{ $t("newProductName") }}:</label>
     <input
       type="text"
       v-model="newProductName"
@@ -18,7 +16,7 @@
         {{ product.name }}
       </li>
     </ul>
-    <label for="newProductAmount">{{ $t("addProductFields.amount") }}:</label>
+    <label for="newProductAmount">{{ $t("amount") }}:</label>
     <input
       type="number"
       v-model.number="newProductAmount"
@@ -26,7 +24,7 @@
       min="1"
     />
     <button type="button" @click="addProduct">
-      {{ $t("addProductFields.addProduct") }}
+      {{ $t("addProduct") }}
     </button>
   </div>
 </template>

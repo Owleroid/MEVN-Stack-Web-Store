@@ -1,79 +1,77 @@
 <template>
   <div class="orders">
-    <h1>{{ $t("userOrdersView.title") }}</h1>
+    <h1>{{ $t("title") }}</h1>
     <div v-if="orders.length">
       <div v-for="order in orders" :key="order._id" class="order">
-        <h2>{{ $t("userOrdersView.order") }} #{{ order.orderNumber }}</h2>
+        <h2>{{ $t("order") }} #{{ order.orderNumber }}</h2>
         <p>
-          {{ $t("userOrdersView.date") }}:
+          {{ $t("date") }}:
           {{ new Date(order.dateOfCreation).toLocaleDateString() }}
         </p>
         <p>
-          {{ $t("userOrdersView.total") }}: {{ order.totalPrice }}
+          {{ $t("total") }}: {{ order.totalPrice }}
           {{ order.currency }}
         </p>
-        <p>{{ $t("userOrdersView.status") }}: {{ order.status }}</p>
+        <p>{{ $t("status") }}: {{ order.status }}</p>
         <ul>
           <li v-for="item in order.products" :key="item.productId">
             {{ item.name }} - {{ item.amount }} x {{ item.productPrice }}
           </li>
         </ul>
         <div class="recipient">
-          <h3>{{ $t("userOrdersView.recipient.title") }}</h3>
+          <h3>{{ $t("recipient.title") }}</h3>
           <p>
-            {{ $t("userOrdersView.recipient.email") }}:
+            {{ $t("recipient.email") }}:
             {{ order.recipient?.email }}
           </p>
           <p>
-            {{ $t("userOrdersView.recipient.name") }}:
+            {{ $t("recipient.name") }}:
             {{ order.recipient?.name }}
           </p>
           <p>
-            {{ $t("userOrdersView.recipient.surname") }}:
+            {{ $t("recipient.surname") }}:
             {{ order.recipient?.surname }}
           </p>
           <p>
-            {{ $t("userOrdersView.recipient.phone") }}:
+            {{ $t("recipient.phone") }}:
             {{ order.recipient?.phone }}
           </p>
         </div>
         <div class="delivery">
-          <h3>{{ $t("userOrdersView.delivery.title") }}</h3>
+          <h3>{{ $t("delivery.title") }}</h3>
           <p>
-            {{ $t("userOrdersView.delivery.country") }}:
+            {{ $t("delivery.country") }}:
             {{ order.shippingAddress?.country }}
           </p>
           <p>
-            {{ $t("userOrdersView.delivery.city") }}:
+            {{ $t("delivery.city") }}:
             {{ order.shippingAddress?.city }}
           </p>
           <p>
-            {{ $t("userOrdersView.delivery.street") }}:
+            {{ $t("delivery.street") }}:
             {{ order.shippingAddress?.street }}
           </p>
           <p>
-            {{ $t("userOrdersView.delivery.buildingNumber") }}:
+            {{ $t("delivery.buildingNumber") }}:
             {{ order.shippingAddress?.buildingNumber }}
           </p>
           <p>
-            {{ $t("userOrdersView.delivery.apartment") }}:
+            {{ $t("delivery.apartment") }}:
             {{ order.shippingAddress?.apartment }}
           </p>
           <p>
-            {{ $t("userOrdersView.delivery.postalCode") }}:
+            {{ $t("delivery.postalCode") }}:
             {{ order.shippingAddress?.postalCode }}
           </p>
         </div>
-        <p v-if="order.orderNotes">
-          {{ $t("userOrdersView.notes") }}: {{ order.orderNotes }}
-        </p>
+        <p v-if="order.orderNotes">{{ $t("notes") }}: {{ order.orderNotes }}</p>
         <p v-if="order.trackingNumber">
-          {{ $t("userOrdersView.trackingNumber") }}: {{ order.trackingNumber }}
+          {{ $t("trackingNumber") }}: {{ order.trackingNumber }}
         </p>
       </div>
     </div>
     <div v-else>
-      <p>{{ $t("userOrdersView.noOrders") }}</p>
+      <p>{{ $t("noOrders") }}</p>
     </div>
   </div>
 </template>
