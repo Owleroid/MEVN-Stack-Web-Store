@@ -29,7 +29,7 @@
             v-for="image in images"
             :key="image.url"
             class="image-item"
-            :class="{ selected: selectedImages.includes(image) }"
+            :class="{ selected: selectedImages.includes(image as Image) }"
             @click="toggleImageSelection(image)"
           >
             <img :src="image.url" :alt="image.name" />
@@ -54,10 +54,12 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
+
+import type { Image } from "@/types/imageManager";
 
 import {
   fetchImages,
@@ -68,9 +70,9 @@ import {
 const toast = useToast();
 const { t } = useI18n();
 
-const images = ref([]);
-const selectedFiles = ref([]);
-const selectedImages = ref([]);
+const images = ref<Image[]>([]);
+const selectedFiles = ref<File[]>([]);
+const selectedImages = ref<Image[]>([]);
 const loading = ref(false);
 
 // Allowed MIME types and max file size
@@ -89,8 +91,9 @@ const fetchImagesFromBackend = async () => {
   }
 };
 
-const handleFileUpload = (event) => {
-  const files = event.target.files;
+const handleFileUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement | null;
+  const files = target?.files;
   if (files) {
     const validFiles = [];
     for (const file of files) {
@@ -137,7 +140,7 @@ const deleteSelectedImages = async () => {
   }
 };
 
-const toggleImageSelection = (image) => {
+const toggleImageSelection = (image: Image) => {
   if (selectedImages.value.includes(image)) {
     selectedImages.value = selectedImages.value.filter((img) => img !== image);
   } else {

@@ -59,16 +59,32 @@
         </div>
         <div class="form-group">
           <label for="mainImageUrl">{{ $t("mainImageUrl") }}:</label>
-          <input type="text" id="mainImageUrl" v-model="product.mainImageUrl" />
+          <div class="image-selection">
+            <input
+              type="text"
+              id="mainImageUrl"
+              v-model="product.mainImageUrl"
+              readonly
+            />
+            <button type="button" @click="openImageManager(false)">
+              {{ $t("selectImage") }}
+            </button>
+          </div>
         </div>
         <div class="form-group">
           <label for="secondaryImageUrls"
             >{{ $t("secondaryImageUrls") }}:</label
           >
-          <textarea
-            id="secondaryImageUrls"
-            v-model="product.secondaryImageUrls"
-          ></textarea>
+          <div class="image-selection">
+            <textarea
+              id="secondaryImageUrls"
+              v-model="product.secondaryImageUrls"
+              readonly
+            ></textarea>
+            <button type="button" @click="openImageManager(true)">
+              {{ $t("selectImages") }}
+            </button>
+          </div>
         </div>
         <div class="form-actions">
           <button type="submit">
@@ -79,11 +95,22 @@
           </button>
         </div>
       </form>
+
+      <!-- Image Manager Modal -->
+      <ImageManagerModal
+        :show="showImageManager"
+        :allowMultiple="allowMultiple"
+        @close="closeImageManager"
+        @confirm="handleImageSelection"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+import ImageManagerModal from "@/components/admin/image-manager/ImageManagerModal.vue";
+
 const props = defineProps({
   show: Boolean,
   isEdit: Boolean,
@@ -106,6 +133,29 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["close", "submitForm"]);
+
+const showImageManager = ref(false);
+const allowMultiple = ref(false);
+
+const openImageManager = (multiple: boolean) => {
+  allowMultiple.value = multiple;
+  showImageManager.value = true;
+};
+
+const closeImageManager = () => {
+  showImageManager.value = false;
+};
+
+const handleImageSelection = (selectedImages: { url: string }[]) => {
+  if (allowMultiple.value) {
+    props.product.secondaryImageUrls = selectedImages
+      .map((img) => img.url)
+      .join(", ");
+  } else {
+    props.product.mainImageUrl = selectedImages[0]?.url || "";
+  }
+  closeImageManager();
+};
 
 const close = () => {
   emits("close");

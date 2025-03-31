@@ -1,0 +1,12 @@
+{
+  "imageManager": "Image Manager",
+  "uploadImages": "Upload Images",
+  "loadingImages": "Loading images...",
+  "noImages": "No images available.",
+  "fetchImagesError": "Failed to fetch images.",
+  "upload": "Upload",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
+  "selectImage": "Select Image",
+  "selectImages": "Select Images"
+}
