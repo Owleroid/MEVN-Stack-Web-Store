@@ -52,14 +52,14 @@ export const createCategory = async (
   next: NextFunction
 ) => {
   try {
-    const { name } = req.body;
+    const { name, imageUrl } = req.body;
 
     const existingCategory = await Category.findOne({ name });
     if (existingCategory) {
       return next(new ApiError(400, "Category with this name already exists"));
     }
 
-    const newCategory = new Category({ name });
+    const newCategory = new Category({ name, imageUrl });
     const savedCategory = await newCategory.save();
 
     res.status(201).json({
@@ -79,11 +79,11 @@ export const updateCategory = async (
 ) => {
   try {
     const { id } = req.params;
-    const { name } = req.body;
+    const { name, imageUrl } = req.body;
 
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
-      { name },
+      { name, imageUrl },
       { new: true }
     );
 

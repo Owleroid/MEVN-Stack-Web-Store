@@ -20,8 +20,6 @@ export const fetchImages = async (
       url: `https://storage.googleapis.com/${bucketName}/${file.name}`,
     }));
 
-    console.log("Fetched images:", images);
-
     res.status(200).json({
       success: true,
       message: "Images fetched successfully",

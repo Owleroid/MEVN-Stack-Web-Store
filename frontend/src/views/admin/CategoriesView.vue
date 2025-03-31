@@ -3,12 +3,12 @@
     <h1>{{ $t("categories") }}</h1>
     <div v-if="categories.length === 0">
       <p>{{ $t("noCategories") }}</p>
-      <button @click="showAddModal = true">
+      <button @click="openAddModal">
         {{ $t("addNewCategory") }}
       </button>
     </div>
     <div v-else>
-      <button @click="showAddModal = true" class="add-category-button">
+      <button @click="openAddModal" class="add-category-button">
         {{ $t("addNewCategory") }}
       </button>
       <table class="categories-table">
@@ -52,17 +52,13 @@
       @cancelRemove="cancelRemove"
     />
 
-    <AddCategoryModal
-      :show="showAddModal"
-      @submitAddForm="submitAddForm"
-      @cancelAdd="cancelAdd"
-    />
-
-    <EditCategoryModal
-      :show="showEditModal"
-      :categoryName="editCategoryName"
-      @submitEditForm="submitEditForm"
-      @cancelEdit="cancelEdit"
+    <AddEditCategoryModal
+      :show="showAddEditModal"
+      :mode="isEdit ? 'edit' : 'add'"
+      :initialCategoryName="editCategoryName"
+      :initialCategoryImageUrl="editCategoryImageUrl"
+      @submitForm="submitForm"
+      @cancelAction="cancelAddEdit"
     />
   </div>
 </template>
@@ -74,8 +70,7 @@ import { useI18n } from "vue-i18n";
 
 import DeleteCategoryModal from "@/components/admin/categories/DeleteCategoryModal.vue";
 import ReassignCategoryModal from "@/components/admin/categories/ReassignCategoryModal.vue";
-import AddCategoryModal from "@/components/admin/categories/AddCategoryModal.vue";
-import EditCategoryModal from "@/components/admin/categories/EditCategoryModal.vue";
+import AddEditCategoryModal from "@/components/admin/categories/AddEditCategoryModal.vue";
 
 import type { Category } from "@/types/categories";
 
@@ -96,11 +91,12 @@ const toast = useToast();
 
 const showDeleteModal = ref(false);
 const showReassignModal = ref(false);
-const showAddModal = ref(false);
-const showEditModal = ref(false);
+const showAddEditModal = ref(false);
 const selectedCategoryId = ref<string | undefined>(undefined);
 const newCategoryId = ref<string | null>(null);
 const editCategoryName = ref("");
+const editCategoryImageUrl = ref("");
+const isEdit = ref(false);
 
 const fetchCategories = async () => {
   try {
@@ -112,10 +108,19 @@ const fetchCategories = async () => {
   }
 };
 
+const openAddModal = () => {
+  isEdit.value = false;
+  editCategoryName.value = "";
+  editCategoryImageUrl.value = "";
+  showAddEditModal.value = true;
+};
+
 const openEditModal = (category: Category) => {
+  isEdit.value = true;
   selectedCategoryId.value = category._id ?? undefined;
   editCategoryName.value = category.name;
-  showEditModal.value = true;
+  editCategoryImageUrl.value = category.imageUrl;
+  showAddEditModal.value = true;
 };
 
 const confirmRemoveCategory = (id: string) => {
@@ -155,41 +160,32 @@ const reassignAndRemoveCategory = async (newCategoryId: string) => {
   }
 };
 
-const submitAddForm = async (newCategoryName: string) => {
+const submitForm = async (formData: { name: string; imageUrl: string }) => {
   try {
-    await createCategory({ name: newCategoryName });
-    fetchCategories();
-    toast.success(t("addCategorySuccess"));
-    showAddModal.value = false;
-  } catch (error) {
-    toast.error(t("addCategoryError"));
-    console.error("Failed to add category:", error);
-  }
-};
-
-const submitEditForm = async (editCategoryName: string) => {
-  try {
-    if (selectedCategoryId.value) {
-      await updateCategory(selectedCategoryId.value, {
-        name: editCategoryName,
-      });
-      fetchCategories();
+    if (isEdit.value && selectedCategoryId.value) {
+      await updateCategory(selectedCategoryId.value, formData);
       toast.success(t("updateCategorySuccess"));
-      showEditModal.value = false;
-      selectedCategoryId.value = undefined;
+    } else {
+      await createCategory(formData);
+      toast.success(t("addCategorySuccess"));
     }
+    fetchCategories();
+    showAddEditModal.value = false;
+    selectedCategoryId.value = undefined;
   } catch (error) {
-    toast.error(t("updateCategoryError"));
-    console.error("Failed to update category:", error);
+    const errorMessage = isEdit.value
+      ? t("updateCategoryError")
+      : t("addCategoryError");
+    toast.error(errorMessage);
+    console.error("Failed to submit category form:", error);
   }
 };
 
-const cancelAdd = () => {
-  showAddModal.value = false;
-};
-
-const cancelEdit = () => {
-  showEditModal.value = false;
+const cancelAddEdit = () => {
+  showAddEditModal.value = false;
+  isEdit.value = false;
+  editCategoryName.value = "";
+  editCategoryImageUrl.value = "";
   selectedCategoryId.value = undefined;
 };
 

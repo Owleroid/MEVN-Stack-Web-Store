@@ -1,0 +1,10 @@
+{
+  "addNewCategory": "Добавить новую категорию",
+  "editCategory": "Редактировать категорию",
+  "categoryName": "Название категории",
+  "categoryImage": "Изображение категории",
+  "selectImage": "Выбрать изображение",
+  "addCategory": "Добавить категорию",
+  "updateCategory": "Обновить категорию",
+  "cancel": "Отмена"
+}

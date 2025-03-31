@@ -1,5 +1,5 @@
 <template>
-  <button @click="addToCart">{{ $t("addToCartButton.addToCart") }}</button>
+  <button @click="addToCart">{{ $t("addToCart") }}</button>
 </template>
 
 <script setup lang="ts">
@@ -22,9 +22,7 @@ const { t } = useI18n();
 
 function addToCart() {
   addToCartService(props.product);
-  toast.success(
-    t("addToCartButton.addedToCart", { product: props.product.name })
-  );
+  toast.success(t("addedToCart", { product: props.product.name }));
   emit("cart-updated");
 }
 </script>

@@ -57,8 +57,8 @@ import { useRoute } from "vue-router";
 
 import CartHoover from "./CartHoover.vue";
 import { useAuthStore } from "@/stores/authStore";
-import { loadLocaleMessages } from "@/i18n"; // Ensure loadLocaleMessages is correctly imported
-import i18n from "@/i18n"; // Import the default i18n instance
+import { loadLocaleMessages } from "@/i18n";
+import i18n from "@/i18n";
 
 const authStore = useAuthStore();
 const route = useRoute();
@@ -70,18 +70,16 @@ const currentLanguage = computed(() => (locale.value === "en" ? "EN" : "RU"));
 
 const toggleLanguage = async () => {
   if (locale.value === "en") {
-    locale.value = "ru"; // Update the i18n locale
-    sessionStorage.setItem("language", "ru"); // Persist the language
+    locale.value = "ru";
+    sessionStorage.setItem("language", "ru");
   } else {
     locale.value = "en";
     sessionStorage.setItem("language", "en");
   }
 
   // Force reload translations
-  const messages = await loadLocaleMessages(locale.value); // Ensure this function is correctly implemented in "@/i18n"
+  const messages = await loadLocaleMessages(locale.value);
   i18n.global.setLocaleMessage(locale.value, messages);
-
-  console.log("Locale switched to:", locale.value); // Debugging
 };
 </script>
 
