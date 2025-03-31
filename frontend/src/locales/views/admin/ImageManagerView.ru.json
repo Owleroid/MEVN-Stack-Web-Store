@@ -1,0 +1,20 @@
+{
+  "imageManager": "Менеджер изображений",
+  "uploadImages": "Загрузить изображения",
+  "upload": "Загрузить",
+  "copyUrls": "Скопировать ссылки",
+  "deleteSelected": "Удалить выбранные",
+  "cancel": "Отмена",
+  "availableImages": "Доступные изображения",
+  "loadingImages": "Загрузка изображений...",
+  "noImages": "Нет доступных изображений",
+  "fetchImagesError": "Не удалось загрузить изображения",
+  "invalidFileType": "Недопустимый тип файла: {fileName}",
+  "fileTooLarge": "Размер файла превышает 5 МБ: {fileName}",
+  "filesSelected": "Выбрано файлов: {count}",
+  "uploadSuccess": "Изображения успешно загружены",
+  "uploadError": "Не удалось загрузить изображения",
+  "deleteSuccess": "Изображения успешно удалены",
+  "deleteError": "Не удалось удалить изображения",
+  "copySuccess": "Ссылки скопированы в буфер обмена"
+}

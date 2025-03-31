@@ -22,6 +22,11 @@
         </router-link>
       </li>
       <li>
+        <router-link to="/admin/image-manager">
+          {{ $t("imageManager") }}
+        </router-link>
+      </li>
+      <li>
         <router-link to="/admin/clients">
           {{ $t("clients") }}
         </router-link>

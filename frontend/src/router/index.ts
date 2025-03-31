@@ -25,6 +25,7 @@ import AdminCategoriesView from "@/views/admin/CategoriesView.vue";
 import AdminProductsView from "@/views/admin/ProductsView.vue";
 import AdminOrdersView from "@/views/admin/OrdersView.vue";
 import AdminWarehouseView from "@/views/admin/WarehouseView.vue";
+import AdminImageManagerView from "@/views/admin/ImageManagerView.vue";
 import AdminClientsView from "@/views/admin/ClientsView.vue";
 import AdminNewsView from "@/views/admin/NewsView.vue";
 
@@ -76,6 +77,12 @@ const routes = [
         path: "orders",
         name: "AdminOrders",
         component: AdminOrdersView,
+        meta: { requiresAuth: true, requiresAdmin: true },
+      },
+      {
+        path: "image-manager",
+        name: "AdminImageManager",
+        component: AdminImageManagerView,
         meta: { requiresAuth: true, requiresAdmin: true },
       },
       { path: "clients", component: AdminClientsView },

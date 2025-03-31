@@ -8,6 +8,9 @@ dist/
 build/
 *.tsbuildinfo
 
+# Key files
+*.json
+
 # Environment variables
 .env
 .env.local
