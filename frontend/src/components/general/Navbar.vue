@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <nav v-if="!translationsLoading">
     <ul class="left">
       <li>
         <router-link to="/">{{ $t("mainPage") }}</router-link>
@@ -48,6 +48,7 @@
       </li>
     </ul>
   </nav>
+  <div v-else>Loading translations...</div>
 </template>
 
 <script setup lang="ts">
@@ -57,12 +58,12 @@ import { useRoute } from "vue-router";
 
 import CartHoover from "./CartHoover.vue";
 import { useAuthStore } from "@/stores/authStore";
-import { loadLocaleMessages } from "@/i18n";
+import { translationsLoaded, loadLocaleMessages } from "@/i18n";
 import i18n from "@/i18n";
 
 const authStore = useAuthStore();
 const route = useRoute();
-const { locale, t } = useI18n();
+const { locale } = useI18n();
 
 const isCartPage = computed(() => route.path === "/cart");
 
@@ -81,6 +82,8 @@ const toggleLanguage = async () => {
   const messages = await loadLocaleMessages(locale.value);
   i18n.global.setLocaleMessage(locale.value, messages);
 };
+
+const translationsLoading = computed(() => !translationsLoaded.value);
 </script>
 
 <style scoped>

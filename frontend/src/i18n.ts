@@ -33,8 +33,6 @@ const i18n = createI18n({
   const locale = sessionStorage.getItem("language") || "en";
   const messages = await loadLocaleMessages(locale);
 
-  console.log("Loaded messages for locale:", locale, messages); // Debugging
-
   i18n.global.setLocaleMessage(locale, messages);
 
   // Preload fallback locale messages

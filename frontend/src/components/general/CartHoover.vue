@@ -1,8 +1,8 @@
 <template>
   <div class="cart-hover">
-    <h3>{{ $t("cartHoover.cart") }}</h3>
+    <h3>{{ $t("cart") }}</h3>
     <div v-if="cart.length === 0">
-      <p>{{ $t("cartHoover.emptyCart") }}</p>
+      <p>{{ $t("emptyCart") }}</p>
     </div>
     <div v-else>
       <ul>
@@ -11,18 +11,17 @@
           <div>
             <p>{{ item.product.name }}</p>
             <p>{{ item.product.price.euros.amount }} €</p>
-            <p>{{ $t("cartHoover.quantity") }}: {{ item.quantity }}</p>
+            <p>{{ $t("quantity") }}: {{ item.quantity }}</p>
           </div>
         </li>
       </ul>
-      <router-link to="/cart">{{ $t("cartHoover.viewFullCart") }}</router-link>
+      <router-link to="/cart">{{ $t("viewFullCart") }}</router-link>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useI18n } from "vue-i18n";
 
 import type { Product } from "@/types/products";
 
@@ -42,7 +41,6 @@ const fetchCart = () => {
 };
 
 const { on } = useEventBus();
-const { t } = useI18n();
 
 onMounted(() => {
   fetchCart();
