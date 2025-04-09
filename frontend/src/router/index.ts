@@ -5,7 +5,8 @@ import { useAuthStore } from "@/stores/authStore";
 import { getUserLocation, getUserRegion } from "@/services/geolocationService";
 
 import HomeView from "@/views/HomeView.vue";
-import StoreView from "@/views/StoreView.vue";
+import CollectionsListView from "@/views/CollectionsListView.vue";
+import CollectionProductsView from "@/views/CollectionProductsView.vue";
 import AboutView from "@/views/AboutView.vue";
 import ContactView from "@/views/ContactView.vue";
 import NewsView from "@/views/NewsView.vue";
@@ -34,7 +35,16 @@ const routes = [
   { path: "/login", component: LoginView },
   { path: "/signup", component: SignupView },
   { path: "/password-reset", component: PasswordResetView },
-  { path: "/collections", component: StoreView },
+  {
+    path: "/collections",
+    component: CollectionsListView,
+  },
+  {
+    path: "/collections/:categoryId",
+    name: "Collection",
+    component: CollectionProductsView,
+    props: true,
+  },
   { path: "/about", component: AboutView },
   { path: "/contact", component: ContactView },
   { path: "/news", component: NewsView },
