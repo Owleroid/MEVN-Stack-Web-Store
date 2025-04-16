@@ -1,15 +1,174 @@
+import fs from "fs";
+import path from "path";
 import bcrypt from "bcryptjs";
 import crypto from "crypto-js";
+import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 
-import Order from "../models/Order.js";
 import User from "../models/User.js";
+import Order from "../models/Order.js";
+import Warehouse from "../models/Warehouse.js";
+
+const countryToWarehousePath = path.resolve(
+  "src/config/secrets/country-to-warehouse.json"
+);
+
+const loadCountryToWarehouseMap = (): { [key: string]: string } => {
+  if (!fs.existsSync(countryToWarehousePath)) {
+    console.warn(
+      `Warning: Configuration file "country-to-warehouse.json" not found.`
+    );
+    return {};
+  }
+
+  try {
+    return JSON.parse(fs.readFileSync(countryToWarehousePath, "utf-8"));
+  } catch (error) {
+    console.error(
+      `Error parsing "country-to-warehouse.json": ${(error as Error).message}`
+    );
+    return {};
+  }
+};
+
+const handleUser = async (
+  userId: string | null,
+  recipient: any,
+  shippingAddress: any,
+  session: mongoose.ClientSession
+) => {
+  let user;
+
+  if (!userId) {
+    user = await User.findOne({ email: recipient.email });
+
+    if (user) {
+      throw new Error("Email is already in use. Please log in to continue.");
+    }
+
+    const password = crypto.lib.WordArray.random(8).toString();
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    user = new User({
+      email: recipient.email,
+      password: hashedPassword,
+      name: recipient.name,
+      surname: recipient.surname,
+      phone: recipient.phone,
+      deliveryData: shippingAddress,
+    });
+
+    return await user.save({ session });
+  }
+
+  user = await User.findById(userId);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if (!user.name || user.name !== recipient.name) user.name = recipient.name;
+  if (!user.surname || user.surname !== recipient.surname)
+    user.surname = recipient.surname;
+  if (!user.phone || user.phone !== recipient.phone)
+    user.phone = recipient.phone;
+
+  if (
+    !user.deliveryData ||
+    JSON.stringify(user.deliveryData) !== JSON.stringify(shippingAddress)
+  ) {
+    user.deliveryData = shippingAddress;
+  }
+
+  return await user.save({ session });
+};
+
+const determineWarehouse = async (
+  country: string,
+  session: mongoose.ClientSession
+) => {
+  const countryToWarehouseMap = loadCountryToWarehouseMap();
+  const warehouseName = countryToWarehouseMap[country] || null;
+
+  if (!warehouseName) {
+    return null; // No warehouse for this country
+  }
+
+  const warehouse = await Warehouse.findOne({ name: warehouseName }).session(
+    session
+  );
+
+  if (!warehouse) {
+    throw new Error(`Warehouse "${warehouseName}" not found`);
+  }
+
+  return warehouse;
+};
+
+const updateWarehouseStock = async (
+  warehouse: any,
+  products: any[],
+  session: mongoose.ClientSession
+) => {
+  for (const orderProduct of products) {
+    const warehouseProduct = warehouse.products.find(
+      (p: any) => p.product.toString() === orderProduct.productId
+    );
+
+    if (!warehouseProduct) {
+      throw new Error(
+        `Product with ID "${orderProduct.productId}" not found in warehouse "${warehouse.name}"`
+      );
+    }
+
+    // Subtract the ordered quantity from the warehouse stock
+    warehouseProduct.amount -= orderProduct.quantity;
+  }
+
+  await warehouse.save({ session });
+};
+
+const createNewOrder = async (
+  userId: string,
+  products: any[],
+  totalPrice: number,
+  currency: string,
+  shippingAddress: any,
+  recipient: any,
+  status: string,
+  checked: boolean,
+  paymentMethod: string,
+  orderNotes: string,
+  trackingNumber: string,
+  warehouse: any,
+  session: mongoose.ClientSession
+) => {
+  const order = new Order({
+    userId,
+    products,
+    totalPrice,
+    currency,
+    shippingAddress,
+    recipient,
+    status,
+    checked,
+    paymentMethod,
+    orderNotes,
+    trackingNumber,
+    warehouse: warehouse ? warehouse._id : null,
+  });
+
+  return await order.save({ session });
+};
 
 export const createOrder = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const {
       userId,
@@ -24,70 +183,24 @@ export const createOrder = async (
       orderNotes,
       trackingNumber,
     } = req.body;
-    let user;
 
-    if (!userId) {
-      // Check if user with the provided email exists
-      user = await User.findOne({ email: recipient.email });
+    // Step 1: Handle user creation or update
+    const user = await handleUser(userId, recipient, shippingAddress, session);
 
-      if (user) {
-        // If user with the provided email already exists, throw an error
-        res.status(400).json({
-          success: false,
-          message: "Email is already in use. Please log in to continue.",
-        });
-        return;
-      } else {
-        // If user does not exist, create a new user
-        const password = crypto.lib.WordArray.random(8).toString();
-        const hashedPassword = await bcrypt.hash(password, 10);
+    // Step 2: Determine the warehouse
+    const warehouse = await determineWarehouse(
+      shippingAddress.country,
+      session
+    );
 
-        user = new User({
-          email: recipient.email,
-          password: hashedPassword,
-          name: recipient.name,
-          surname: recipient.surname,
-          phone: recipient.phone,
-          deliveryData: shippingAddress,
-        });
-
-        user = await user.save();
-
-        // Optionally, send the generated password to the user's email
-        // sendEmail(recipient.email, password);
-      }
-    } else {
-      user = await User.findById(userId);
-
-      if (!user) {
-        res.status(400).json({
-          success: false,
-          message: "User not found",
-        });
-        return;
-      }
-
-      // Update user information if not filled or if there is new information
-      if (!user.name || user.name !== recipient.name)
-        user.name = recipient.name;
-      if (!user.surname || user.surname !== recipient.surname)
-        user.surname = recipient.surname;
-      if (!user.phone || user.phone !== recipient.phone)
-        user.phone = recipient.phone;
-
-      if (
-        !user.deliveryData ||
-        JSON.stringify(user.deliveryData) !== JSON.stringify(shippingAddress)
-      ) {
-        user.deliveryData = shippingAddress;
-      }
-
-      await user.save();
+    // Step 3: Update warehouse stock if applicable
+    if (warehouse) {
+      await updateWarehouseStock(warehouse, products, session);
     }
 
-    // Create the order
-    const order = new Order({
-      userId: user._id,
+    // Step 4: Create the order
+    const order = await createNewOrder(
+      user._id,
       products,
       totalPrice,
       currency,
@@ -98,9 +211,13 @@ export const createOrder = async (
       paymentMethod,
       orderNotes,
       trackingNumber,
-    });
+      warehouse,
+      session
+    );
 
-    await order.save();
+    // Commit the transaction
+    await session.commitTransaction();
+    session.endSession();
 
     res.status(201).json({
       success: true,
@@ -108,6 +225,10 @@ export const createOrder = async (
       order,
     });
   } catch (error) {
+    // Abort the transaction in case of an error
+    await session.abortTransaction();
+    session.endSession();
+
     next(error);
   }
 };

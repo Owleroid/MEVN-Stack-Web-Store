@@ -20,6 +20,8 @@ const loadWarehouseConfig = (): string[] => {
     const warehousesConfig = JSON.parse(
       fs.readFileSync(warehousesConfigPath, "utf-8")
     );
+
+    // Return the array of warehouse names directly
     return warehousesConfig.warehouses || [];
   } catch (error) {
     console.error(

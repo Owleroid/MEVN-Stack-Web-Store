@@ -26,6 +26,7 @@ export interface OrderData {
   products: Product[];
   totalPrice: number;
   currency: "rubles" | "euros";
+  warehouse?: string;
   shippingAddress?: Address;
   recipient?: Recipient;
   status:

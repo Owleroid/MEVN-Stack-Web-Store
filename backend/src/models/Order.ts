@@ -34,6 +34,11 @@ interface Order extends Document {
   products: Product[];
   totalPrice: number;
   currency: "rubles" | "euros";
+  warehouse: {
+    type: mongoose.Types.ObjectId;
+    ref: "Warehouse";
+    required: false;
+  };
   dateOfCreation: Date;
   status:
     | "waiting confirmation"

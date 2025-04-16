@@ -14,15 +14,6 @@ export const getWarehouses = async (): Promise<Warehouse[]> => {
   return response.data;
 };
 
-export const addWarehouse = async (name: string): Promise<Warehouse> => {
-  const response = await warehouseService.post("/add-warehouse", { name });
-  return response.data;
-};
-
-export const deleteWarehouse = async (warehouseId: string): Promise<void> => {
-  await warehouseService.delete(`/delete-warehouse/${warehouseId}`);
-};
-
 export const updateWarehouseProductAmount = async (
   warehouseId: string,
   data: { productId: string; amount: number }
