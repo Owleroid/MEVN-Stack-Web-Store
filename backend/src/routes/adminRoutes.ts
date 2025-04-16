@@ -21,9 +21,7 @@ import {
 import {
   getAllWarehouses,
   getWarehouseById,
-  createWarehouse,
   updateWarehouse,
-  deleteWarehouse,
 } from "../controllers/admin/warehouseController.js";
 import {
   getOrderById,
@@ -84,14 +82,7 @@ router.delete("/delete-product/:id", isAuthenticated, isAdmin, deleteProduct);
 // Warehouse routes
 router.get("/warehouses", isAuthenticated, isAdmin, getAllWarehouses);
 router.get("/warehouse/:id", isAuthenticated, isAdmin, getWarehouseById);
-router.post("/add-warehouse", isAuthenticated, isAdmin, createWarehouse);
 router.put("/update-warehouse/:id", isAuthenticated, isAdmin, updateWarehouse);
-router.delete(
-  "/delete-warehouse/:id",
-  isAuthenticated,
-  isAdmin,
-  deleteWarehouse
-);
 
 // Order routes
 router.get("/orders", isAuthenticated, isAdmin, getAllOrders);

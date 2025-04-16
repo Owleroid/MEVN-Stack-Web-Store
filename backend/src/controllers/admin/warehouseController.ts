@@ -3,7 +3,6 @@ import { Request, Response, NextFunction } from "express";
 import ApiError from "../../utils/apiError.js";
 
 import Warehouse from "../../models/Warehouse.js";
-import Product from "../../models/Product.js";
 
 export const getAllWarehouses = async (
   _req: Request,
@@ -29,31 +28,6 @@ export const getWarehouseById = async (
       return next(new ApiError(404, "Warehouse not found"));
     }
     res.status(200).json(warehouse);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const createWarehouse = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { name } = req.body;
-  try {
-    // Fetch all products
-    const products = await Product.find().select("_id name");
-
-    // Create an array of products with amount set to 0
-    const productsWithAmount = products.map((product) => ({
-      product: product._id,
-      name: product.name,
-      amount: 0,
-    }));
-
-    const newWarehouse = new Warehouse({ name, products: productsWithAmount });
-    const savedWarehouse = await newWarehouse.save();
-    res.status(201).json(savedWarehouse);
   } catch (error) {
     next(error);
   }
@@ -86,22 +60,6 @@ export const updateWarehouse = async (
 
     const updatedWarehouse = await warehouse.save();
     res.status(200).json(updatedWarehouse);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const deleteWarehouse = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const deletedWarehouse = await Warehouse.findByIdAndDelete(req.params.id);
-    if (!deletedWarehouse) {
-      return next(new ApiError(404, "Warehouse not found"));
-    }
-    res.status(200).json({ message: "Warehouse deleted successfully" });
   } catch (error) {
     next(error);
   }

@@ -2,9 +2,6 @@
   <div class="admin-warehouse">
     <div class="top-center">
       <!-- Block 1: Top Center -->
-      <button @click="toggleAddWarehouseForm">
-        {{ $t("addWarehouse") }}
-      </button>
       <div v-if="warehouses.length === 0">
         <p>{{ $t("noWarehousesFound") }}</p>
       </div>
@@ -18,9 +15,6 @@
             {{ warehouse.name }}
           </option>
         </select>
-        <button @click="toggleDeleteWarehouseModal">
-          {{ $t("deleteWarehouse") }}
-        </button>
       </div>
     </div>
 
@@ -78,19 +72,6 @@
         </div>
       </div>
     </div>
-
-    <AddWarehouseModal
-      :show="showAddWarehouseForm"
-      @submitAddForm="addNewWarehouse"
-      @cancelAdd="toggleAddWarehouseForm"
-    />
-
-    <DeleteWarehouseModal
-      :show="showDeleteWarehouseModal"
-      :warehouses="warehouses"
-      @confirmDelete="removeWarehouse"
-      @cancelDelete="toggleDeleteWarehouseModal"
-    />
   </div>
 </template>
 
@@ -100,9 +81,6 @@ import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 
-import AddWarehouseModal from "@/components/admin/warehouses/AddWarehouseModal.vue";
-import DeleteWarehouseModal from "@/components/admin/warehouses/DeleteWarehouseModal.vue";
-
 import type { Category } from "@/types/categories";
 import type { Warehouse } from "@/types/warehouse";
 
@@ -110,8 +88,6 @@ import { getAllCategories } from "@/services/categoryService";
 import { getProductIdsByCategory } from "@/services/productService";
 import {
   getWarehouses,
-  addWarehouse,
-  deleteWarehouse,
   updateWarehouseProductAmount,
 } from "@/services/warehouseService";
 
@@ -122,8 +98,6 @@ const categories = ref<Category[]>([]);
 const productIds = ref<string[]>([]);
 const selectedWarehouseId = ref<string>("");
 const selectedCategoryId = ref<string>("");
-const showAddWarehouseForm = ref<boolean>(false);
-const showDeleteWarehouseModal = ref<boolean>(false);
 
 const toast = useToast();
 const router = useRouter();
@@ -141,52 +115,6 @@ const filteredProducts = computed(() => {
 });
 
 const originalAmounts = ref<{ [key: string]: number }>({});
-
-const toggleAddWarehouseForm = () => {
-  showAddWarehouseForm.value = !showAddWarehouseForm.value;
-};
-
-const toggleDeleteWarehouseModal = () => {
-  showDeleteWarehouseModal.value = !showDeleteWarehouseModal.value;
-};
-
-const addNewWarehouse = async (newWarehouseName: string) => {
-  if (!newWarehouseName) {
-    toast.error(t("failedToAddWarehouse"));
-    return;
-  }
-  try {
-    await addWarehouse(newWarehouseName);
-    toast.success(t("warehouseAddedSuccessfully"));
-    showAddWarehouseForm.value = false;
-    await fetchWarehouses();
-  } catch (error) {
-    console.error("Failed to add warehouse:", error);
-    toast.error(t("failedToAddWarehouse"));
-  }
-};
-
-const removeWarehouse = async (warehouseId: string) => {
-  try {
-    await deleteWarehouse(warehouseId);
-    toast.success(t("warehouseDeletedSuccessfully"));
-    await fetchWarehouses();
-    showDeleteWarehouseModal.value = false;
-  } catch (error) {
-    console.error("Failed to delete warehouse:", error);
-    toast.error(t("failedToDeleteWarehouse"));
-  }
-};
-
-// const selectWarehouse = (warehouse: Warehouse) => {
-//   selectedWarehouseId.value = warehouse._id || "";
-//   // Update originalAmounts with the amounts of the products in the selected warehouse
-//   if (warehouse.products) {
-//     warehouse.products.forEach((product) => {
-//       originalAmounts.value[product.product] = product.amount;
-//     });
-//   }
-// };
 
 const selectCategory = (category: Category) => {
   selectedCategoryId.value = category._id || "";

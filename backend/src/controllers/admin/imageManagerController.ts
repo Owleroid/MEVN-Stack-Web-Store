@@ -9,12 +9,14 @@ const storage = new Storage({
 const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME!;
 
 export const fetchImages = async (
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
+    console.log("Fetching images from bucket:", bucketName);
     const [files] = await storage.bucket(bucketName).getFiles();
+    console.log("Fetched files:", files);
     const images = files.map((file) => ({
       name: file.name,
       url: `https://storage.googleapis.com/${bucketName}/${file.name}`,

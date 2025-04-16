@@ -54,5 +54,8 @@ backend/.vscode/
 backend/.env
 backend/*.log
 
+# Backend configuration files
+backend/src/config/secrets/*.json
+
 # Session store
 *.session
