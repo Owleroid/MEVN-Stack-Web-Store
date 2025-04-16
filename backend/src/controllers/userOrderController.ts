@@ -91,7 +91,7 @@ const determineWarehouse = async (
   const warehouseName = countryToWarehouseMap[country] || null;
 
   if (!warehouseName) {
-    return null; // No warehouse for this country
+    return null;
   }
 
   const warehouse = await Warehouse.findOne({ name: warehouseName }).session(
@@ -121,8 +121,22 @@ const updateWarehouseStock = async (
       );
     }
 
-    // Subtract the ordered quantity from the warehouse stock
-    warehouseProduct.amount -= orderProduct.quantity;
+    const orderAmount = orderProduct.amount;
+    if (typeof orderAmount !== "number" || isNaN(orderAmount)) {
+      throw new Error(
+        `Invalid amount "${orderAmount}" for product "${orderProduct.productId}"`
+      );
+    }
+
+    const currentAmount = warehouseProduct.amount ?? 0;
+
+    warehouseProduct.amount = currentAmount - orderAmount;
+
+    if (isNaN(warehouseProduct.amount)) {
+      throw new Error(
+        `Failed to update stock for product "${orderProduct.productId}" in warehouse "${warehouse.name}". Resulting amount is NaN.`
+      );
+    }
   }
 
   await warehouse.save({ session });
@@ -183,6 +197,8 @@ export const createOrder = async (
       orderNotes,
       trackingNumber,
     } = req.body;
+
+    console.log(products);
 
     // Step 1: Handle user creation or update
     const user = await handleUser(userId, recipient, shippingAddress, session);
