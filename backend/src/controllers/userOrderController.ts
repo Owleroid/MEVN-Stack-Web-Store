@@ -198,8 +198,6 @@ export const createOrder = async (
       trackingNumber,
     } = req.body;
 
-    console.log(products);
-
     // Step 1: Handle user creation or update
     const user = await handleUser(userId, recipient, shippingAddress, session);
 

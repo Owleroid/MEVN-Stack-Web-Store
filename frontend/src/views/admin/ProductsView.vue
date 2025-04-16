@@ -38,12 +38,20 @@
           <table>
             <thead>
               <tr>
+                <th>{{ $t("productImage") }}</th>
                 <th>{{ $t("productName") }}</th>
                 <th>{{ $t("actions") }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="product in products" :key="product._id">
+                <td>
+                  <img
+                    :src="product.imageUrls?.main"
+                    :alt="product.name"
+                    class="product-image"
+                  />
+                </td>
                 <td>{{ product.name }}</td>
                 <td class="actions">
                   <button @click="openChangeCategoryModal(product)">
@@ -363,49 +371,91 @@ onMounted(() => {
 .admin-products-container {
   display: flex;
   flex-direction: row;
-  gap: 20px;
-  width: 100%;
-  height: 100%;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.categories-menu,
-.products-list {
+.categories-menu {
   flex: 1;
-  min-width: 0;
+  max-width: 300px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-.categories-menu button,
-.products-list button {
+.categories-menu h2 {
+  font-size: 1.4em;
+  margin-bottom: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
+.categories-menu button {
   display: block;
-  margin: 5px 0;
-  padding: 10px;
+  margin-bottom: 12px;
+  padding: 12px;
   border: none;
   background-color: #007bff;
   color: white;
   cursor: pointer;
-  border-radius: 4px;
-  width: fit-content;
-  box-sizing: border-box;
+  border-radius: 6px;
+  width: 100%;
+  text-align: center;
+  font-size: 1em;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .categories-menu button.active {
   background-color: #0056b3;
 }
 
+.categories-menu button:hover {
+  background-color: #0056b3;
+  transform: scale(1.02);
+}
+
+.products-list {
+  flex: 3;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.products-list h2 {
+  font-size: 1.6em;
+  margin-bottom: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
 .products-list table {
   width: 100%;
   border-collapse: collapse;
+  background-color: #ffffff;
 }
 
 .products-list th,
 .products-list td {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 12px;
+  vertical-align: middle;
+  text-align: center;
 }
 
 .products-list th {
-  background-color: #f2f2f2;
-  text-align: left;
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #555;
 }
 
 .products-list tr:nth-child(even) {
@@ -413,33 +463,40 @@ onMounted(() => {
 }
 
 .products-list tr:hover {
-  background-color: #ddd;
+  background-color: #f1f1f1;
 }
 
 .products-list .actions {
   display: flex;
-  gap: 5px;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
 }
 
 .products-list button {
   margin: 0;
-}
-
-.form-actions button {
-  padding: 10px 20px;
+  padding: 10px 16px;
   border: none;
-  border-radius: 4px;
   background-color: #007bff;
   color: white;
   cursor: pointer;
-  width: fit-content;
+  border-radius: 6px;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.form-actions button[type="button"] {
-  background-color: #6c757d;
+.products-list button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
 }
 
-.form-actions button[type="button"]:hover {
-  background-color: #5a6268;
+.product-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>

@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -144,6 +144,8 @@ const fetchProducts = async () => {
   try {
     const response = await getProductIdsByCategory(selectedCategoryId.value);
     productIds.value = response.data.productIds;
+
+    originalAmounts.value = {};
     if (selectedWarehouse.value) {
       selectedWarehouse.value.products.forEach((product) => {
         originalAmounts.value[product.product] = product.amount;
@@ -190,6 +192,21 @@ const redirectToAdminProductPage = () => {
   router.push("/admin/products");
 };
 
+watch(selectedWarehouseId, async (newWarehouseId) => {
+  if (newWarehouseId) {
+    const warehouse = warehouses.value.find(
+      (warehouse) => warehouse._id === newWarehouseId
+    );
+
+    if (warehouse) {
+      originalAmounts.value = {};
+      warehouse.products.forEach((product) => {
+        originalAmounts.value[product.product] = product.amount;
+      });
+    }
+  }
+});
+
 onMounted(async () => {
   await fetchWarehouses();
   await fetchCategories();
@@ -201,105 +218,163 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .top-center {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
-}
-
-.top-center button {
-  margin-top: 0;
+  gap: 16px;
+  width: 100%;
 }
 
 .warehouse-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+}
+
+.warehouse-actions select {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #ffffff;
+  font-size: 1em;
+  color: #333;
+  cursor: pointer;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  width: 250px;
+}
+
+.warehouse-actions select:hover {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+.warehouse-actions select:focus {
+  outline: none;
+  border-color: #0056b3;
+  box-shadow: 0 0 6px rgba(0, 86, 179, 0.7);
 }
 
 .content {
   display: flex;
+  flex-direction: row;
+  gap: 24px;
   width: 100%;
-  gap: 20px;
-}
-
-.left,
-.right {
-  flex: 1;
-  min-width: 0;
 }
 
 .left {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #ddd;
 }
 
-.right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-button {
-  padding: 10px 15px;
+.left button {
+  padding: 12px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   background-color: #007bff;
   color: white;
   cursor: pointer;
-  width: 200px;
-  box-sizing: border-box;
+  font-size: 1em;
+  font-weight: 500;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-button:hover {
+.left button:hover {
   background-color: #0056b3;
+  transform: scale(1.02);
 }
 
-button.active {
+.left button.active {
   background-color: #0056b3;
   color: white;
 }
 
-button[type="button"] {
-  background-color: #6c757d;
+.right {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #ddd;
 }
 
-button[type="button"]:hover {
-  background-color: #5a6268;
-}
-
-table {
+.right table {
   width: 100%;
   border-collapse: collapse;
 }
 
-th,
-td {
-  padding: 10px;
+.right th,
+.right td {
+  padding: 12px;
   border: 1px solid #ddd;
   text-align: left;
 }
 
-th {
+.right th {
   background-color: #f8f9fa;
+  font-weight: 600;
+  color: #555;
 }
 
 .product-row:hover {
   background-color: #f1f1f1;
-  text-decoration: underline;
 }
 
 input[type="number"] {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
   box-sizing: border-box;
+  font-size: 1em;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="number"]:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+.right button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.right button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.right button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 </style>

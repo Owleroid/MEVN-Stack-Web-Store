@@ -14,9 +14,7 @@ export const fetchImages = async (
   next: NextFunction
 ) => {
   try {
-    console.log("Fetching images from bucket:", bucketName);
     const [files] = await storage.bucket(bucketName).getFiles();
-    console.log("Fetched files:", files);
     const images = files.map((file) => ({
       name: file.name,
       url: `https://storage.googleapis.com/${bucketName}/${file.name}`,

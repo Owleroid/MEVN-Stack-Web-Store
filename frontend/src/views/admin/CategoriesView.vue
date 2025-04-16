@@ -1,17 +1,13 @@
 <template>
-  <div>
-    <h1>{{ $t("categories") }}</h1>
-    <div v-if="categories.length === 0">
-      <p>{{ $t("noCategories") }}</p>
-      <button @click="openAddModal">
-        {{ $t("addNewCategory") }}
-      </button>
-    </div>
-    <div v-else>
+  <div class="admin-categories-container">
+    <div class="categories-menu">
+      <h2>{{ $t("categories") }}</h2>
       <button @click="openAddModal" class="add-category-button">
         {{ $t("addNewCategory") }}
       </button>
-      <table class="categories-table">
+    </div>
+    <div class="categories-list">
+      <table>
         <thead>
           <tr>
             <th>{{ $t("categoryName") }}</th>
@@ -33,7 +29,6 @@
         </tbody>
       </table>
     </div>
-
     <DeleteCategoryModal
       :show="showDeleteModal"
       @confirmDelete="selectedCategoryId && removeCategory(selectedCategoryId)"
@@ -43,7 +38,6 @@
       "
       @cancelRemove="cancelRemove"
     />
-
     <ReassignCategoryModal
       :show="showReassignModal"
       :categories="categories.filter((cat) => cat._id !== selectedCategoryId)"
@@ -51,7 +45,6 @@
       @reassignAndRemoveCategory="reassignAndRemoveCategory"
       @cancelRemove="cancelRemove"
     />
-
     <AddEditCategoryModal
       :show="showAddEditModal"
       :mode="isEdit ? 'edit' : 'add'"
@@ -204,138 +197,126 @@ onMounted(() => {
 </script>
 
 <style scoped>
-button {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-  width: fit-content;
-  margin: 5px 0;
+.admin-categories-container {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-button:hover {
+.categories-menu {
+  flex: 1;
+  max-width: 300px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.categories-menu h2 {
+  font-size: 1.4em;
+  margin-bottom: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
+.categories-menu button {
+  display: block;
+  margin-bottom: 12px;
+  padding: 12px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+  width: 100%;
+  text-align: center;
+  font-size: 1em;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.categories-menu button.active {
   background-color: #0056b3;
 }
 
-button[type="button"] {
-  background-color: #6c757d;
+.categories-menu button:hover {
+  background-color: #0056b3;
+  transform: scale(1.02);
 }
 
-button[type="button"]:hover {
-  background-color: #5a6268;
+.categories-list {
+  flex: 3;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-.add-category-button {
-  margin-bottom: 20px;
+.categories-list h2 {
+  font-size: 1.6em;
+  margin-bottom: 16px;
+  color: #333;
+  font-weight: 600;
 }
 
-.categories-table {
+.categories-list table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  background-color: #ffffff;
 }
 
-.categories-table th,
-.categories-table td {
+.categories-list th,
+.categories-list td {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 12px;
+  vertical-align: middle;
+  text-align: center;
 }
 
-.categories-table th {
-  background-color: #f2f2f2;
-  text-align: left;
+.categories-list th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #555;
 }
 
-.categories-table tr:nth-child(even) {
+.categories-list tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-.categories-table tr:hover {
-  background-color: #ddd;
+.categories-list tr:hover {
+  background-color: #f1f1f1;
 }
 
-.categories-table .actions {
+.categories-list .actions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
 }
 
-.modal {
-  display: block;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-  background-color: #fefefe;
-  margin: 15% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 600px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-input {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-}
-
-.form-actions button {
-  padding: 10px 20px;
+.categories-list button {
+  margin: 0;
+  padding: 10px 16px;
   border: none;
-  border-radius: 4px;
   background-color: #007bff;
   color: white;
   cursor: pointer;
-  width: fit-content;
+  border-radius: 6px;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.form-actions button[type="button"] {
-  background-color: #6c757d;
-}
-
-.form-actions button[type="button"]:hover {
-  background-color: #5a6268;
+.categories-list button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
 }
 </style>
