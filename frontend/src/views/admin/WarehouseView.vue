@@ -1,7 +1,6 @@
 <template>
   <div class="admin-warehouse">
     <div class="top-center">
-      <!-- Block 1: Top Center -->
       <div v-if="warehouses.length === 0">
         <p>{{ $t("noWarehousesFound") }}</p>
       </div>
@@ -18,8 +17,12 @@
       </div>
     </div>
 
+    <ProductStatusList
+      v-if="selectedWarehouse && selectedWarehouse.products.length > 0"
+      :products="selectedWarehouse.products"
+    />
+
     <div v-if="warehouses.length > 0 && categories.length > 0" class="content">
-      <!-- Block 2: Left -->
       <div class="left">
         <div v-for="category in categories" :key="category._id">
           <button
@@ -30,8 +33,6 @@
           </button>
         </div>
       </div>
-
-      <!-- Block 3: Right -->
       <div class="right">
         <div v-if="filteredProducts.length === 0">
           <p>{{ $t("noProductsFound") }}</p>
@@ -90,6 +91,8 @@ import {
   getWarehouses,
   updateWarehouseProductAmount,
 } from "@/services/warehouseService";
+
+import ProductStatusList from "@/components/admin/warehouses/ProductCriticalStatusList.vue";
 
 const { t } = useI18n();
 

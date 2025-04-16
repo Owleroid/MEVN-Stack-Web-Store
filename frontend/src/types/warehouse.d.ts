@@ -1,16 +1,11 @@
-export interface ProductAmount {
+export interface Product {
   product: string;
+  name: string;
   amount: number;
 }
 
-export interface Warehouse extends WarehouseInput {
+export interface Warehouse {
   _id?: string;
   name: string;
-  products: [
-    {
-      product: string;
-      name: string;
-      amount: number;
-    }
-  ];
+  products: Product[];
 }
