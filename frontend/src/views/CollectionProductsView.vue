@@ -28,6 +28,7 @@
             <img :src="product.imageUrls?.main" :alt="product.name" />
             <h3>{{ product.name }}</h3>
             <p>{{ formatPrice(product.price[currency]?.amount) }}</p>
+            <AddToCartButton :product="product" />
           </div>
         </div>
       </div>
@@ -47,6 +48,8 @@ import {
   getProductsByCategoryId,
   getAllCategories,
 } from "@/services/storeService";
+
+import AddToCartButton from "@/components/general/AddToCartButton.vue";
 
 const route = useRoute();
 const router = useRouter();
