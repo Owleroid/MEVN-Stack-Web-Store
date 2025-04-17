@@ -1,0 +1,39 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - ./backend/src/config/secrets/country-to-warehouse.json:/app/src/config/secrets/country-to-warehouse.json:ro
+      - ./backend/src/config/secrets/irbis-miniatures-c38162522e05.json:/app/src/config/secrets/irbis-miniatures-c38162522e05.json:ro
+      - ./backend/src/config/secrets/warehouses-init.json:/app/src/config/secrets/warehouses-init.json:ro
+      - ./backend/.env:/app/.env:ro
+    environment:
+      - DOTENV_PATH=/app/.env
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:3000
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - VITE_API_URL=http://localhost:3000
+
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./frontend/.env:/app/.env:ro
+
+volumes:
+  mongo-data:
