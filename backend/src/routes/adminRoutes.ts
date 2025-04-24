@@ -9,16 +9,6 @@ import {
   deleteCategoryAndReassignProducts,
 } from "../controllers/admin/categoryController.js";
 import {
-  searchProductsByName,
-  getProductsByCategoryId,
-  getProductIdsByCategoryId,
-  getProductById,
-  addProduct,
-  editProduct,
-  updateProductCategory,
-  deleteProduct,
-} from "../controllers/admin/productController.js";
-import {
   getAllWarehouses,
   getWarehouseById,
   updateWarehouse,
@@ -48,29 +38,6 @@ router.put(
 );
 
 // Product routes
-router.get(
-  "/products/search/:name",
-  isAuthenticated,
-  isAdmin,
-  searchProductsByName
-);
-router.get(
-  "/products/category/:categoryId",
-  isAuthenticated,
-  isAdmin,
-  getProductsByCategoryId
-);
-router.get("/products/category/:categoryId/ids", getProductIdsByCategoryId);
-router.get("/product/:id", isAuthenticated, isAdmin, getProductById);
-router.post("/add-product", isAuthenticated, isAdmin, addProduct);
-router.put("/edit-product/:id", isAuthenticated, isAdmin, editProduct);
-router.put(
-  "/edit-product-category/:id",
-  isAuthenticated,
-  isAdmin,
-  updateProductCategory
-);
-router.delete("/delete-product/:id", isAuthenticated, isAdmin, deleteProduct);
 
 // Warehouse routes
 router.get("/warehouses", isAuthenticated, isAdmin, getAllWarehouses);

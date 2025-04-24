@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import ApiError from "../../utils/apiError.js";
 
-import Product from "../../models/Product.js";
+import Product from "../../features/products/ProductModel.js";
 import Category from "../../models/Category.js";
 import Warehouse from "../../models/Warehouse.js";
 

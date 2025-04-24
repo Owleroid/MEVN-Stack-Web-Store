@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import Order from "./OrderModel.js";
-import Product from "../../models/Product.js";
+import Product from "../products/ProductModel.js";
 
 export const getOrderById = async (
   req: Request,
