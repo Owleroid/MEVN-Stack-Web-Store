@@ -2,7 +2,7 @@ import "dotenv/config";
 
 import app from "./app.js";
 import connectDB from "./config/db.js";
-import { initializeWarehouses } from "./middleware/initializeWarehouses.js";
+import { initializeWarehouses } from "./features/warehouses/initializeWarehouses.js";
 
 const PORT = process.env.PORT || 3010;
 
