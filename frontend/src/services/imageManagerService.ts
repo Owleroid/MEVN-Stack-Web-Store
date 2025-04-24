@@ -3,13 +3,13 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const imageService = axios.create({
-  baseURL: `${apiUrl}/api/admin/image-manager`,
+  baseURL: `${apiUrl}/api/image-manager`,
   withCredentials: true,
 });
 
 export const fetchImages = async () => {
   try {
-    const response = await imageService.get("/images");
+    const response = await imageService.get("/");
     return response.data;
   } catch (error) {
     console.error("Error fetching images:", error);
@@ -24,7 +24,7 @@ export const uploadImages = async (files: File[]) => {
       formData.append("images", file);
     });
 
-    const response = await imageService.post("/upload-images", formData, {
+    const response = await imageService.post("/", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
@@ -37,7 +37,7 @@ export const uploadImages = async (files: File[]) => {
 
 export const deleteImages = async (imageNames: string[]) => {
   try {
-    const response = await imageService.delete("/delete-images", {
+    const response = await imageService.delete("/", {
       data: { imageNames },
     });
 
