@@ -9,13 +9,8 @@ const ordersService = axios.create({
   withCredentials: true,
 });
 
-const adminOrdersService = axios.create({
-  baseURL: `${apiUrl}/api/admin`,
-  withCredentials: true,
-});
-
 export const createOrder = async (orderData: OrderData) => {
-  return ordersService.post(`/create`, orderData);
+  return ordersService.post(`/`, orderData);
 };
 
 export const getOrdersByUserId = async (userId: string) => {
@@ -29,18 +24,14 @@ export const getOrderById = async (orderId: string) => {
 // Admin api routes
 
 export const getAllOrders = async () => {
-  return adminOrdersService.get(`/orders`);
-};
-
-export const deleteOrderById = async (orderId: string) => {
-  return adminOrdersService.delete(`/delete-order/${orderId}`);
+  return ordersService.get(`/admin`);
 };
 
 export const editOrderById = async (
   orderId: string,
   updateData: Partial<OrderData>
 ) => {
-  return adminOrdersService.put(`/edit-order/${orderId}`, updateData);
+  return ordersService.put(`/admin/edit-order/${orderId}`, updateData);
 };
 
 // export const filterOrders = async (filters: {

@@ -24,13 +24,6 @@ import {
   updateWarehouse,
 } from "../controllers/admin/warehouseController.js";
 import {
-  getOrderById,
-  deleteOrderById,
-  editOrderById,
-  getAllOrders,
-  filterOrders,
-} from "../controllers/admin/orderController.js";
-import {
   fetchImages,
   uploadImages,
   deleteImages,
@@ -85,16 +78,6 @@ router.get("/warehouse/:id", isAuthenticated, isAdmin, getWarehouseById);
 router.put("/update-warehouse/:id", isAuthenticated, isAdmin, updateWarehouse);
 
 // Order routes
-router.get("/orders", isAuthenticated, isAdmin, getAllOrders);
-router.get("/filter-orders", isAuthenticated, isAdmin, filterOrders);
-router.get("/order/:orderId", isAuthenticated, isAdmin, getOrderById);
-router.put("/edit-order/:orderId", isAuthenticated, isAdmin, editOrderById);
-router.delete(
-  "/delete-order/:orderId",
-  isAuthenticated,
-  isAdmin,
-  deleteOrderById
-);
 
 // Image Manager routes
 router.get("/image-manager/images", isAuthenticated, isAdmin, fetchImages);

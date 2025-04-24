@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-import Order from "../../models/Order.js";
+import Order from "./OrderModel.js";
 import Product from "../../models/Product.js";
 
 export const getOrderById = async (
@@ -24,33 +24,6 @@ export const getOrderById = async (
     res.status(200).json({
       success: true,
       order,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const deleteOrderById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { orderId } = req.params;
-
-  try {
-    const order = await Order.findByIdAndDelete(orderId);
-
-    if (!order) {
-      res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
-      return;
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Order deleted successfully",
     });
   } catch (error) {
     next(error);

@@ -5,9 +5,9 @@ import crypto from "crypto-js";
 import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 
-import User from "../models/User.js";
-import Order from "../models/Order.js";
-import Warehouse from "../models/Warehouse.js";
+import User from "../../models/User.js";
+import Order from "./OrderModel.js";
+import Warehouse from "../../models/Warehouse.js";
 
 const countryToWarehousePath = path.resolve(
   "src/config/secrets/country-to-warehouse.json"
@@ -268,33 +268,6 @@ export const getOrdersByUserId = async (
     res.status(200).json({
       success: true,
       orders,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getOrderById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { orderId } = req.params;
-
-  try {
-    const order = await Order.findById(orderId);
-
-    if (!order) {
-      res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
-      return;
-    }
-
-    res.status(200).json({
-      success: true,
-      order,
     });
   } catch (error) {
     next(error);
