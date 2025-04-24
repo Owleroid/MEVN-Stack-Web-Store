@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import ApiError from "../utils/apiError.js";
 
 import Product from "../features/products/ProductModel.js";
-import Category from "../models/Category.js";
+import Category from "../features/categories/CategoryModel.js";
 
 export const getCategories = async (
   _req: Request,

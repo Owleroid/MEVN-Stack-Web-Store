@@ -1,14 +1,6 @@
 import express from "express";
 
 import {
-  getAllCategories,
-  getCategoryById,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-  deleteCategoryAndReassignProducts,
-} from "../controllers/admin/categoryController.js";
-import {
   getAllWarehouses,
   getWarehouseById,
   updateWarehouse,
@@ -25,17 +17,6 @@ import { upload } from "../middleware/multer.js";
 const router = express.Router();
 
 // Category routes
-router.get("/categories", isAuthenticated, isAdmin, getAllCategories);
-router.get("/category/:id", isAuthenticated, isAdmin, getCategoryById);
-router.post("/add-category", isAuthenticated, isAdmin, createCategory);
-router.put("/update-category/:id", isAuthenticated, isAdmin, updateCategory);
-router.delete("/delete-category/:id", isAuthenticated, isAdmin, deleteCategory);
-router.put(
-  "/delete-and-reassign-category/:id",
-  isAuthenticated,
-  isAdmin,
-  deleteCategoryAndReassignProducts
-);
 
 // Product routes
 
