@@ -4,12 +4,15 @@ import {
   getCategories,
   getProductsByCategoryId,
   getProductById,
-} from "../controllers/storeController.js";
+} from "./storeController.js";
 
 const router = express.Router();
 
+// Categories
 router.get("/categories", getCategories);
-router.get("/products/category/:id", getProductsByCategoryId);
+router.get("/categories/:id/products", getProductsByCategoryId);
+
+// Products
 router.get("/products/:id", getProductById);
 
 export default router;

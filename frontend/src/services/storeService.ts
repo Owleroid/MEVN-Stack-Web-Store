@@ -12,7 +12,7 @@ export const getAllCategories = async () => {
 };
 
 export const getProductsByCategoryId = async (categoryId: string) => {
-  return storeService.get(`/products/category/${categoryId}`);
+  return storeService.get(`/categories/${categoryId}/products`);
 };
 
 export default storeService;
