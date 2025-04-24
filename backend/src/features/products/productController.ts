@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 import ApiError from "../../utils/apiError.js";
 
 import Product from "./ProductModel.js";
-import Warehouse from "../../models/Warehouse.js";
+import Warehouse from "../warehouses/Warehouse.js";
 
 import { ProductInput } from "../../types/product.js";
 

@@ -9,11 +9,11 @@ import sessionConfig from "./config/session.js";
 
 import geoRoutes from "./routes/geoRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
 import storeRoutes from "./routes/storeRoutes.js";
 import orderRoutes from "./features/orders/orderRoutes.js";
 import productRoutes from "./features/products/productRoutes.js";
 import categoryRoutes from "./features/categories/categoryRoutes.js";
+import warehouseRoutes from "./features/warehouses/warehouseRoutes.js";
 import imageManagerRoutes from "./features/image-manager/imageManagerRoutes.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -28,11 +28,11 @@ app.use(session(sessionConfig));
 
 app.use("/api/geo", geoRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/admin", adminRoutes);
 app.use("/api/store", storeRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/warehouses", warehouseRoutes);
 app.use("/api/image-manager", imageManagerRoutes);
 
 app.use(errorHandler);

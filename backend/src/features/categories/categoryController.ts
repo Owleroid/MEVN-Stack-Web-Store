@@ -4,7 +4,7 @@ import ApiError from "../../utils/apiError.js";
 
 import Product from "../../features/products/ProductModel.js";
 import Category from "./CategoryModel.js";
-import Warehouse from "../../models/Warehouse.js";
+import Warehouse from "../warehouses/Warehouse.js";
 
 export const getAllCategories = async (
   _req: Request,
