@@ -5,7 +5,7 @@ import crypto from "crypto-js";
 import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 
-import User from "../../models/User.js";
+import User from "../authorization/UserModel.js";
 import Order from "./OrderModel.js";
 import Warehouse from "../warehouses/Warehouse.js";
 

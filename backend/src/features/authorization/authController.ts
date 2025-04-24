@@ -3,9 +3,9 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import { Request, Response, NextFunction } from "express";
 
-import ApiError from "../utils/apiError.js";
+import ApiError from "../../utils/apiError.js";
 
-import User from "../models/User.js";
+import User from "./UserModel.js";
 
 export const getUserData = async (
   req: Request,

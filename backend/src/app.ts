@@ -8,9 +8,9 @@ import corseConfig from "./config/cors.js";
 import sessionConfig from "./config/session.js";
 
 import geoRoutes from "./routes/geoRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
 import storeRoutes from "./routes/storeRoutes.js";
 import orderRoutes from "./features/orders/orderRoutes.js";
+import authRoutes from "./features/authorization/authRoutes.js";
 import productRoutes from "./features/products/productRoutes.js";
 import categoryRoutes from "./features/categories/categoryRoutes.js";
 import warehouseRoutes from "./features/warehouses/warehouseRoutes.js";

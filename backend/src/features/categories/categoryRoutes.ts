@@ -9,7 +9,7 @@ import {
   deleteCategoryAndReassignProducts,
 } from "./categoryController.js";
 
-import { isAuthenticated, isAdmin } from "../../middleware/authMiddleware.js";
+import { isAuthenticated, isAdmin } from "../authorization/authMiddleware.js";
 
 const router = express.Router();
 

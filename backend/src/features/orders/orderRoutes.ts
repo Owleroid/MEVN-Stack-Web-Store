@@ -8,7 +8,7 @@ import {
 } from "./adminOrderController.js";
 import { createOrder, getOrdersByUserId } from "./userOrderController.js";
 
-import { isAuthenticated, isAdmin } from "../../middleware/authMiddleware.js";
+import { isAuthenticated, isAdmin } from "../authorization/authMiddleware.js";
 
 const router = express.Router();
 
