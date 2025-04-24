@@ -7,11 +7,11 @@ import mongoSanitize from "express-mongo-sanitize";
 import corseConfig from "./config/cors.js";
 import sessionConfig from "./config/session.js";
 
-import geoRoutes from "./routes/geoRoutes.js";
-import storeRoutes from "./features/store-manager/storeRoutes.js";
 import orderRoutes from "./features/orders/orderRoutes.js";
 import authRoutes from "./features/authorization/authRoutes.js";
 import productRoutes from "./features/products/productRoutes.js";
+import storeRoutes from "./features/store-manager/storeRoutes.js";
+import geoRoutes from "./features/geolocation-manager/geoRoutes.js";
 import categoryRoutes from "./features/categories/categoryRoutes.js";
 import warehouseRoutes from "./features/warehouses/warehouseRoutes.js";
 import imageManagerRoutes from "./features/image-manager/imageManagerRoutes.js";

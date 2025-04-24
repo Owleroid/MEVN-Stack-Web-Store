@@ -9,7 +9,7 @@ const geoService = axios.create({
 
 export const getUserLocation = async () => {
   try {
-    const response = await geoService.get("/location");
+    const response = await geoService.get("/");
     const location = response.data;
     sessionStorage.setItem("userRegion", location.country_code);
     return location;
