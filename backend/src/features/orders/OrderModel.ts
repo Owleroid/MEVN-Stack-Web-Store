@@ -34,11 +34,7 @@ interface Order extends Document {
   products: Product[];
   totalPrice: number;
   currency: "rubles" | "euros";
-  warehouse: {
-    type: mongoose.Types.ObjectId;
-    ref: "Warehouse";
-    required: false;
-  };
+  warehouse: mongoose.Types.ObjectId;
   dateOfCreation: Date;
   status:
     | "waiting confirmation"
@@ -83,6 +79,11 @@ const OrderSchema: Schema = new Schema({
   products: { type: [ProductSchema], required: true },
   totalPrice: { type: Number, required: true },
   currency: { type: String, enum: ["rubles", "euros"], required: true },
+  warehouse: {
+    type: mongoose.Types.ObjectId,
+    ref: "Warehouse",
+    required: false,
+  },
   dateOfCreation: { type: Date, default: Date.now },
   status: {
     type: String,

@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 
 import Product from "../products/ProductModel.js";
-import Warehouse from "./Warehouse.js";
+import Warehouse from "./WarehouseModel.js";
 
 const warehousesConfigPath = path.resolve(
   "src/config/secrets/warehouses-init.json"

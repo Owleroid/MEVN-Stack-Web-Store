@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import ApiError from "../../utils/apiError.js";
 
-import Warehouse from "./Warehouse.js";
+import Warehouse from "./WarehouseModel.js";
 
 export const getAllWarehouses = async (
   _req: Request,

@@ -7,7 +7,7 @@ import { Request, Response, NextFunction } from "express";
 
 import User from "../authorization/UserModel.js";
 import Order from "./OrderModel.js";
-import Warehouse from "../warehouses/Warehouse.js";
+import Warehouse from "../warehouses/WarehouseModel.js";
 
 const countryToWarehousePath = path.resolve(
   "src/config/secrets/country-to-warehouse.json"
