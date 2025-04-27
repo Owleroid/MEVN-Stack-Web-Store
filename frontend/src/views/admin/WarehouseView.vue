@@ -136,7 +136,10 @@ const updateProductAmount = async (product: {
     });
     toast.success(t("productAmountUpdatedSuccessfully"));
     originalAmounts.value[product.product] = product.amount;
+
+    const currentWarehouseId = selectedWarehouseId.value;
     await fetchWarehouses();
+    selectedWarehouseId.value = currentWarehouseId;
   } catch (error) {
     console.error("Failed to update product amount:", error);
     toast.error(t("failedToUpdateProductAmount"));
