@@ -8,8 +8,18 @@
   "yes": "Да",
   "no": "Нет",
   "products": "Продукты",
+  "recipientDetails": "Данные получателя",
+  "recipientName": "Имя получателя",
+  "recipientSurname": "Фамилия получателя",
   "recipientEmail": "Электронная почта получателя",
   "recipientPhone": "Телефон получателя",
+  "shippingAddress": "Адрес доставки",
+  "country": "Страна",
+  "city": "Город",
+  "street": "Улица",
+  "buildingNumber": "Номер здания",
+  "apartment": "Квартира",
+  "postalCode": "Почтовый индекс",
   "waitingConfirmation": "Ожидает подтверждения",
   "packing": "Упаковка",
   "sended": "Отправлено",
@@ -17,5 +27,8 @@
   "canceled": "Отменено",
   "updateOrder": "Обновить заказ",
   "cancel": "Отмена",
-  "addProduct": "Добавить продукт"
+  "addNewProduct": "Добавить новый продукт",
+  "close": "Закрыть",
+  "totalPrice": "Итоговая цена",
+  "currency": "Валюта"
 }

@@ -28,7 +28,7 @@ export interface OrderData {
   currency: "rubles" | "euros";
   warehouse?: string;
   shippingAddress?: Address;
-  recipient?: Recipient;
+  recipient: Recipient;
   status:
     | "waiting confirmation"
     | "packing"

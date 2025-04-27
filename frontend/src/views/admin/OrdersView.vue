@@ -101,7 +101,7 @@ const newOrders = computed(() => {
 });
 
 const filteredOrders = computed(() => {
-  let filtered = orders.value;
+  let filtered = orders.value.filter((order) => order.checked);
 
   if (statusFilter.value) {
     filtered = filtered.filter((order) => order.status === statusFilter.value);
@@ -142,17 +142,19 @@ const closeModal = () => {
   isEditing.value = false;
 };
 
-const updateOrder = async () => {
-  if (selectedOrder.value) {
-    try {
-      await editOrderById(selectedOrder.value._id, selectedOrder.value);
-      fetchOrders();
-      closeModal();
-      toast.success(t("orderUpdated"));
-    } catch (error) {
-      console.error("Error updating order:", error);
-      toast.error(t("orderUpdateError"));
-    }
+const updateOrder = async (updatedOrder: Order | null) => {
+  if (!updatedOrder) {
+    console.error("Invalid order: null");
+    return;
+  }
+  try {
+    await editOrderById(updatedOrder._id, updatedOrder);
+    fetchOrders();
+    closeModal();
+    toast.success(t("orderUpdated"));
+  } catch (error) {
+    console.error("Error updating order:", error);
+    toast.error(t("orderUpdateError"));
   }
 };
 

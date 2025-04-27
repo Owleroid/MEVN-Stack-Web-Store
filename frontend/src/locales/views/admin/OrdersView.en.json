@@ -20,5 +20,23 @@
   "orderUpdateError": "Failed to update the order.",
   "orderStatusUpdated": "Order status updated successfully!",
   "orderStatusUpdateError": "Failed to update the order status.",
-  "fetchOrdersError": "Failed to fetch orders."
+  "fetchOrdersError": "Failed to fetch orders.",
+  "recipient": {
+    "title": "Recipient Information",
+    "email": "Email",
+    "name": "Name",
+    "surname": "Surname",
+    "phone": "Phone"
+  },
+  "delivery": {
+    "title": "Delivery Information",
+    "country": "Country",
+    "city": "City",
+    "street": "Street",
+    "buildingNumber": "Building Number",
+    "apartment": "Apartment",
+    "postalCode": "Postal Code"
+  },
+  "notes": "Order Notes",
+  "trackingNumber": "Tracking Number"
 }

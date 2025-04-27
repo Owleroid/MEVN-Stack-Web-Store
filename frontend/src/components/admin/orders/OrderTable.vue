@@ -30,18 +30,7 @@
         <td>{{ order.recipient?.phone }}</td>
         <td>{{ new Date(order.dateOfCreation).toLocaleString() }}</td>
         <td>
-          <select
-            v-model="order.status"
-            @change="updateOrderStatus(order._id, order.status)"
-          >
-            <option value="waiting confirmation">
-              {{ $t("waitingConfirmation") }}
-            </option>
-            <option value="packing">{{ $t("packing") }}</option>
-            <option value="sended">{{ $t("sended") }}</option>
-            <option value="delivered">{{ $t("delivered") }}</option>
-            <option value="canceled">{{ $t("canceled") }}</option>
-          </select>
+          <span>{{ $t(order.status) }}</span>
         </td>
         <td>
           <button @click.stop="editOrder(order)">
@@ -60,7 +49,7 @@ const props = defineProps<{
   orders: Order[];
 }>();
 
-const emits = defineEmits(["viewOrder", "editOrder", "updateOrderStatus"]);
+const emits = defineEmits(["viewOrder", "editOrder"]);
 
 const viewOrder = (order: Order) => {
   emits("viewOrder", order);
@@ -68,10 +57,6 @@ const viewOrder = (order: Order) => {
 
 const editOrder = (order: Order) => {
   emits("editOrder", order);
-};
-
-const updateOrderStatus = (orderId: string, status: string) => {
-  emits("updateOrderStatus", orderId, status);
 };
 </script>
 
@@ -127,11 +112,5 @@ button {
 
 button:hover {
   background-color: #0056b3;
-}
-
-select {
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
 }
 </style>

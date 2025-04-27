@@ -8,8 +8,18 @@
   "yes": "Yes",
   "no": "No",
   "products": "Products",
+  "recipientDetails": "Recipient Details",
+  "recipientName": "Recipient Name",
+  "recipientSurname": "Recipient Surname",
   "recipientEmail": "Recipient Email",
   "recipientPhone": "Recipient Phone",
+  "shippingAddress": "Shipping Address",
+  "country": "Country",
+  "city": "City",
+  "street": "Street",
+  "buildingNumber": "Building Number",
+  "apartment": "Apartment",
+  "postalCode": "Postal Code",
   "waitingConfirmation": "Waiting Confirmation",
   "packing": "Packing",
   "sended": "Sended",
@@ -17,5 +27,8 @@
   "canceled": "Canceled",
   "updateOrder": "Update Order",
   "cancel": "Cancel",
-  "addProduct": "Add Product"
+  "addNewProduct": "Add New Product",
+  "close": "Close",
+  "totalPrice": "Total Price",
+  "currency": "Currency"
 }

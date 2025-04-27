@@ -5,108 +5,204 @@
       <h2 v-if="isEditing">{{ $t("editOrder") }}</h2>
       <h2 v-else>{{ $t("orderDetails") }}</h2>
       <div v-if="order">
-        <p>
-          <strong>{{ $t("orderId") }}:</strong>
-          {{ order.orderNumber }}
-        </p>
-        <p>
-          <strong>{{ $t("date") }}:</strong>
-          {{ new Date(order.dateOfCreation).toLocaleString() }}
-        </p>
-        <p>
-          <strong>{{ $t("status") }}:</strong>
-          {{ order.status }}
-        </p>
-        <p>
-          <strong>{{ $t("checked") }}:</strong>
-          {{ order.checked ? $t("yes") : $t("no") }}
-        </p>
-        <p>
-          <strong>{{ $t("products") }}:</strong>
-        </p>
-        <ProductList
-          :products="order.products"
-          :isEditing="isEditing"
-          @updateProductAmount="updateProductAmount"
-          @removeProduct="removeProduct"
-        />
-        <p>
-          <strong>{{ $t("recipientEmail") }}:</strong>
-          {{ order.recipient?.email }}
-        </p>
-        <p>
-          <strong>{{ $t("recipientPhone") }}:</strong>
-          {{ order.recipient?.phone }}
-        </p>
-
-        <!-- Edit Form -->
-        <div v-if="isEditing">
-          <form @submit.prevent="submitForm">
-            <div class="form-group">
-              <label for="status">{{ $t("status") }}:</label>
+        <!-- Order Details Section -->
+        <section class="form-section">
+          <h3>{{ $t("orderDetails") }}</h3>
+          <p>
+            <strong>{{ $t("orderId") }}:</strong>
+            {{ order.orderNumber }}
+          </p>
+          <p>
+            <strong>{{ $t("date") }}:</strong>
+            {{ new Date(order.dateOfCreation).toLocaleString() }}
+          </p>
+          <div class="form-group">
+            <label for="status">{{ $t("status") }}:</label>
+            <template v-if="isEditing">
               <select v-model="order.status" id="status">
-                <option value="waiting confirmation">
+                <option
+                  value="waiting confirmation"
+                  :disabled="order.status !== 'waiting confirmation'"
+                >
                   {{ $t("waitingConfirmation") }}
                 </option>
-                <option value="packing">
-                  {{ $t("packing") }}
-                </option>
-                <option value="sended">
-                  {{ $t("sended") }}
-                </option>
-                <option value="delivered">
-                  {{ $t("delivered") }}
-                </option>
-                <option value="canceled">
-                  {{ $t("canceled") }}
-                </option>
+                <option value="packing">{{ $t("packing") }}</option>
+                <option value="sended">{{ $t("sended") }}</option>
+                <option value="delivered">{{ $t("delivered") }}</option>
+                <option value="canceled">{{ $t("canceled") }}</option>
               </select>
-            </div>
-            <div class="form-group">
-              <label for="checked">{{ $t("checked") }}:</label>
-              <input type="checkbox" v-model="order.checked" id="checked" />
-            </div>
-            <div class="form-group">
-              <label for="recipientEmail">{{ $t("recipientEmail") }}:</label>
+            </template>
+            <template v-else>
+              <p>{{ $t(`statuses.${order.status}`) }}</p>
+            </template>
+          </div>
+        </section>
+
+        <!-- Recipient Details Section -->
+        <section class="form-section">
+          <h3>{{ $t("recipientDetails") }}</h3>
+          <div class="form-group">
+            <label for="recipientName">{{ $t("recipientName") }}:</label>
+            <template v-if="isEditing">
+              <input
+                type="text"
+                v-model="order.recipient.name"
+                id="recipientName"
+              />
+            </template>
+            <template v-else>
+              <p>{{ order.recipient.name }}</p>
+            </template>
+          </div>
+          <div class="form-group">
+            <label for="recipientSurname">{{ $t("recipientSurname") }}:</label>
+            <template v-if="isEditing">
+              <input
+                type="text"
+                v-model="order.recipient.surname"
+                id="recipientSurname"
+              />
+            </template>
+            <template v-else>
+              <p>{{ order.recipient.surname }}</p>
+            </template>
+          </div>
+          <div class="form-group">
+            <label for="recipientEmail">{{ $t("recipientEmail") }}:</label>
+            <template v-if="isEditing">
               <input
                 type="email"
-                v-model="recipientEmail"
+                v-model="order.recipient.email"
                 id="recipientEmail"
               />
-            </div>
-            <div class="form-group">
-              <label for="recipientPhone">{{ $t("recipientPhone") }}:</label>
-              <input type="tel" v-model="recipientPhone" id="recipientPhone" />
-            </div>
-            <div class="form-group">
-              <label for="products">{{ $t("products") }}:</label>
-              <ProductList
-                :products="order.products"
-                :isEditing="isEditing"
-                @updateProductAmount="updateProductAmount"
-                @removeProduct="removeProduct"
+            </template>
+            <template v-else>
+              <p>{{ order.recipient.email }}</p>
+            </template>
+          </div>
+          <div class="form-group">
+            <label for="recipientPhone">{{ $t("recipientPhone") }}:</label>
+            <template v-if="isEditing">
+              <input
+                type="tel"
+                v-model="order.recipient.phone"
+                id="recipientPhone"
               />
-              <button
-                type="button"
-                @click="showAddProductFields = !showAddProductFields"
-              >
-                +
-              </button>
-              <AddProductFields
-                v-if="showAddProductFields"
-                :existingProductIds="order.products.map((p) => p.productId)"
-                @addProduct="addProduct"
+            </template>
+            <template v-else>
+              <p>{{ order.recipient.phone }}</p>
+            </template>
+          </div>
+        </section>
+
+        <!-- Shipping Address Section -->
+        <section class="form-section">
+          <h3>{{ $t("shippingAddress") }}</h3>
+          <div class="form-group">
+            <label for="country">{{ $t("country") }}:</label>
+            <template v-if="isEditing">
+              <input
+                type="text"
+                v-model="shippingAddress.country"
+                id="country"
               />
-            </div>
-            <div class="form-actions">
-              <button type="submit">
-                {{ $t("updateOrder") }}
-              </button>
-              <button type="button" @click="cancelEdit">
-                {{ $t("cancel") }}
-              </button>
-            </div>
-          </form>
+            </template>
+            <template v-else>
+              <p>{{ shippingAddress.country }}</p>
+            </template>
+          </div>
+          <div class="form-group">
+            <label for="city">{{ $t("city") }}:</label>
+            <template v-if="isEditing">
+              <input type="text" v-model="shippingAddress.city" id="city" />
+            </template>
+            <template v-else>
+              <p>{{ shippingAddress.city }}</p>
+            </template>
+          </div>
+          <div class="form-group">
+            <label for="street">{{ $t("street") }}:</label>
+            <template v-if="isEditing">
+              <input type="text" v-model="shippingAddress.street" id="street" />
+            </template>
+            <template v-else>
+              <p>{{ shippingAddress.street }}</p>
+            </template>
+          </div>
+          <div class="form-group">
+            <label for="buildingNumber">{{ $t("buildingNumber") }}:</label>
+            <template v-if="isEditing">
+              <input
+                type="text"
+                v-model="shippingAddress.buildingNumber"
+                id="buildingNumber"
+              />
+            </template>
+            <template v-else>
+              <p>{{ shippingAddress.buildingNumber }}</p>
+            </template>
+          </div>
+          <div class="form-group">
+            <label for="apartment">{{ $t("apartment") }}:</label>
+            <template v-if="isEditing">
+              <input
+                type="text"
+                v-model="shippingAddress.apartment"
+                id="apartment"
+              />
+            </template>
+            <template v-else>
+              <p>{{ shippingAddress.apartment }}</p>
+            </template>
+          </div>
+          <div class="form-group">
+            <label for="postalCode">{{ $t("postalCode") }}:</label>
+            <template v-if="isEditing">
+              <input
+                type="text"
+                v-model="shippingAddress.postalCode"
+                id="postalCode"
+              />
+            </template>
+            <template v-else>
+              <p>{{ shippingAddress.postalCode }}</p>
+            </template>
+          </div>
+        </section>
+
+        <!-- Products Section -->
+        <section class="form-section">
+          <h3>{{ $t("products") }}</h3>
+          <ProductList
+            :products="order.products"
+            :isEditing="isEditing"
+            @updateProductAmount="updateProductAmount"
+            @removeProduct="removeProduct"
+          />
+          <template v-if="isEditing">
+            <button
+              type="button"
+              class="add-product-button"
+              @click="showAddProductFields = !showAddProductFields"
+            >
+              {{ $t("addNewProduct") }}
+            </button>
+            <AddProductFields
+              v-if="showAddProductFields"
+              :existingProductIds="order.products.map((p) => p.productId)"
+              @addProduct="addProduct"
+            />
+          </template>
+        </section>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button v-if="isEditing" type="submit" @click.prevent="submitForm">
+            {{ $t("updateOrder") }}
+          </button>
+          <button type="button" @click="cancelEdit">
+            {{ isEditing ? $t("cancel") : $t("close") }}
+          </button>
         </div>
       </div>
     </div>
@@ -136,22 +232,28 @@ const emits = defineEmits<{
 
 const showAddProductFields = ref(false);
 
-const recipientEmail = computed<string>({
-  get: () => props.order?.recipient?.email || "",
-  set: (value) => {
-    if (props.order && props.order.recipient) {
-      props.order.recipient.email = value;
+const shippingAddress = computed(() => {
+  if (props.order) {
+    if (!props.order.shippingAddress) {
+      props.order.shippingAddress = {
+        country: "",
+        city: "",
+        street: "",
+        buildingNumber: "",
+        apartment: "",
+        postalCode: "",
+      };
     }
-  },
-});
-
-const recipientPhone = computed<string>({
-  get: () => props.order?.recipient?.phone || "",
-  set: (value) => {
-    if (props.order && props.order.recipient) {
-      props.order.recipient.phone = value;
-    }
-  },
+    return props.order.shippingAddress;
+  }
+  return {
+    country: "",
+    city: "",
+    street: "",
+    buildingNumber: "",
+    apartment: "",
+    postalCode: "",
+  };
 });
 
 const close = (): void => {
@@ -173,7 +275,10 @@ const removeProduct = (index: number): void => {
 };
 
 const addProduct = (product: Product): void => {
-  props.order?.products.push(product);
+  if (props.order) {
+    props.order.products.push(product);
+  }
+  showAddProductFields.value = false;
 };
 
 const cancelEdit = (): void => {
@@ -226,6 +331,21 @@ form {
   flex-direction: column;
 }
 
+.form-section {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.form-section h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
 .form-group {
   margin-bottom: 15px;
 }
@@ -260,6 +380,7 @@ form {
   color: white;
   cursor: pointer;
   width: fit-content;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .form-actions button[type="button"] {
@@ -268,5 +389,32 @@ form {
 
 .form-actions button[type="button"]:hover {
   background-color: #5a6268;
+}
+
+.add-product-button {
+  background-color: #28a745;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-product-button:hover {
+  background-color: #218838;
+  transform: scale(1.05);
+}
+
+.add-product-button:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(40, 167, 69, 0.8);
+}
+
+.add-product-button:active {
+  background-color: #1e7e34;
+  transform: scale(0.95);
 }
 </style>

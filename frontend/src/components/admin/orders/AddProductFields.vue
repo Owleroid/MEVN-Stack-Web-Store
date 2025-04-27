@@ -107,4 +107,32 @@ const addProduct = () => {
   box-sizing: border-box;
   margin-bottom: 10px;
 }
+
+.add-product-fields button {
+  display: inline-block;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-product-fields button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.add-product-fields button:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.8);
+}
+
+.add-product-fields button:active {
+  background-color: #004085;
+  transform: scale(0.95);
+}
 </style>

@@ -41,7 +41,7 @@ export const editOrderById = async (
 ) => {
   const { orderId } = req.params;
   const updateData = req.body;
-  const { currency, products: updatedProducts } = updateData;
+  const { currency, products: updatedProducts, status: newStatus } = updateData;
 
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -51,6 +51,14 @@ export const editOrderById = async (
     const existingOrder = await Order.findById(orderId).session(session);
     if (!existingOrder) {
       throw new Error("Order not found");
+    }
+
+    // Check if the status has changed from "waiting confirmation"
+    if (
+      existingOrder.status === "waiting confirmation" &&
+      newStatus !== "waiting confirmation"
+    ) {
+      updateData.checked = true; // Set checked to true
     }
 
     // Fetch the corresponding warehouse
