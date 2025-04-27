@@ -205,10 +205,7 @@ const handleCheckout = async () => {
       const { exists } = await checkEmail(recipient.value.email);
 
       if (exists) {
-        // Replace alert with a toast
         toast.error(t("emailAlreadyRegistered"));
-
-        // Save form data to local storage
         localStorage.setItem("recipient", JSON.stringify(recipient.value));
         localStorage.setItem(
           "shippingAddress",
@@ -247,7 +244,7 @@ const handleCheckout = async () => {
     localStorage.removeItem("recipient");
     localStorage.removeItem("shippingAddress");
     emit("cart-updated");
-    router.push("/categories");
+    router.push("/orders");
     toast.success(t("orderSuccess"));
   } catch (error) {
     console.error("Error creating order:", error);

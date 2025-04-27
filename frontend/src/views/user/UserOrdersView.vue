@@ -1,9 +1,9 @@
 <template>
   <div class="orders">
-    <h1>{{ $t("title") }}</h1>
+    <h1>{{ $t("pageTitle") }}</h1>
     <div v-if="orders.length">
       <div v-for="order in orders" :key="order._id" class="order">
-        <h2>{{ $t("order") }} #{{ order.orderNumber }}</h2>
+        <h2>{{ $t("order") }}: {{ order.orderNumber }}</h2>
         <p>
           {{ $t("date") }}:
           {{ new Date(order.dateOfCreation).toLocaleDateString() }}
