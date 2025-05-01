@@ -4,8 +4,6 @@ import { Request, Response, NextFunction } from "express";
 import Product from "./ProductModel.js";
 import Warehouse from "../warehouses/WarehouseModel.js";
 
-import { ProductInput } from "../../types/product.js";
-
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 
@@ -85,7 +83,7 @@ export const addProduct = asyncHandler(
       boxArt,
       description = "",
       imageUrls = { main: "", secondary: [] },
-    }: ProductInput = req.body;
+    } = req.body;
 
     const existingProduct = await Product.findOne({ name });
     if (existingProduct) {
@@ -129,7 +127,7 @@ export const addProduct = asyncHandler(
 export const editProduct = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
-    const updatedProduct: ProductInput = req.body;
+    const updatedProduct = req.body;
 
     const product = await Product.findByIdAndUpdate(id, updatedProduct, {
       new: true,
