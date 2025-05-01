@@ -1,33 +1,24 @@
 import { Request, Response, NextFunction } from "express";
 
-import ApiError from "../../utils/apiError.js";
-
 import Product from "../products/ProductModel.js";
 import Category from "../categories/CategoryModel.js";
 
-export const getCategories = async (
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+import ApiError from "../../utils/apiError.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+
+export const getCategories = asyncHandler(
+  async (_req: Request, res: Response, next: NextFunction) => {
     const categories = await Category.find();
     if (!categories.length) {
       return next(new ApiError(404, "No categories found"));
     }
 
     res.status(200).json(categories);
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const getProductsByCategoryId = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+export const getProductsByCategoryId = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
     const categoryDoc = await Category.findById(id);
@@ -41,17 +32,11 @@ export const getProductsByCategoryId = async (
     }
 
     res.status(200).json(products);
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const getProductById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+export const getProductById = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
     const product = await Product.findById(id);
@@ -60,7 +45,5 @@ export const getProductById = async (
     }
 
     res.status(200).json(product);
-  } catch (error) {
-    next(error);
   }
-};
+);
