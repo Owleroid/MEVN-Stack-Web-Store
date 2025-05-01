@@ -3,43 +3,34 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import { Request, Response, NextFunction } from "express";
 
-import ApiError from "../../utils/apiError.js";
-
 import User from "./UserModel.js";
 
-export const getUserData = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { userId } = req.params;
+import ApiError from "../../utils/apiError.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 
-  try {
+export const getUserData = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req.params;
+
     const user = await User.findById(userId).select(
       "-password -resetPasswordToken -resetPasswordExpires"
     );
     if (!user) {
-      throw new ApiError(404, "User not found");
+      return next(new ApiError(404, "User not found"));
     }
 
     res.status(200).json(user);
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const updateUserData = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { userId } = req.params;
-  const { name, surname, phone, deliveryData } = req.body;
+export const updateUserData = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req.params;
+    const { name, surname, phone, deliveryData } = req.body;
 
-  try {
     const user = await User.findById(userId);
     if (!user) {
-      throw new ApiError(404, "User not found");
+      return next(new ApiError(404, "User not found"));
     }
 
     user.name = name || user.name;
@@ -53,28 +44,22 @@ export const updateUserData = async (
       success: true,
       message: "User data updated",
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const changeUserPassword = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { userId } = req.params;
-  const { currentPassword, newPassword } = req.body;
+export const changeUserPassword = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req.params;
+    const { currentPassword, newPassword } = req.body;
 
-  try {
     const user = await User.findById(userId);
     if (!user) {
-      throw new ApiError(404, "User not found");
+      return next(new ApiError(404, "User not found"));
     }
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
-      throw new ApiError(401, "Current password is incorrect");
+      return next(new ApiError(401, "Current password is incorrect"));
     }
 
     user.password = await bcrypt.hash(newPassword, 10);
@@ -84,19 +69,13 @@ export const changeUserPassword = async (
       success: true,
       message: "Password changed successfully",
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const checkEmail = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { email } = req.params;
+export const checkEmail = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.params;
 
-  try {
     const user = await User.findOne({ email });
 
     if (user) {
@@ -104,22 +83,16 @@ export const checkEmail = async (
     } else {
       res.status(200).json({ exists: false });
     }
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const signup = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { email, password } = req.body;
+export const signup = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body;
 
-  try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      throw new ApiError(400, "User already exists");
+      return next(new ApiError(400, "User already exists"));
     }
 
     const user = new User({ email, password });
@@ -129,22 +102,16 @@ export const signup = async (
       success: true,
       message: "User created",
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const login = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { email, password } = req.body;
+export const login = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body;
 
-  try {
     const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new ApiError(401, "Invalid credentials");
+      return next(new ApiError(401, "Invalid credentials"));
     }
 
     req.session.userId = user._id;
@@ -158,36 +125,36 @@ export const login = async (
       userId: user._id,
       isAdmin: user.isAdmin,
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const logout = (req: Request, res: Response, next: NextFunction) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return next(new ApiError(500, "Error logging out"));
-    }
+export const logout = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    await new Promise<void>((resolve, reject) => {
+      req.session.destroy((err) => {
+        if (err) {
+          reject(new ApiError(500, "Error logging out"));
+        } else {
+          resolve();
+        }
+      });
+    });
 
     res.clearCookie("connect.sid");
     res.status(200).json({
       success: true,
       message: "Logged out",
     });
-  });
-};
+  }
+);
 
-export const resetPassword = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { email } = req.body;
+export const resetPassword = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
 
-  try {
     const user = await User.findOne({ email });
     if (!user) {
-      throw new ApiError(404, "User not found");
+      return next(new ApiError(404, "User not found"));
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, {
@@ -215,7 +182,5 @@ export const resetPassword = async (
       success: true,
       message: "Reset email sent",
     });
-  } catch (error) {
-    next(error);
   }
-};
+);

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import User from "./UserModel.js";
+
 import ApiError from "../../utils/apiError.js";
 
 export const isAuthenticated = (
