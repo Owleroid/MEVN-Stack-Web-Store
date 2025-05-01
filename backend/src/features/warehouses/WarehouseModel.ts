@@ -1,4 +1,4 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface ProductAmount {
   product: mongoose.Types.ObjectId;
@@ -6,7 +6,7 @@ export interface ProductAmount {
   amount: number;
 }
 
-export interface Warehouse extends Document {
+export interface WarehouseDocument extends Document {
   name: string;
   products: ProductAmount[];
 }
@@ -26,4 +26,8 @@ const warehouseSchema = new mongoose.Schema({
   ],
 });
 
-export default mongoose.model<Warehouse>("Warehouse", warehouseSchema);
+const Warehouse = mongoose.model<WarehouseDocument>(
+  "Warehouse",
+  warehouseSchema
+);
+export default Warehouse;

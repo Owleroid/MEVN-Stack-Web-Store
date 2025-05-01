@@ -3,14 +3,14 @@ import { customAlphabet } from "nanoid";
 
 const nanoid = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 6);
 
-interface Product {
+export interface OrderProduct {
   productId: mongoose.Types.ObjectId;
   name: string;
   amount: number;
   productPrice: number;
 }
 
-interface Address {
+export interface Address {
   street: string;
   buildingNumber: string;
   apartment?: string;
@@ -19,21 +19,21 @@ interface Address {
   country: string;
 }
 
-interface Recipient {
+export interface Recipient {
   name: string;
   surname: string;
   phone: string;
   email: string;
 }
 
-interface Order extends Document {
+export interface OrderDocument extends Document {
   _id: string;
   orderNumber: string;
   userId: mongoose.Types.ObjectId;
-  products: Product[];
+  products: OrderProduct[];
   totalPrice: number;
   currency: "rubles" | "euros";
-  warehouse: mongoose.Types.ObjectId;
+  warehouse?: mongoose.Types.ObjectId;
   dateOfCreation: Date;
   status:
     | "waiting confirmation"
@@ -103,13 +103,12 @@ const OrderSchema: Schema = new Schema({
   trackingNumber: { type: String, required: false },
 });
 
-OrderSchema.pre<Order>("save", function (next) {
+OrderSchema.pre<OrderDocument>("save", function (next) {
   if (!this.orderNumber) {
     this.orderNumber = nanoid();
   }
   next();
 });
 
-const Order = mongoose.model<Order>("Order", OrderSchema);
-
+const Order = mongoose.model<OrderDocument>("Order", OrderSchema);
 export default Order;

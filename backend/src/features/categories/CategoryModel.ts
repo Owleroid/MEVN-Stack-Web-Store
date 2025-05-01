@@ -1,6 +1,6 @@
 import mongoose, { Document } from "mongoose";
 
-export interface Category extends Document {
+export interface CategoryDocument extends Document {
   name: string;
   imageUrl: string;
 }
@@ -10,4 +10,5 @@ const categorySchema = new mongoose.Schema({
   imageUrl: { type: String, required: true, unique: true },
 });
 
-export default mongoose.model<Category>("Category", categorySchema);
+const Category = mongoose.model<CategoryDocument>("Category", categorySchema);
+export default Category;

@@ -1,13 +1,13 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Model } from "mongoose";
 
-interface CurrencyDetails {
+export interface CurrencyDetails {
   amount: number;
   discount?: number;
   discountStartDate?: Date;
   discountEndDate?: Date;
 }
 
-export interface Product extends Document {
+export interface ProductDocument extends Document {
   _id: string;
   name: string;
   category: mongoose.Types.ObjectId;
@@ -15,7 +15,7 @@ export interface Product extends Document {
     rubles: CurrencyDetails;
     euros: CurrencyDetails;
   };
-  artist: string;
+  artist?: string;
   size: string;
   material: string;
   parts?: string;
@@ -57,4 +57,5 @@ const productSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model<Product>("Product", productSchema);
+const Product = mongoose.model<ProductDocument>("Product", productSchema);
+export default Product;
