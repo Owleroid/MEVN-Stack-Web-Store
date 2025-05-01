@@ -1,19 +1,16 @@
 import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 
-import ApiError from "../../utils/apiError.js";
-
 import Product from "./ProductModel.js";
 import Warehouse from "../warehouses/WarehouseModel.js";
 
 import { ProductInput } from "../../types/product.js";
 
-export const searchProductsByName = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+import ApiError from "../../utils/apiError.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+
+export const searchProductsByName = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
     const { name } = req.params;
     if (!name) {
       return next(new ApiError(400, "Product name is required"));
@@ -28,17 +25,11 @@ export const searchProductsByName = async (
       message: "Products fetched successfully",
       products,
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const getProductsByCategoryId = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+export const getProductsByCategoryId = asyncHandler(
+  async (req: Request, res: Response, _next: NextFunction) => {
     const { categoryId } = req.params;
     const products = await Product.find({ category: categoryId });
 
@@ -47,17 +38,11 @@ export const getProductsByCategoryId = async (
       message: "Products fetched successfully",
       products,
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const getProductIdsByCategoryId = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+export const getProductIdsByCategoryId = asyncHandler(
+  async (req: Request, res: Response, _next: NextFunction) => {
     const { categoryId } = req.params;
     const products = await Product.find({ category: categoryId }).select("_id");
     const productIds = products.map((product) => product._id.toString());
@@ -67,17 +52,11 @@ export const getProductIdsByCategoryId = async (
       message: "Product IDs fetched successfully",
       productIds,
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const getProductById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+export const getProductById = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const product = await Product.findById(id);
 
@@ -90,30 +69,24 @@ export const getProductById = async (
       message: "Product fetched successfully",
       product,
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const addProduct = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const {
-    name,
-    category,
-    price,
-    artist,
-    size,
-    material,
-    parts = "",
-    boxArt,
-    description = "",
-    imageUrls = { main: "", secondary: [] },
-  }: ProductInput = req.body;
+export const addProduct = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      name,
+      category,
+      price,
+      artist,
+      size,
+      material,
+      parts = "",
+      boxArt,
+      description = "",
+      imageUrls = { main: "", secondary: [] },
+    }: ProductInput = req.body;
 
-  try {
     const existingProduct = await Product.findOne({ name });
     if (existingProduct) {
       return next(new ApiError(400, "Product with this name already exists"));
@@ -150,17 +123,11 @@ export const addProduct = async (
       message: "New product was successfully added",
       productId: savedProduct._id,
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const editProduct = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+export const editProduct = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const updatedProduct: ProductInput = req.body;
 
@@ -177,17 +144,11 @@ export const editProduct = async (
       message: "Product was successfully updated",
       productId: id,
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const updateProductCategory = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+export const updateProductCategory = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const { categoryId } = req.body;
 
@@ -207,17 +168,11 @@ export const updateProductCategory = async (
       productId: id,
       category: categoryId,
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const deleteProduct = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+export const deleteProduct = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
     const product = await Product.findByIdAndDelete(id);
@@ -233,7 +188,5 @@ export const deleteProduct = async (
       success: true,
       message: "Product was successfully deleted",
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
