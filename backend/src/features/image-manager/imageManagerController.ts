@@ -1,21 +1,29 @@
-import { Request, Response, NextFunction } from "express";
 import { Storage } from "@google-cloud/storage";
+import { Request, Response, NextFunction } from "express";
 
 import ApiError from "../../utils/apiError.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+
+interface ImageInfo {
+  name: string;
+  url: string;
+}
+
+interface DeleteImagesRequest extends Request {
+  body: {
+    imageNames: string[];
+  };
+}
 
 const storage = new Storage({
   keyFilename: process.env.GOOGLE_CLOUD_KEYFILE_PATH,
 });
 const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME!;
 
-export const fetchImages = async (
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+export const fetchImages = asyncHandler(
+  async (_req: Request, res: Response, _next: NextFunction) => {
     const [files] = await storage.bucket(bucketName).getFiles();
-    const images = files.map((file) => ({
+    const images: ImageInfo[] = files.map((file) => ({
       name: file.name,
       url: `https://storage.googleapis.com/${bucketName}/${file.name}`,
     }));
@@ -25,23 +33,17 @@ export const fetchImages = async (
       message: "Images fetched successfully",
       images,
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const uploadImages = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+export const uploadImages = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
     if (!req.files || !Array.isArray(req.files)) {
       return next(new ApiError(400, "No files uploaded"));
     }
 
-    const files = req.files as Express.Multer.File[]; // Type assertion for multer files
-    const uploadedImages: { name: string; url: string }[] = [];
+    const files = req.files as Express.Multer.File[];
+    const uploadedImages: ImageInfo[] = [];
 
     for (const file of files) {
       const blob = storage.bucket(bucketName).file(file.originalname);
@@ -60,7 +62,7 @@ export const uploadImages = async (
           resolve();
         });
 
-        stream.on("error", (err) => {
+        stream.on("error", (err: Error) => {
           console.error("Error uploading file:", err);
           reject(
             new ApiError(500, `Failed to upload image: ${file.originalname}`)
@@ -76,17 +78,11 @@ export const uploadImages = async (
       message: "Images uploaded successfully",
       images: uploadedImages,
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const deleteImages = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+export const deleteImages = asyncHandler(
+  async (req: DeleteImagesRequest, res: Response, next: NextFunction) => {
     const { imageNames } = req.body;
 
     if (!imageNames || !Array.isArray(imageNames) || imageNames.length === 0) {
@@ -107,7 +103,5 @@ export const deleteImages = async (
       message: "Images deleted successfully",
       deletedImages,
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
