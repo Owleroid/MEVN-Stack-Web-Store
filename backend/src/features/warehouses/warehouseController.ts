@@ -1,46 +1,31 @@
 import { Request, Response, NextFunction } from "express";
 
 import ApiError from "../../utils/apiError.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 
 import Warehouse from "./WarehouseModel.js";
 
-export const getAllWarehouses = async (
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+export const getAllWarehouses = asyncHandler(
+  async (_req: Request, res: Response, _next: NextFunction) => {
     const warehouses = await Warehouse.find();
     res.status(200).json(warehouses);
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const getWarehouseById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+export const getWarehouseById = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
     const warehouse = await Warehouse.findById(req.params.id);
     if (!warehouse) {
       return next(new ApiError(404, "Warehouse not found"));
     }
     res.status(200).json(warehouse);
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const updateWarehouse = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { productId, amount } = req.body;
+export const updateWarehouse = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { productId, amount } = req.body;
 
-  try {
     const warehouse = await Warehouse.findById(req.params.id);
     if (!warehouse) {
       return next(new ApiError(404, "Warehouse not found"));
@@ -60,7 +45,5 @@ export const updateWarehouse = async (
 
     const updatedWarehouse = await warehouse.save();
     res.status(200).json(updatedWarehouse);
-  } catch (error) {
-    next(error);
   }
-};
+);
