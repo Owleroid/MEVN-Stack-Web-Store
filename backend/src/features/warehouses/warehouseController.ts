@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 
+import Warehouse from "./WarehouseModel.js";
+
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-
-import Warehouse from "./WarehouseModel.js";
 
 export const getAllWarehouses = asyncHandler(
   async (_req: Request, res: Response, _next: NextFunction) => {
