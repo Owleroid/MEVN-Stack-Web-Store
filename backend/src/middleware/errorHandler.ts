@@ -1,6 +1,7 @@
-import { Request, Response, NextFunction } from "express";
 import multer from "multer";
-import ApiError from "../utils/apiError.js";
+import { Request, Response, NextFunction } from "express";
+
+import ApiError, { ErrorType } from "../utils/apiError.js";
 
 export const errorHandler = (
   err: Error,
@@ -8,15 +9,36 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ) => {
+  console.error(
+    `[${new Date().toISOString()}] Error: ${err.name}: ${err.message}`
+  );
+
   // Handle ApiError
   if (err instanceof ApiError) {
-    res.status(err.statusCode).json({ message: err.message });
+    const response = {
+      status: "error",
+      statusCode: err.statusCode,
+      message: err.message,
+      errorType: err.errorType,
+    };
+
+    // Log with more detail for server-side debugging
+    console.error(
+      `[${new Date().toISOString()}] ${err.errorType}: ${err.message}`,
+      {
+        statusCode: err.statusCode,
+        stack: err.stack,
+      }
+    );
+
+    res.status(err.statusCode).json(response);
     return;
   }
 
   // Handle Multer-specific errors
   if (err instanceof multer.MulterError) {
     let message = "File upload error";
+    let errorType = ErrorType.BAD_REQUEST;
 
     // Customize error messages based on Multer error codes
     switch (err.code) {
@@ -33,11 +55,31 @@ export const errorHandler = (
         message = err.message;
     }
 
-    res.status(400).json({ message });
+    console.error(`[${new Date().toISOString()}] ${errorType}: ${message}`, {
+      code: err.code,
+      field: err.field,
+    });
+
+    res.status(400).json({
+      status: "error",
+      statusCode: 400,
+      message,
+      errorType,
+    });
     return;
   }
 
   // Handle other errors
-  console.error(err);
-  res.status(500).json({ message: "Internal Server Error" });
+  console.error(`[${new Date().toISOString()}] Unhandled Error:`, {
+    name: err.name,
+    message: err.message,
+    stack: err.stack,
+  });
+
+  res.status(500).json({
+    status: "error",
+    statusCode: 500,
+    message: "Internal Server Error",
+    errorType: ErrorType.INTERNAL,
+  });
 };
