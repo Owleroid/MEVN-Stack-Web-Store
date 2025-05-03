@@ -1,75 +1,158 @@
 <template>
-  <div>
-    <div class="admin-products-container">
-      <div class="categories-menu">
-        <h2>{{ $t("categories") }}</h2>
-        <div v-if="loading">
-          <p>{{ $t("loadingCategories") }}</p>
+  <div class="max-w-5xl mx-auto p-6">
+    <div class="flex flex-col md:flex-row gap-6">
+      <!-- Categories Menu -->
+      <div
+        class="w-full md:w-64 bg-white p-4 rounded-lg shadow border border-gray-200"
+      >
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">
+          {{ $t("categories") }}
+        </h2>
+
+        <!-- Loading State -->
+        <div v-if="loading" class="flex flex-col items-center py-6">
+          <div
+            class="w-8 h-8 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-2"
+          ></div>
+          <p class="text-gray-600 text-sm">{{ $t("loadingCategories") }}</p>
         </div>
-        <div v-else-if="categories.length === 0">
-          <p>{{ $t("noCategoriesFound") }}</p>
-          <button @click="goToCategories">
+
+        <!-- No Categories State -->
+        <div v-else-if="categories.length === 0" class="py-4">
+          <p class="text-gray-500 mb-4 text-center">
+            {{ $t("noCategoriesFound") }}
+          </p>
+          <button
+            @click="goToCategories"
+            class="w-full py-2 px-4 bg-blue-500 text-white rounded-md font-medium hover:bg-blue-600 transition-colors"
+          >
             {{ $t("goToCategories") }}
           </button>
         </div>
-        <div v-else>
+
+        <!-- Categories List -->
+        <div v-else class="flex flex-col gap-2">
           <button
             v-for="category in categories"
             :key="category._id"
-            :class="{ active: category._id === selectedCategory }"
+            :class="[
+              'py-2.5 px-4 text-sm font-medium rounded-md transition-colors w-full text-left',
+              category._id === selectedCategory
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+            ]"
             @click="selectCategory(category._id ?? '')"
           >
             {{ category.name }}
           </button>
         </div>
       </div>
-      <div v-if="categories.length > 0" class="products-list">
-        <h2>{{ $t("products") }}</h2>
-        <div v-if="products.length === 0">
-          <p>{{ $t("noProductsFound") }}</p>
-          <button @click="openAddProductModal">
-            {{ $t("addNewProduct") }}
-          </button>
-        </div>
-        <div v-else>
-          <button @click="openAddProductModal">
-            {{ $t("addNewProduct") }}
-          </button>
-          <table>
-            <thead>
-              <tr>
-                <th>{{ $t("productImage") }}</th>
-                <th>{{ $t("productName") }}</th>
-                <th>{{ $t("actions") }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="product in products" :key="product._id">
-                <td>
-                  <img
-                    :src="product.imageUrls?.main"
-                    :alt="product.name"
-                    class="product-image"
-                  />
-                </td>
-                <td>{{ product.name }}</td>
-                <td class="actions">
-                  <button @click="openChangeCategoryModal(product)">
-                    {{ $t("changeCategory") }}
-                  </button>
-                  <button @click="openEditProductModal(product)">
-                    {{ $t("edit") }}
-                  </button>
-                  <button @click="deleteProduct(product._id)">
-                    {{ $t("delete") }}
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+
+      <!-- Products List -->
+      <div class="flex-1" v-if="categories.length > 0">
+        <div class="bg-white rounded-lg shadow border border-gray-200">
+          <div class="p-4 border-b border-gray-200">
+            <div
+              class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+            >
+              <h2 class="text-xl font-semibold text-gray-800 m-0">
+                {{ $t("products") }}
+              </h2>
+              <button
+                @click="openAddProductModal"
+                class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm font-medium"
+              >
+                {{ $t("addNewProduct") }}
+              </button>
+            </div>
+          </div>
+
+          <!-- No Products State -->
+          <div v-if="products.length === 0" class="text-center p-8">
+            <p class="text-gray-500 mb-4">{{ $t("noProductsFound") }}</p>
+          </div>
+
+          <!-- Products Table -->
+          <div v-else class="overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th
+                    class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200 w-24"
+                  >
+                    {{ $t("productImage") }}
+                  </th>
+                  <th
+                    class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                  >
+                    {{ $t("productName") }}
+                  </th>
+                  <th
+                    class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                  >
+                    {{ $t("actions") }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="product in products"
+                  :key="product._id"
+                  class="hover:bg-gray-50 transition-colors"
+                >
+                  <td class="p-4 border-b border-gray-200">
+                    <div
+                      class="w-16 h-16 rounded-md overflow-hidden bg-gray-100 border border-gray-200"
+                    >
+                      <img
+                        v-if="product.imageUrls?.main"
+                        :src="product.imageUrls.main"
+                        :alt="product.name"
+                        class="w-full h-full object-cover"
+                        @error="handleImageError"
+                      />
+                      <div
+                        v-else
+                        class="w-full h-full flex items-center justify-center text-gray-400 text-xs"
+                      >
+                        {{ $t("noImage") }}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="p-4 border-b border-gray-200">
+                    {{ product.name }}
+                  </td>
+                  <td class="p-4 border-b border-gray-200">
+                    <div class="flex flex-wrap gap-2">
+                      <button
+                        @click="openChangeCategoryModal(product)"
+                        class="px-3 py-1 bg-blue-500 text-white rounded text-xs font-medium hover:bg-blue-600 transition-colors"
+                      >
+                        {{ $t("changeCategory") }}
+                      </button>
+                      <button
+                        @click="openEditProductModal(product)"
+                        class="px-3 py-1 bg-green-500 text-white rounded text-xs font-medium hover:bg-green-600 transition-colors"
+                      >
+                        {{ $t("edit") }}
+                      </button>
+                      <button
+                        @click="deleteProduct(product._id)"
+                        class="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600 transition-colors"
+                      >
+                        {{ $t("delete") }}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Modals -->
     <ChangeCategoryModal
       :show="showChangeCategoryModal"
       :productToChangeCategory="productToChangeCategory || {}"
@@ -77,6 +160,7 @@
       @close="closeChangeCategoryModal"
       @changeCategory="changeCategory"
     />
+
     <AddEditProductModal
       :show="showAddProductModal"
       :isEdit="false"
@@ -84,6 +168,7 @@
       @close="closeAddProductModal"
       @submitForm="submitAddProductForm"
     />
+
     <AddEditProductModal
       :show="showEditProductModal"
       :isEdit="true"
@@ -99,13 +184,17 @@ import { ref, onMounted, watch } from "vue";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { useEventBus } from "@/utils/eventBus";
 
+// Component imports
 import ChangeCategoryModal from "@/components/admin/products/ChangeCategoryModal.vue";
 import AddEditProductModal from "@/components/admin/products/AddEditProductModal.vue";
 
+// Type imports
 import type { Product } from "@/types/products";
 import type { Category } from "@/types/categories";
 
+// Service imports
 import { getAllCategories } from "@/services/categoryService";
 import {
   getProductsByCategory,
@@ -116,22 +205,33 @@ import {
   updateProduct,
 } from "@/services/productService";
 
-import { useEventBus } from "@/utils/eventBus";
+// ==============================
+// Composables setup
+// ==============================
 
 const { t } = useI18n();
-
-const categories = ref<Category[]>([]);
-const products = ref<Product[]>([]);
-const selectedCategory = ref<string>("");
-const loading = ref(true);
 const router = useRouter();
 const toast = useToast();
 const { on, emit } = useEventBus();
 
+// ==============================
+// State Management
+// ==============================
+
+// Data state
+const categories = ref<Category[]>([]);
+const products = ref<Product[]>([]);
+const selectedCategory = ref<string>("");
+const loading = ref(true);
+
+// UI state - modals
 const showChangeCategoryModal = ref(false);
+const showAddProductModal = ref(false);
+const showEditProductModal = ref(false);
+
+// Form state
 const productToChangeCategory = ref<Product | null>(null);
 
-const showAddProductModal = ref(false);
 const newProduct = ref({
   name: "",
   priceRubles: 0,
@@ -146,7 +246,6 @@ const newProduct = ref({
   secondaryImageUrls: "",
 });
 
-const showEditProductModal = ref(false);
 const editProduct = ref({
   id: "",
   name: "",
@@ -162,7 +261,29 @@ const editProduct = ref({
   secondaryImageUrls: "",
 });
 
+// ==============================
+// UI Helpers
+// ==============================
+
+/**
+ * Handles image loading errors by replacing with placeholder
+ * @param event - The error event from the img element
+ */
+const handleImageError = (event: Event) => {
+  const target = event.target as HTMLImageElement;
+  target.src = "/images/placeholder-product.png";
+};
+
+// ==============================
+// Data Fetching
+// ==============================
+
+/**
+ * Fetches all categories from the API
+ */
 const fetchCategories = async () => {
+  loading.value = true;
+
   try {
     const response = await getAllCategories();
     categories.value = response.data.categories;
@@ -179,6 +300,9 @@ const fetchCategories = async () => {
   }
 };
 
+/**
+ * Fetches products for the selected category
+ */
 const fetchProducts = async () => {
   if (!selectedCategory.value) return;
 
@@ -191,18 +315,136 @@ const fetchProducts = async () => {
   }
 };
 
+// ==============================
+// Navigation
+// ==============================
+
+/**
+ * Navigate to categories management page
+ */
 const goToCategories = () => {
   router.push({ name: "AdminCategories" });
 };
 
+// ==============================
+// Category Operations
+// ==============================
+
+/**
+ * Select a category to view its products
+ * @param categoryId - ID of the selected category
+ */
+const selectCategory = (categoryId: string) => {
+  selectedCategory.value = categoryId;
+  fetchProducts();
+};
+
+// ==============================
+// Modal Management
+// ==============================
+
+/**
+ * Opens the category change modal for a product
+ * @param product - Product to change category
+ */
+const openChangeCategoryModal = (product: Product) => {
+  productToChangeCategory.value = product;
+  showChangeCategoryModal.value = true;
+};
+
+/**
+ * Closes the category change modal
+ */
+const closeChangeCategoryModal = () => {
+  productToChangeCategory.value = null;
+  showChangeCategoryModal.value = false;
+};
+
+/**
+ * Opens the add product modal
+ */
 const openAddProductModal = () => {
   showAddProductModal.value = true;
 };
 
+/**
+ * Closes the add product modal
+ */
 const closeAddProductModal = () => {
   showAddProductModal.value = false;
 };
 
+/**
+ * Opens the edit product modal
+ * @param product - Product to edit
+ */
+const openEditProductModal = async (product: Product) => {
+  try {
+    const response = await getProductById(product._id);
+    const fetchedProduct = response.data.product;
+
+    editProduct.value = {
+      id: fetchedProduct._id,
+      name: fetchedProduct.name,
+      priceRubles: fetchedProduct.price.rubles.amount,
+      priceEuros: fetchedProduct.price.euros.amount,
+      artist: fetchedProduct.artist,
+      size: fetchedProduct.size,
+      material: fetchedProduct.material,
+      parts: fetchedProduct.parts,
+      boxArt: fetchedProduct.boxArt,
+      description: fetchedProduct.description,
+      mainImageUrl: fetchedProduct.imageUrls.main,
+      secondaryImageUrls: fetchedProduct.imageUrls.secondary.join(", "),
+    };
+
+    showEditProductModal.value = true;
+  } catch (error) {
+    console.error("Failed to fetch product:", error);
+    toast.error(t("failedToFetchProduct"));
+  }
+};
+
+/**
+ * Closes the edit product modal
+ */
+const closeEditProductModal = () => {
+  showEditProductModal.value = false;
+};
+
+// ==============================
+// CRUD Operations
+// ==============================
+
+/**
+ * Changes a product's category
+ * @param newCategoryId - ID of the new category
+ */
+const changeCategory = async (newCategoryId: string) => {
+  if (!productToChangeCategory.value) return;
+
+  if (!newCategoryId) {
+    toast.error(t("selectNewCategory"));
+    return;
+  }
+
+  try {
+    await updateProductCategory(
+      productToChangeCategory.value._id,
+      newCategoryId
+    );
+    fetchProducts();
+    toast.success(t("productCategoryUpdatedSuccessfully"));
+    closeChangeCategoryModal();
+  } catch (error) {
+    console.error("Failed to update product category:", error);
+    toast.error(t("failedToUpdateProductCategory"));
+  }
+};
+
+/**
+ * Add a new product
+ */
 const submitAddProductForm = async () => {
   try {
     const product = {
@@ -237,37 +479,9 @@ const submitAddProductForm = async () => {
   }
 };
 
-const openEditProductModal = async (product: Product) => {
-  try {
-    const response = await getProductById(product._id);
-    const fetchedProduct = response.data.product;
-
-    editProduct.value = {
-      id: fetchedProduct._id,
-      name: fetchedProduct.name,
-      priceRubles: fetchedProduct.price.rubles.amount,
-      priceEuros: fetchedProduct.price.euros.amount,
-      artist: fetchedProduct.artist,
-      size: fetchedProduct.size,
-      material: fetchedProduct.material,
-      parts: fetchedProduct.parts,
-      boxArt: fetchedProduct.boxArt,
-      description: fetchedProduct.description,
-      mainImageUrl: fetchedProduct.imageUrls.main,
-      secondaryImageUrls: fetchedProduct.imageUrls.secondary.join(", "),
-    };
-
-    showEditProductModal.value = true;
-  } catch (error) {
-    console.error("Failed to fetch product:", error);
-    toast.error(t("failedToFetchProduct"));
-  }
-};
-
-const closeEditProductModal = () => {
-  showEditProductModal.value = false;
-};
-
+/**
+ * Update an existing product
+ */
 const submitEditProductForm = async () => {
   try {
     const product = {
@@ -302,6 +516,10 @@ const submitEditProductForm = async () => {
   }
 };
 
+/**
+ * Delete a product
+ * @param id - ID of the product to delete
+ */
 const deleteProduct = async (id: string) => {
   try {
     await deleteProductService(id);
@@ -313,42 +531,9 @@ const deleteProduct = async (id: string) => {
   }
 };
 
-const selectCategory = (categoryId: string) => {
-  selectedCategory.value = categoryId;
-  fetchProducts();
-};
-
-const openChangeCategoryModal = (product: Product) => {
-  productToChangeCategory.value = product;
-  showChangeCategoryModal.value = true;
-};
-
-const closeChangeCategoryModal = () => {
-  productToChangeCategory.value = null;
-  showChangeCategoryModal.value = false;
-};
-
-const changeCategory = async (newCategoryId: string) => {
-  if (!productToChangeCategory.value) return;
-
-  if (!newCategoryId) {
-    toast.error(t("selectNewCategory"));
-    return;
-  }
-
-  try {
-    await updateProductCategory(
-      productToChangeCategory.value._id,
-      newCategoryId
-    );
-    fetchProducts();
-    toast.success(t("productCategoryUpdatedSuccessfully"));
-    closeChangeCategoryModal();
-  } catch (error) {
-    console.error("Failed to update product category:", error);
-    toast.error(t("failedToUpdateProductCategory"));
-  }
-};
+// ==============================
+// Watchers & Lifecycle
+// ==============================
 
 watch(selectedCategory, (newCategoryId) => {
   if (newCategoryId) {
@@ -366,137 +551,3 @@ onMounted(() => {
   on("productUpdated", fetchProducts);
 });
 </script>
-
-<style scoped>
-.admin-products-container {
-  display: flex;
-  flex-direction: row;
-  gap: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.categories-menu {
-  flex: 1;
-  max-width: 300px;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.categories-menu h2 {
-  font-size: 1.4em;
-  margin-bottom: 16px;
-  color: #333;
-  font-weight: 600;
-}
-
-.categories-menu button {
-  display: block;
-  margin-bottom: 12px;
-  padding: 12px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  border-radius: 6px;
-  width: 100%;
-  text-align: center;
-  font-size: 1em;
-  font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.categories-menu button.active {
-  background-color: #0056b3;
-}
-
-.categories-menu button:hover {
-  background-color: #0056b3;
-  transform: scale(1.02);
-}
-
-.products-list {
-  flex: 3;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.products-list h2 {
-  font-size: 1.6em;
-  margin-bottom: 16px;
-  color: #333;
-  font-weight: 600;
-}
-
-.products-list table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #ffffff;
-}
-
-.products-list th,
-.products-list td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  vertical-align: middle;
-  text-align: center;
-}
-
-.products-list th {
-  background-color: #f8f9fa;
-  font-weight: 600;
-  color: #555;
-}
-
-.products-list tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.products-list tr:hover {
-  background-color: #f1f1f1;
-}
-
-.products-list .actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  align-items: center;
-}
-
-.products-list button {
-  margin: 0;
-  padding: 10px 16px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  border-radius: 6px;
-  font-size: 0.9em;
-  font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.products-list button:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
-}
-
-.product-image {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-</style>

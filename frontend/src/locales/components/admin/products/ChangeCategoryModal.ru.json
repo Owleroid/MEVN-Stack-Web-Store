@@ -3,5 +3,6 @@
   "chooseNewCategory": "Выберите новую категорию",
   "change": "Изменить",
   "cancel": "Отмена",
-  "selectNewCategoryAlert": "Пожалуйста, выберите новую категорию"
+  "selectNewCategoryAlert": "Пожалуйста, выберите новую категорию",
+  "selectCategory": "Выберите категорию"
 }

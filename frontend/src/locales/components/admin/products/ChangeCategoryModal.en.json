@@ -3,5 +3,6 @@
   "chooseNewCategory": "Choose a New Category",
   "change": "Change",
   "cancel": "Cancel",
-  "selectNewCategoryAlert": "Please select a new category"
+  "selectNewCategoryAlert": "Please select a new category",
+  "selectCategory": "Select category"
 }

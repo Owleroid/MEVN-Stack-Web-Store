@@ -12,6 +12,8 @@
   "description": "Описание",
   "mainImageUrl": "URL главного изображения",
   "secondaryImageUrls": "URL дополнительных изображений",
+  "selectImage": "Выбрать изображение",
+  "selectImages": "Выбрать изображения",
   "addProduct": "Добавить продукт",
   "updateProduct": "Обновить продукт",
   "cancel": "Отмена"

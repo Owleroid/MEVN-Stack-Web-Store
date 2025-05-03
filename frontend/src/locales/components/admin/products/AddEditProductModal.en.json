@@ -12,6 +12,8 @@
   "description": "Description",
   "mainImageUrl": "Main Image URL",
   "secondaryImageUrls": "Secondary Image URLs",
+  "selectImage": "Select Image",
+  "selectImages": "Select Images",
   "addProduct": "Add Product",
   "updateProduct": "Update Product",
   "cancel": "Cancel"

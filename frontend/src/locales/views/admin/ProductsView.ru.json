@@ -7,6 +7,8 @@
   "noProductsFound": "Продукты не найдены.",
   "addNewProduct": "Добавить новый продукт",
   "productName": "Название продукта",
+  "productImage": "Изображение",
+  "noImage": "Нет фото",
   "actions": "Действия",
   "changeCategory": "Изменить категорию",
   "edit": "Редактировать",

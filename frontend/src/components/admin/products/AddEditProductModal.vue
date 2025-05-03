@@ -1,97 +1,254 @@
 <template>
-  <div v-if="show" class="modal">
-    <div class="modal-content">
-      <h3>
+  <div
+    v-if="show"
+    class="fixed inset-0 bg-black/50 flex justify-center items-center z-50 overflow-y-auto py-4"
+    @click="close"
+  >
+    <div
+      class="bg-white rounded-lg w-11/12 max-w-2xl p-6 shadow-lg my-4"
+      @click.stop
+    >
+      <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">
         {{ isEdit ? $t("editProduct") : $t("addNewProduct") }}
       </h3>
-      <form @submit.prevent="submitForm">
-        <!-- Add/Edit Product Form Fields -->
-        <div class="form-group">
-          <label for="name">{{ $t("productName") }}:</label>
-          <input type="text" id="name" v-model="product.name" required />
-        </div>
-        <div class="form-group">
-          <label for="priceRubles">{{ $t("priceRubles") }}:</label>
+
+      <form @submit.prevent="submitForm" class="space-y-5">
+        <!-- Product Name -->
+        <div>
+          <label
+            for="name"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            {{ $t("productName") }}:
+          </label>
           <input
-            type="number"
-            id="priceRubles"
-            v-model="product.priceRubles"
+            type="text"
+            id="name"
+            v-model="product.name"
             required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-        <div class="form-group">
-          <label for="priceEuros">{{ $t("priceEuros") }}:</label>
+
+        <!-- Price Section -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label
+              for="priceRubles"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              {{ $t("priceRubles") }}:
+            </label>
+            <input
+              type="number"
+              id="priceRubles"
+              v-model="product.priceRubles"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label
+              for="priceEuros"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              {{ $t("priceEuros") }}:
+            </label>
+            <input
+              type="number"
+              id="priceEuros"
+              v-model="product.priceEuros"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+
+        <!-- Product Details -->
+        <div>
+          <label
+            for="artist"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            {{ $t("artist") }}:
+          </label>
           <input
-            type="number"
-            id="priceEuros"
-            v-model="product.priceEuros"
+            type="text"
+            id="artist"
+            v-model="product.artist"
             required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-        <div class="form-group">
-          <label for="artist">{{ $t("artist") }}:</label>
-          <input type="text" id="artist" v-model="product.artist" required />
+
+        <div>
+          <label
+            for="size"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            {{ $t("size") }}:
+          </label>
+          <input
+            type="text"
+            id="size"
+            v-model="product.size"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
         </div>
-        <div class="form-group">
-          <label for="size">{{ $t("size") }}:</label>
-          <input type="text" id="size" v-model="product.size" required />
-        </div>
-        <div class="form-group">
-          <label for="material">{{ $t("material") }}:</label>
+
+        <div>
+          <label
+            for="material"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            {{ $t("material") }}:
+          </label>
           <input
             type="text"
             id="material"
             v-model="product.material"
             required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-        <div class="form-group">
-          <label for="parts">{{ $t("parts") }}:</label>
-          <input type="text" id="parts" v-model="product.parts" />
+
+        <div>
+          <label
+            for="parts"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            {{ $t("parts") }}:
+          </label>
+          <input
+            type="text"
+            id="parts"
+            v-model="product.parts"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
         </div>
-        <div class="form-group">
-          <label for="boxArt">{{ $t("boxArt") }}:</label>
-          <input type="text" id="boxArt" v-model="product.boxArt" required />
+
+        <div>
+          <label
+            for="boxArt"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            {{ $t("boxArt") }}:
+          </label>
+          <input
+            type="text"
+            id="boxArt"
+            v-model="product.boxArt"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
         </div>
-        <div class="form-group">
-          <label for="description">{{ $t("description") }}:</label>
-          <textarea id="description" v-model="product.description"></textarea>
+
+        <!-- Description -->
+        <div>
+          <label
+            for="description"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            {{ $t("description") }}:
+          </label>
+          <textarea
+            id="description"
+            v-model="product.description"
+            rows="4"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          ></textarea>
         </div>
-        <div class="form-group">
-          <label for="mainImageUrl">{{ $t("mainImageUrl") }}:</label>
-          <div class="image-selection">
+
+        <!-- Main Image -->
+        <div>
+          <label
+            for="mainImageUrl"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            {{ $t("mainImageUrl") }}:
+          </label>
+          <div class="flex gap-2">
             <input
               type="text"
               id="mainImageUrl"
               v-model="product.mainImageUrl"
               readonly
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50"
             />
-            <button type="button" @click="openImageManager(false)">
+            <button
+              type="button"
+              @click="openImageManager(false)"
+              class="px-3 py-2 bg-blue-500 text-white rounded-md text-sm font-medium hover:bg-blue-600 transition-colors"
+            >
               {{ $t("selectImage") }}
             </button>
           </div>
+
+          <!-- Image Preview -->
+          <div v-if="product.mainImageUrl" class="mt-2">
+            <img
+              :src="product.mainImageUrl"
+              alt="Main product image"
+              class="h-32 object-contain rounded-md border border-gray-200"
+            />
+          </div>
         </div>
-        <div class="form-group">
-          <label for="secondaryImageUrls"
-            >{{ $t("secondaryImageUrls") }}:</label
+
+        <!-- Secondary Images -->
+        <div>
+          <label
+            for="secondaryImageUrls"
+            class="block text-sm font-medium text-gray-700 mb-1"
           >
-          <div class="image-selection">
+            {{ $t("secondaryImageUrls") }}:
+          </label>
+          <div class="flex gap-2">
             <textarea
               id="secondaryImageUrls"
               v-model="product.secondaryImageUrls"
               readonly
+              rows="2"
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50"
             ></textarea>
-            <button type="button" @click="openImageManager(true)">
+            <button
+              type="button"
+              @click="openImageManager(true)"
+              class="px-3 py-2 bg-blue-500 text-white rounded-md text-sm font-medium hover:bg-blue-600 transition-colors"
+            >
               {{ $t("selectImages") }}
             </button>
           </div>
+
+          <!-- Secondary Images Preview -->
+          <div
+            v-if="product.secondaryImageUrls"
+            class="mt-2 flex flex-wrap gap-2"
+          >
+            <img
+              v-for="(url, index) in product.secondaryImageUrls.split(',')"
+              :key="index"
+              :src="url.trim()"
+              alt="Secondary product image"
+              class="h-24 object-contain rounded-md border border-gray-200"
+            />
+          </div>
         </div>
-        <div class="form-actions">
-          <button type="submit">
-            {{ isEdit ? $t("updateProduct") : $t("addProduct") }}
-          </button>
-          <button type="button" @click="close">
+
+        <!-- Form Actions -->
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+          <button
+            type="button"
+            @click="close"
+            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+          >
             {{ $t("cancel") }}
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+          >
+            {{ isEdit ? $t("updateProduct") : $t("addProduct") }}
           </button>
         </div>
       </form>
@@ -110,6 +267,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import ImageManagerModal from "@/components/admin/image-manager/ImageManagerModal.vue";
+
+// ==============================
+// Props & Emits
+// ==============================
 
 const props = defineProps({
   show: Boolean,
@@ -134,18 +295,37 @@ const props = defineProps({
 
 const emits = defineEmits(["close", "submitForm"]);
 
+// ==============================
+// State Management
+// ==============================
+
 const showImageManager = ref(false);
 const allowMultiple = ref(false);
 
+// ==============================
+// Image Manager Methods
+// ==============================
+
+/**
+ * Opens the image manager modal
+ * @param multiple - Whether to allow multiple image selection
+ */
 const openImageManager = (multiple: boolean) => {
   allowMultiple.value = multiple;
   showImageManager.value = true;
 };
 
+/**
+ * Closes the image manager modal
+ */
 const closeImageManager = () => {
   showImageManager.value = false;
 };
 
+/**
+ * Handles image selection from the image manager
+ * @param selectedImages - Array of selected image objects
+ */
 const handleImageSelection = (selectedImages: { url: string }[]) => {
   if (allowMultiple.value) {
     props.product.secondaryImageUrls = selectedImages
@@ -157,81 +337,21 @@ const handleImageSelection = (selectedImages: { url: string }[]) => {
   closeImageManager();
 };
 
+// ==============================
+// Form Actions
+// ==============================
+
+/**
+ * Closes the modal
+ */
 const close = () => {
   emits("close");
 };
 
+/**
+ * Submits the form
+ */
 const submitForm = () => {
   emits("submitForm", props.product);
 };
 </script>
-
-<style scoped>
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 90%;
-  overflow-y: auto;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.form-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-button[type="button"] {
-  background-color: #6c757d;
-}
-
-button[type="button"]:hover {
-  background-color: #5a6268;
-}
-</style>

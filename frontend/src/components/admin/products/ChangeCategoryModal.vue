@@ -1,17 +1,39 @@
 <template>
-  <div v-if="show" class="modal">
-    <div class="modal-content">
-      <span class="close" @click="close">&times;</span>
-      <h3>
-        {{
-          $t("changeCategoryFor", {
-            name: productToChangeCategory?.name,
-          })
-        }}
-      </h3>
-      <div class="form-group">
-        <label for="newCategory">{{ $t("chooseNewCategory") }}</label>
-        <select id="newCategory" v-model="selectedNewCategory">
+  <div
+    v-if="show"
+    class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+    @click="close"
+  >
+    <div class="bg-white rounded-lg w-11/12 max-w-md p-6 shadow-lg" @click.stop>
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold text-gray-800">
+          {{
+            $t("changeCategoryFor", {
+              name: productToChangeCategory?.name,
+            })
+          }}
+        </h3>
+        <button
+          class="bg-transparent border-0 text-gray-400 hover:text-gray-600 text-2xl cursor-pointer transition-colors"
+          @click="close"
+        >
+          &times;
+        </button>
+      </div>
+
+      <div class="mb-6">
+        <label
+          for="newCategory"
+          class="block text-sm font-medium text-gray-700 mb-2"
+        >
+          {{ $t("chooseNewCategory") }}
+        </label>
+        <select
+          id="newCategory"
+          v-model="selectedNewCategory"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="" disabled selected>{{ $t("selectCategory") }}</option>
           <option
             v-for="category in filteredCategories"
             :key="category._id"
@@ -21,12 +43,21 @@
           </option>
         </select>
       </div>
-      <div class="form-actions">
-        <button @click="changeCategory(selectedNewCategory)">
-          {{ $t("change") }}
-        </button>
-        <button type="button" @click="close">
+
+      <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <button
+          @click="close"
+          class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-medium hover:bg-gray-300 transition-colors"
+        >
           {{ $t("cancel") }}
+        </button>
+        <button
+          @click="changeCategory(selectedNewCategory)"
+          class="px-4 py-2 bg-blue-500 text-white rounded-md font-medium hover:bg-blue-600 transition-colors"
+          :disabled="!selectedNewCategory"
+          :class="{ 'opacity-50 cursor-not-allowed': !selectedNewCategory }"
+        >
+          {{ $t("change") }}
         </button>
       </div>
     </div>
@@ -34,9 +65,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
+import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
 
 import type { Category } from "@/types/categories";
+
+// ==============================
+// Composables setup
+// ==============================
+
+const { t } = useI18n();
+const toast = useToast();
+
+// ==============================
+// Props & Emits
+// ==============================
 
 const props = defineProps({
   show: Boolean,
@@ -46,8 +90,19 @@ const props = defineProps({
 
 const emits = defineEmits(["close", "changeCategory"]);
 
+// ==============================
+// State Management
+// ==============================
+
 const selectedNewCategory = ref<string>("");
 
+// ==============================
+// Computed Properties
+// ==============================
+
+/**
+ * Filters out the current category from the categories list
+ */
 const filteredCategories = computed(() => {
   return ((props.categories ?? []) as Category[]).filter(
     (category: Category) =>
@@ -55,110 +110,42 @@ const filteredCategories = computed(() => {
   );
 });
 
+// ==============================
+// Watchers
+// ==============================
+
+/**
+ * Reset the selected category when the modal opens
+ */
+watch(
+  () => props.show,
+  (newValue) => {
+    if (newValue) {
+      selectedNewCategory.value = "";
+    }
+  }
+);
+
+// ==============================
+// Action Handlers
+// ==============================
+
+/**
+ * Closes the modal
+ */
 const close = () => {
   emits("close");
 };
 
+/**
+ * Handles the category change
+ * @param newCategoryId - ID of the new category
+ */
 const changeCategory = (newCategoryId: string) => {
   if (!newCategoryId) {
-    alert("Please select a new category");
+    toast.error(t("selectNewCategoryAlert"));
     return;
   }
   emits("changeCategory", newCategoryId);
 };
 </script>
-
-<style scoped>
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 90%;
-  overflow-y: auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  position: relative;
-}
-
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-h3 {
-  margin-top: 0;
-  font-size: 24px;
-  text-align: center;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-.form-actions button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  width: fit-content;
-}
-
-.form-actions button[type="button"] {
-  background-color: #6c757d;
-}
-
-.form-actions button:hover {
-  background-color: #0056b3;
-}
-
-.form-actions button[type="button"]:hover {
-  background-color: #5a6268;
-}
-</style>
