@@ -30,5 +30,12 @@
   "addNewProduct": "Добавить новый продукт",
   "close": "Закрыть",
   "totalPrice": "Итоговая цена",
-  "currency": "Валюта"
+  "currency": "Валюта",
+  "statuses": {
+    "waiting confirmation": "Ожидает подтверждения",
+    "packing": "Упаковка",
+    "sended": "Отправлено",
+    "delivered": "Доставлено",
+    "canceled": "Отменено"
+  }
 }

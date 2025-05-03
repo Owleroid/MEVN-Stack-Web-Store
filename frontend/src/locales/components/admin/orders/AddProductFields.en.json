@@ -1,7 +1,13 @@
 {
-  "newProductName": "Product Name",
-  "amount": "Amount",
-  "addProduct": "Add Product",
-  "searchPlaceholder": "Search for a product...",
-  "noResultsFound": "No results found."
+  "addNewProduct": "Add New Product",
+  "productName": "Product Name",
+  "searchProductPlaceholder": "Start typing to search...",
+  "quantity": "Quantity",
+  "enterQuantity": "Enter quantity",
+  "addToOrder": "Add to Order",
+  "totalPrice": "Total Price",
+  "noProductsFound": "No products found",
+  "errorSearchingProducts": "Error searching products",
+  "selectProductError": "Please select a product from the list",
+  "invalidQuantityError": "Please enter a valid quantity (minimum 1)"
 }

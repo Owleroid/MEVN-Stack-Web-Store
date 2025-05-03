@@ -1,31 +1,23 @@
 {
-  "pageTitle": "Мои заказы",
-  "order": "Заказ",
-  "date": "Дата",
-  "total": "Итого",
-  "status": "Статус",
-  "recipient": {
-    "title": "Информация о получателе",
-    "email": "Электронная почта",
-    "name": "Имя",
-    "surname": "Фамилия",
-    "phone": "Телефон"
+  "newOrders": "Новые заказы",
+  "noNewOrders": "На данный момент нет новых заказов",
+  "allOrders": "Все заказы",
+  "sortByDate": "Сортировать по дате",
+  "newestToOldest": "От новых к старым",
+  "oldestToNewest": "От старых к новым",
+  "filterByStatus": "Фильтр по статусу",
+  "statuses": {
+    "all": "Все статусы",
+    "waitingConfirmation": "Ожидает подтверждения",
+    "packing": "Упаковка",
+    "sended": "Отправлено",
+    "delivered": "Доставлено",
+    "canceled": "Отменено"
   },
-  "delivery": {
-    "title": "Информация о доставке",
-    "country": "Страна",
-    "city": "Город",
-    "street": "Улица",
-    "buildingNumber": "Номер дома",
-    "apartment": "Квартира",
-    "postalCode": "Почтовый индекс"
-  },
-  "notes": "Примечания к заказу",
-  "trackingNumber": "Номер отслеживания",
-  "noOrders": "У вас нет заказов.",
-  "orderUpdated": "Заказ успешно обновлен!",
-  "orderUpdateError": "Не удалось обновить заказ.",
-  "orderStatusUpdated": "Статус заказа успешно обновлен!",
-  "orderStatusUpdateError": "Не удалось обновить статус заказа.",
-  "fetchOrdersError": "Не удалось загрузить заказы."
+  "noOrdersFound": "Заказы не найдены",
+  "fetchOrdersError": "Не удалось загрузить заказы",
+  "orderUpdated": "Заказ успешно обновлен",
+  "orderUpdateError": "Ошибка при обновлении заказа",
+  "orderStatusUpdated": "Статус заказа обновлен",
+  "orderStatusUpdateError": "Не удалось обновить статус заказа"
 }

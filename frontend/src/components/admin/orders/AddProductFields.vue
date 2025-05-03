@@ -1,138 +1,275 @@
 <template>
-  <div class="add-product-fields">
-    <label for="newProductName">{{ $t("newProductName") }}:</label>
-    <input
-      type="text"
-      v-model="newProductName"
-      id="newProductName"
-      @input="searchProducts"
-    />
-    <ul v-if="searchResults.length > 0">
-      <li
-        v-for="product in searchResults"
-        :key="product._id"
-        @click="selectProduct(product)"
+  <div class="space-y-6 border rounded-md p-6 bg-gray-50">
+    <h3 class="text-lg font-medium text-gray-700 mb-4">
+      {{ $t("addNewProduct") }}
+    </h3>
+
+    <div class="relative">
+      <label
+        for="newProductName"
+        class="block text-sm font-medium text-gray-700 mb-2"
       >
-        {{ product.name }}
-      </li>
-    </ul>
-    <label for="newProductAmount">{{ $t("amount") }}:</label>
-    <input
-      type="number"
-      v-model.number="newProductAmount"
-      id="newProductAmount"
-      min="1"
-    />
-    <button type="button" @click="addProduct">
-      {{ $t("addProduct") }}
+        {{ $t("productName") }}:
+      </label>
+      <input
+        type="text"
+        v-model="newProductName"
+        id="newProductName"
+        @input="searchProducts"
+        class="mt-1 block w-full py-2.5 px-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        :placeholder="$t('searchProductPlaceholder')"
+        :aria-invalid="!!errors.product"
+      />
+
+      <!-- Search Results Dropdown -->
+      <ul
+        v-if="searchResults.length > 0"
+        class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+      >
+        <li
+          v-for="product in searchResults"
+          :key="product._id"
+          @click="selectProduct(product)"
+          class="relative cursor-pointer select-none py-2.5 px-4 hover:bg-blue-100"
+        >
+          <div class="flex items-center">
+            <span class="block truncate font-medium">{{ product.name }}</span>
+            <span class="ml-auto text-sm text-gray-500">{{
+              formatPrice(product.price.euros.amount)
+            }}</span>
+          </div>
+        </li>
+        <li
+          v-if="searchResults.length === 0"
+          class="relative cursor-default select-none py-2.5 px-4 text-gray-500"
+        >
+          {{ $t("noProductsFound") }}
+        </li>
+      </ul>
+
+      <p v-if="errors.product" class="mt-2 text-sm text-red-600">
+        {{ errors.product }}
+      </p>
+    </div>
+
+    <div class="mt-6">
+      <label
+        for="newProductAmount"
+        class="block text-sm font-medium text-gray-700 mb-2"
+      >
+        {{ $t("quantity") }}:
+      </label>
+      <input
+        type="number"
+        v-model.number="newProductAmount"
+        id="newProductAmount"
+        min="1"
+        class="mt-1 block w-full py-2.5 px-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        :placeholder="$t('enterQuantity')"
+        :aria-invalid="!!errors.amount"
+      />
+      <p v-if="errors.amount" class="mt-2 text-sm text-red-600">
+        {{ errors.amount }}
+      </p>
+    </div>
+
+    <!-- Selected Product Summary -->
+    <div
+      v-if="selectedProduct"
+      class="p-4 bg-blue-50 rounded border border-blue-200 mt-6"
+    >
+      <div class="flex justify-between items-center">
+        <span class="font-medium">{{ selectedProduct.name }}</span>
+        <span>{{ formatPrice(selectedProduct.price.euros.amount) }}</span>
+      </div>
+      <div class="text-sm text-gray-600 mt-2" v-if="newProductAmount > 0">
+        {{ $t("totalPrice") }}:
+        {{ formatPrice(selectedProduct.price.euros.amount * newProductAmount) }}
+      </div>
+    </div>
+
+    <button
+      type="button"
+      @click="addProduct"
+      class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mt-6"
+      :disabled="!selectedProduct || newProductAmount < 1"
+    >
+      {{ $t("addToOrder") }}
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { useI18n } from "vue-i18n";
 
+// Type imports
 import type { Product } from "@/types/products";
 
+// Service imports
 import { searchProductsByName } from "@/services/productService";
 
+// ==============================
+// Props & Emits
+// ==============================
 const props = defineProps<{
   existingProductIds: string[];
 }>();
 
 const emits = defineEmits(["addProduct"]);
 
+// ==============================
+// Composables
+// ==============================
+const { t } = useI18n();
+
+// ==============================
+// State Management
+// ==============================
+// Form inputs
 const newProductName = ref("");
 const newProductAmount = ref(1);
+
+// Search state
 const searchResults = ref<Product[]>([]);
 const selectedProduct = ref<Product | null>(null);
+const isSearching = ref(false);
 
+// Validation state
+const errors = ref({
+  product: "",
+  amount: "",
+});
+
+// ==============================
+// Search & Selection Logic
+// ==============================
+/**
+ * Searches for products based on entered name
+ * Filters out products that are already in the order
+ */
 const searchProducts = async () => {
-  if (newProductName.value) {
-    try {
-      const response = await searchProductsByName(newProductName.value);
-      const allProducts = response.data.products;
+  // Reset state
+  errors.value.product = "";
 
-      // Filter out products that are already in the order
-      searchResults.value = allProducts.filter(
-        (product: { _id: string }) =>
-          !props.existingProductIds.includes(product._id)
-      );
-    } catch (error) {
-      console.error("Error searching products:", error);
-    }
-  } else {
+  // Clear results when input is empty
+  if (!newProductName.value.trim()) {
     searchResults.value = [];
+    selectedProduct.value = null;
+    return;
+  }
+
+  // Don't search until user types at least 2 characters
+  if (newProductName.value.trim().length < 2) {
+    return;
+  }
+
+  try {
+    isSearching.value = true;
+    const response = await searchProductsByName(newProductName.value);
+
+    // Filter out products already in order
+    searchResults.value = response.data.products.filter(
+      (product: { _id: string }) =>
+        !props.existingProductIds.includes(product._id)
+    );
+  } catch (error) {
+    console.error("Error searching products:", error);
+    errors.value.product = t("errorSearchingProducts");
+  } finally {
+    isSearching.value = false;
   }
 };
 
+/**
+ * Handles product selection from dropdown
+ * @param product - Selected product
+ */
 const selectProduct = (product: Product) => {
   selectedProduct.value = product;
   newProductName.value = product.name;
   searchResults.value = [];
 };
 
+// ==============================
+// Form Submission Logic
+// ==============================
+/**
+ * Validates form inputs before submission
+ * @returns boolean indicating if form is valid
+ */
+const validateForm = () => {
+  let isValid = true;
+  errors.value = { product: "", amount: "" };
+
+  // Validate product selection
+  if (!selectedProduct.value) {
+    errors.value.product = t("selectProductError");
+    isValid = false;
+  }
+
+  // Validate quantity
+  if (!newProductAmount.value || newProductAmount.value < 1) {
+    errors.value.amount = t("invalidQuantityError");
+    isValid = false;
+  }
+
+  return isValid;
+};
+
+/**
+ * Handles the add product button click
+ * Validates input, emits event with product data, and resets form
+ */
 const addProduct = () => {
-  if (selectedProduct.value && newProductAmount.value > 0) {
+  if (!validateForm()) return;
+
+  if (selectedProduct.value) {
+    // Emit product data to parent component
     emits("addProduct", {
       productId: selectedProduct.value._id,
       name: selectedProduct.value.name,
       amount: newProductAmount.value,
       productPrice: selectedProduct.value.price.euros.amount,
     });
-    newProductName.value = "";
-    newProductAmount.value = 1;
-    selectedProduct.value = null;
+
+    // Reset form after successful add
+    resetForm();
   }
 };
+
+/**
+ * Resets form to initial state
+ */
+const resetForm = () => {
+  newProductName.value = "";
+  newProductAmount.value = 1;
+  selectedProduct.value = null;
+  errors.value = { product: "", amount: "" };
+};
+
+// ==============================
+// Helper Functions
+// ==============================
+/**
+ * Formats price with currency symbol
+ * @param price - Price to format
+ * @returns Formatted price string
+ */
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "EUR",
+  }).format(price);
+};
+
+// Computed values for selected product display
+const totalPrice = computed(() => {
+  if (selectedProduct.value && newProductAmount.value > 0) {
+    return formatPrice(
+      selectedProduct.value.price.euros.amount * newProductAmount.value
+    );
+  }
+  return formatPrice(0);
+});
 </script>
-
-<style scoped>
-.add-product-fields {
-  margin-top: 10px;
-}
-
-.add-product-fields label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.add-product-fields input,
-.add-product-fields select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-sizing: border-box;
-  margin-bottom: 10px;
-}
-
-.add-product-fields button {
-  display: inline-block;
-  background-color: #007bff;
-  color: #fff;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.add-product-fields button:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
-}
-
-.add-product-fields button:focus {
-  outline: none;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.8);
-}
-
-.add-product-fields button:active {
-  background-color: #004085;
-  transform: scale(0.95);
-}
-</style>

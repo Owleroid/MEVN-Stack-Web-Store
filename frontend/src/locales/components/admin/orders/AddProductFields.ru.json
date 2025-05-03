@@ -1,7 +1,13 @@
 {
-  "newProductName": "Название продукта",
-  "amount": "Количество",
-  "addProduct": "Добавить продукт",
-  "searchPlaceholder": "Поиск продукта...",
-  "noResultsFound": "Результаты не найдены."
+  "addNewProduct": "Добавить новый продукт",
+  "productName": "Наименование продукта",
+  "searchProductPlaceholder": "Начните вводить для поиска...",
+  "quantity": "Количество",
+  "enterQuantity": "Введите количество",
+  "addToOrder": "Добавить в заказ",
+  "totalPrice": "Общая стоимость",
+  "noProductsFound": "Товары не найдены",
+  "errorSearchingProducts": "Ошибка при поиске товаров",
+  "selectProductError": "Пожалуйста, выберите продукт из списка",
+  "invalidQuantityError": "Пожалуйста, введите действительное количество (минимум 1)"
 }

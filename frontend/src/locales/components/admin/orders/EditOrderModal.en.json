@@ -30,5 +30,12 @@
   "addNewProduct": "Add New Product",
   "close": "Close",
   "totalPrice": "Total Price",
-  "currency": "Currency"
+  "currency": "Currency",
+  "statuses": {
+    "waiting confirmation": "Waiting Confirmation",
+    "packing": "Packing",
+    "sended": "Sent",
+    "delivered": "Delivered",
+    "canceled": "Canceled"
+  }
 }

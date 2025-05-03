@@ -1,116 +1,164 @@
 <template>
-  <table class="orders-table">
-    <thead>
-      <tr>
-        <th>{{ $t("orderId") }}</th>
-        <th>{{ $t("products") }}</th>
-        <th>{{ $t("recipientEmail") }}</th>
-        <th>{{ $t("recipientPhone") }}</th>
-        <th>{{ $t("date") }}</th>
-        <th>{{ $t("status") }}</th>
-        <th>{{ $t("actions") }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr
-        v-for="order in orders"
-        :key="order._id"
-        @click="viewOrder(order)"
-        class="clickable-row"
-      >
-        <td class="clickable-id">{{ order.orderNumber }}</td>
-        <td>
-          <ul>
-            <li v-for="product in order.products" :key="product.productId">
-              {{ product.name }} ({{ product.amount }})
-            </li>
-          </ul>
-        </td>
-        <td>{{ order.recipient?.email }}</td>
-        <td>{{ order.recipient?.phone }}</td>
-        <td>{{ new Date(order.dateOfCreation).toLocaleString() }}</td>
-        <td>
-          <span>{{ $t(order.status) }}</span>
-        </td>
-        <td>
-          <button @click.stop="editOrder(order)">
-            {{ $t("edit") }}
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            {{ $t("orderId") }}
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            {{ $t("products") }}
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            {{ $t("date") }}
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            {{ $t("status") }}
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            {{ $t("actions") }}
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr
+          v-for="order in orders"
+          :key="order._id"
+          @click="viewOrder(order)"
+          class="hover:bg-gray-50 cursor-pointer transition-colors"
+        >
+          <td class="px-6 py-4 whitespace-nowrap text-blue-600 underline">
+            {{ order.orderNumber }}
+          </td>
+          <td class="px-6 py-4">
+            <ul class="list-disc ml-4 text-sm">
+              <li
+                v-for="product in order.products"
+                :key="product.productId"
+                class="mb-1 last:mb-0"
+              >
+                {{ product.name }} ({{ product.amount }})
+              </li>
+            </ul>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            {{ new Date(order.dateOfCreation).toLocaleString() }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span
+              class="px-2 py-1 text-sm rounded-full"
+              :class="getStatusClass(order.status)"
+            >
+              {{ $t(statusKey(order.status)) }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <button
+              @click.stop="editOrder(order)"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              {{ $t("edit") }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script setup lang="ts">
 import type { Order } from "@/types/orders";
 
+// ==============================
+// Props Definition
+// ==============================
+
+/**
+ * Component props
+ */
 const props = defineProps<{
+  /** List of orders to display in the table */
   orders: Order[];
 }>();
 
+// ==============================
+// Events Definition
+// ==============================
+
+/**
+ * Component events
+ */
 const emits = defineEmits(["viewOrder", "editOrder"]);
 
+// ==============================
+// Action Handlers
+// ==============================
+
+/**
+ * Emits event to view order details
+ * @param order - The order to view
+ */
 const viewOrder = (order: Order) => {
   emits("viewOrder", order);
 };
 
+/**
+ * Emits event to edit order
+ * @param order - The order to edit
+ */
 const editOrder = (order: Order) => {
   emits("editOrder", order);
 };
+
+// ==============================
+// Utility Functions
+// ==============================
+
+/**
+ * Converts status string from backend format to translation key format
+ * @param status - The order status from backend (e.g. "waiting confirmation")
+ * @returns The corresponding translation key (e.g. "waitingConfirmation")
+ */
+const statusKey = (status: string): string => {
+  switch (status) {
+    case "waiting confirmation":
+      return "waitingConfirmation";
+    // All other statuses match their keys
+    default:
+      return status;
+  }
+};
+
+/**
+ * Returns appropriate CSS class based on order status
+ * @param status - The order status
+ * @returns CSS class for styling the status badge
+ */
+const getStatusClass = (status: string): string => {
+  switch (status) {
+    case "waiting confirmation":
+    case "waitingConfirmation":
+      return "bg-yellow-100 text-yellow-800";
+    case "packing":
+      return "bg-blue-100 text-blue-800";
+    case "sended":
+      return "bg-purple-100 text-purple-800";
+    case "delivered":
+      return "bg-green-100 text-green-800";
+    case "canceled":
+      return "bg-red-100 text-red-800";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
+};
 </script>
-
-<style scoped>
-.orders-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
-.orders-table th,
-.orders-table td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  text-align: left;
-}
-
-.orders-table th {
-  background-color: #f2f2f2;
-  font-weight: bold;
-}
-
-.orders-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.orders-table tr:hover {
-  background-color: #f1f1f1;
-}
-
-.clickable-row {
-  cursor: pointer;
-}
-
-.clickable-id {
-  color: #000;
-  text-decoration: underline;
-}
-
-.clickable-id:hover {
-  color: #333;
-}
-
-button {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-  width: fit-content;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-</style>

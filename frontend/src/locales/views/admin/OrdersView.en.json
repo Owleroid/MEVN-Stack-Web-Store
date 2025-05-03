@@ -1,42 +1,23 @@
 {
-  "orders": "Orders",
   "newOrders": "New Orders",
-  "noNewOrders": "No new orders",
+  "noNewOrders": "No new orders at the moment",
   "allOrders": "All Orders",
-  "noOrdersFound": "No orders found",
-  "sortByDate": "Sort by Date:",
-  "newestToOldest": "Newest to Oldest",
-  "oldestToNewest": "Oldest to Newest",
-  "filterByStatus": "Filter by Status:",
+  "sortByDate": "Sort by date",
+  "newestToOldest": "Newest to oldest",
+  "oldestToNewest": "Oldest to newest",
+  "filterByStatus": "Filter by status",
   "statuses": {
-    "all": "All",
+    "all": "All statuses",
     "waitingConfirmation": "Waiting Confirmation",
     "packing": "Packing",
-    "sended": "Sended",
+    "sended": "Sent",
     "delivered": "Delivered",
     "canceled": "Canceled"
   },
-  "orderUpdated": "Order updated successfully!",
-  "orderUpdateError": "Failed to update the order.",
-  "orderStatusUpdated": "Order status updated successfully!",
-  "orderStatusUpdateError": "Failed to update the order status.",
-  "fetchOrdersError": "Failed to fetch orders.",
-  "recipient": {
-    "title": "Recipient Information",
-    "email": "Email",
-    "name": "Name",
-    "surname": "Surname",
-    "phone": "Phone"
-  },
-  "delivery": {
-    "title": "Delivery Information",
-    "country": "Country",
-    "city": "City",
-    "street": "Street",
-    "buildingNumber": "Building Number",
-    "apartment": "Apartment",
-    "postalCode": "Postal Code"
-  },
-  "notes": "Order Notes",
-  "trackingNumber": "Tracking Number"
+  "noOrdersFound": "No orders found",
+  "fetchOrdersError": "Failed to fetch orders",
+  "orderUpdated": "Order has been successfully updated",
+  "orderUpdateError": "Error updating order",
+  "orderStatusUpdated": "Order status has been updated",
+  "orderStatusUpdateError": "Failed to update order status"
 }

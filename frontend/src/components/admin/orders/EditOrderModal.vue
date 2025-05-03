@@ -1,25 +1,51 @@
 <template>
-  <div v-if="show" class="modal">
-    <div class="modal-content">
-      <span class="close" @click="close">&times;</span>
-      <h2 v-if="isEditing">{{ $t("editOrder") }}</h2>
-      <h2 v-else>{{ $t("orderDetails") }}</h2>
-      <div v-if="order">
+  <div
+    v-if="show"
+    class="fixed inset-0 z-10 flex items-center justify-center overflow-auto bg-black/40"
+  >
+    <div
+      class="relative w-11/12 max-w-3xl p-6 mx-auto bg-white rounded-lg shadow-lg"
+    >
+      <!-- Modal Header -->
+      <button
+        @click="close"
+        class="absolute top-4 right-4 text-2xl font-bold text-gray-400 hover:text-gray-800 transition-colors"
+      >
+        &times;
+      </button>
+
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">
+        {{ isEditing ? $t("editOrder") : $t("orderDetails") }}
+      </h2>
+
+      <div v-if="order" class="space-y-6">
         <!-- Order Details Section -->
-        <section class="form-section">
-          <h3>{{ $t("orderDetails") }}</h3>
-          <p>
-            <strong>{{ $t("orderId") }}:</strong>
-            {{ order.orderNumber }}
-          </p>
-          <p>
-            <strong>{{ $t("date") }}:</strong>
-            {{ new Date(order.dateOfCreation).toLocaleString() }}
-          </p>
-          <div class="form-group">
-            <label for="status">{{ $t("status") }}:</label>
-            <template v-if="isEditing">
-              <select v-model="order.status" id="status">
+        <section class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-700 mb-4">
+            {{ $t("orderDetails") }}
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm text-gray-600 mb-1">{{ $t("orderId") }}:</p>
+              <p class="font-medium">{{ order.orderNumber }}</p>
+            </div>
+
+            <div>
+              <p class="text-sm text-gray-600 mb-1">{{ $t("date") }}:</p>
+              <p class="font-medium">
+                {{ new Date(order.dateOfCreation).toLocaleString() }}
+              </p>
+            </div>
+
+            <div class="col-span-1 md:col-span-2">
+              <p class="text-sm text-gray-600 mb-1">{{ $t("status") }}:</p>
+              <select
+                v-if="isEditing"
+                v-model="order.status"
+                id="status"
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              >
                 <option
                   value="waiting confirmation"
                   :disabled="order.status !== 'waiting confirmation'"
@@ -31,176 +57,231 @@
                 <option value="delivered">{{ $t("delivered") }}</option>
                 <option value="canceled">{{ $t("canceled") }}</option>
               </select>
-            </template>
-            <template v-else>
-              <p>{{ $t(`statuses.${order.status}`) }}</p>
-            </template>
+              <p v-else class="font-medium">
+                {{ $t(statusKey(order.status)) }}
+              </p>
+            </div>
           </div>
         </section>
 
         <!-- Recipient Details Section -->
-        <section class="form-section">
-          <h3>{{ $t("recipientDetails") }}</h3>
-          <div class="form-group">
-            <label for="recipientName">{{ $t("recipientName") }}:</label>
-            <template v-if="isEditing">
+        <section class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-700 mb-4">
+            {{ $t("recipientDetails") }}
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label
+                for="recipientName"
+                class="block text-sm text-gray-600 mb-1"
+                >{{ $t("recipientName") }}:</label
+              >
               <input
+                v-if="isEditing"
                 type="text"
                 v-model="order.recipient.name"
                 id="recipientName"
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
-            </template>
-            <template v-else>
-              <p>{{ order.recipient.name }}</p>
-            </template>
-          </div>
-          <div class="form-group">
-            <label for="recipientSurname">{{ $t("recipientSurname") }}:</label>
-            <template v-if="isEditing">
+              <p v-else class="font-medium">{{ order.recipient.name }}</p>
+            </div>
+
+            <div>
+              <label
+                for="recipientSurname"
+                class="block text-sm text-gray-600 mb-1"
+                >{{ $t("recipientSurname") }}:</label
+              >
               <input
+                v-if="isEditing"
                 type="text"
                 v-model="order.recipient.surname"
                 id="recipientSurname"
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
-            </template>
-            <template v-else>
-              <p>{{ order.recipient.surname }}</p>
-            </template>
-          </div>
-          <div class="form-group">
-            <label for="recipientEmail">{{ $t("recipientEmail") }}:</label>
-            <template v-if="isEditing">
+              <p v-else class="font-medium">{{ order.recipient.surname }}</p>
+            </div>
+
+            <div>
+              <label
+                for="recipientEmail"
+                class="block text-sm text-gray-600 mb-1"
+                >{{ $t("recipientEmail") }}:</label
+              >
               <input
+                v-if="isEditing"
                 type="email"
                 v-model="order.recipient.email"
                 id="recipientEmail"
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
-            </template>
-            <template v-else>
-              <p>{{ order.recipient.email }}</p>
-            </template>
-          </div>
-          <div class="form-group">
-            <label for="recipientPhone">{{ $t("recipientPhone") }}:</label>
-            <template v-if="isEditing">
+              <p v-else class="font-medium">{{ order.recipient.email }}</p>
+            </div>
+
+            <div>
+              <label
+                for="recipientPhone"
+                class="block text-sm text-gray-600 mb-1"
+                >{{ $t("recipientPhone") }}:</label
+              >
               <input
+                v-if="isEditing"
                 type="tel"
                 v-model="order.recipient.phone"
                 id="recipientPhone"
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
-            </template>
-            <template v-else>
-              <p>{{ order.recipient.phone }}</p>
-            </template>
+              <p v-else class="font-medium">{{ order.recipient.phone }}</p>
+            </div>
           </div>
         </section>
 
         <!-- Shipping Address Section -->
-        <section class="form-section">
-          <h3>{{ $t("shippingAddress") }}</h3>
-          <div class="form-group">
-            <label for="country">{{ $t("country") }}:</label>
-            <template v-if="isEditing">
+        <section class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-700 mb-4">
+            {{ $t("shippingAddress") }}
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="country" class="block text-sm text-gray-600 mb-1"
+                >{{ $t("country") }}:</label
+              >
               <input
+                v-if="isEditing"
                 type="text"
                 v-model="shippingAddress.country"
                 id="country"
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
-            </template>
-            <template v-else>
-              <p>{{ shippingAddress.country }}</p>
-            </template>
-          </div>
-          <div class="form-group">
-            <label for="city">{{ $t("city") }}:</label>
-            <template v-if="isEditing">
-              <input type="text" v-model="shippingAddress.city" id="city" />
-            </template>
-            <template v-else>
-              <p>{{ shippingAddress.city }}</p>
-            </template>
-          </div>
-          <div class="form-group">
-            <label for="street">{{ $t("street") }}:</label>
-            <template v-if="isEditing">
-              <input type="text" v-model="shippingAddress.street" id="street" />
-            </template>
-            <template v-else>
-              <p>{{ shippingAddress.street }}</p>
-            </template>
-          </div>
-          <div class="form-group">
-            <label for="buildingNumber">{{ $t("buildingNumber") }}:</label>
-            <template v-if="isEditing">
+              <p v-else class="font-medium">{{ shippingAddress.country }}</p>
+            </div>
+
+            <div>
+              <label for="city" class="block text-sm text-gray-600 mb-1"
+                >{{ $t("city") }}:</label
+              >
               <input
+                v-if="isEditing"
+                type="text"
+                v-model="shippingAddress.city"
+                id="city"
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              />
+              <p v-else class="font-medium">{{ shippingAddress.city }}</p>
+            </div>
+
+            <div>
+              <label for="street" class="block text-sm text-gray-600 mb-1"
+                >{{ $t("street") }}:</label
+              >
+              <input
+                v-if="isEditing"
+                type="text"
+                v-model="shippingAddress.street"
+                id="street"
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              />
+              <p v-else class="font-medium">{{ shippingAddress.street }}</p>
+            </div>
+
+            <div>
+              <label
+                for="buildingNumber"
+                class="block text-sm text-gray-600 mb-1"
+                >{{ $t("buildingNumber") }}:</label
+              >
+              <input
+                v-if="isEditing"
                 type="text"
                 v-model="shippingAddress.buildingNumber"
                 id="buildingNumber"
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
-            </template>
-            <template v-else>
-              <p>{{ shippingAddress.buildingNumber }}</p>
-            </template>
-          </div>
-          <div class="form-group">
-            <label for="apartment">{{ $t("apartment") }}:</label>
-            <template v-if="isEditing">
+              <p v-else class="font-medium">
+                {{ shippingAddress.buildingNumber }}
+              </p>
+            </div>
+
+            <div>
+              <label for="apartment" class="block text-sm text-gray-600 mb-1"
+                >{{ $t("apartment") }}:</label
+              >
               <input
+                v-if="isEditing"
                 type="text"
                 v-model="shippingAddress.apartment"
                 id="apartment"
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
-            </template>
-            <template v-else>
-              <p>{{ shippingAddress.apartment }}</p>
-            </template>
-          </div>
-          <div class="form-group">
-            <label for="postalCode">{{ $t("postalCode") }}:</label>
-            <template v-if="isEditing">
+              <p v-else class="font-medium">{{ shippingAddress.apartment }}</p>
+            </div>
+
+            <div>
+              <label for="postalCode" class="block text-sm text-gray-600 mb-1"
+                >{{ $t("postalCode") }}:</label
+              >
               <input
+                v-if="isEditing"
                 type="text"
                 v-model="shippingAddress.postalCode"
                 id="postalCode"
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
-            </template>
-            <template v-else>
-              <p>{{ shippingAddress.postalCode }}</p>
-            </template>
+              <p v-else class="font-medium">{{ shippingAddress.postalCode }}</p>
+            </div>
           </div>
         </section>
 
         <!-- Products Section -->
-        <section class="form-section">
-          <h3>{{ $t("products") }}</h3>
+        <section class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-700 mb-4">
+            {{ $t("products") }}
+          </h3>
+
           <ProductList
             :products="order.products"
             :isEditing="isEditing"
             @updateProductAmount="updateProductAmount"
             @removeProduct="removeProduct"
           />
-          <template v-if="isEditing">
+
+          <div v-if="isEditing" class="mt-4">
             <button
               type="button"
-              class="add-product-button"
+              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
               @click="showAddProductFields = !showAddProductFields"
             >
               {{ $t("addNewProduct") }}
             </button>
-            <AddProductFields
-              v-if="showAddProductFields"
-              :existingProductIds="order.products.map((p) => p.productId)"
-              @addProduct="addProduct"
-            />
-          </template>
+
+            <div class="mt-6">
+              <AddProductFields
+                v-if="showAddProductFields"
+                :existingProductIds="order.products.map((p) => p.productId)"
+                @addProduct="addProduct"
+              />
+            </div>
+          </div>
         </section>
 
         <!-- Form Actions -->
-        <div class="form-actions">
-          <button v-if="isEditing" type="submit" @click.prevent="submitForm">
+        <div class="flex justify-end space-x-4 py-4">
+          <button
+            v-if="isEditing"
+            type="submit"
+            @click.prevent="submitForm"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
             {{ $t("updateOrder") }}
           </button>
-          <button type="button" @click="cancelEdit">
+
+          <button
+            type="button"
+            @click="cancelEdit"
+            class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          >
             {{ isEditing ? $t("cancel") : $t("close") }}
           </button>
         </div>
@@ -212,26 +293,63 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 
+// ==============================
+// Component Imports
+// ==============================
 import ProductList from "@/components/admin/orders/ProductList.vue";
 import AddProductFields from "@/components/admin/orders/AddProductFields.vue";
 
+// ==============================
+// Type Imports
+// ==============================
 import type { Product, Order } from "@/types/orders";
 
+// ==============================
+// Props Definition
+// ==============================
+
+/**
+ * Component props
+ */
 interface Props {
+  /** Whether to show the modal */
   show: boolean;
+  /** Whether the modal is in editing mode */
   isEditing: boolean;
+  /** Order data to display/edit */
   order: Order | null;
 }
 
 const props = defineProps<Props>();
 
+// ==============================
+// Events Definition
+// ==============================
+
+/**
+ * Component events
+ */
 const emits = defineEmits<{
   (e: "close"): void;
   (e: "submitForm", order: Order | null): void;
 }>();
 
+// ==============================
+// State Management
+// ==============================
+
+/**
+ * Controls visibility of the add product form
+ */
 const showAddProductFields = ref(false);
 
+// ==============================
+// Computed Properties
+// ==============================
+
+/**
+ * Returns the shipping address of the current order or an empty object
+ */
 const shippingAddress = computed(() => {
   if (props.order) {
     if (!props.order.shippingAddress) {
@@ -256,165 +374,85 @@ const shippingAddress = computed(() => {
   };
 });
 
+// ==============================
+// Utility Functions
+// ==============================
+
+/**
+ * Converts status string from backend format to translation key format
+ * @param status - The order status from backend (e.g. "waiting confirmation")
+ * @returns The corresponding translation key (e.g. "waitingConfirmation")
+ */
+const statusKey = (status: string): string => {
+  switch (status) {
+    case "waiting confirmation":
+      return "waitingConfirmation";
+    // All other statuses match their keys
+    default:
+      return status;
+  }
+};
+
+// ==============================
+// Modal Management
+// ==============================
+
+/**
+ * Closes the modal
+ */
 const close = (): void => {
   emits("close");
 };
 
+/**
+ * Cancels current editing and closes the modal
+ */
+const cancelEdit = (): void => {
+  emits("close");
+};
+
+// ==============================
+// Form Submission
+// ==============================
+
+/**
+ * Submits the form with updated order data
+ */
 const submitForm = (): void => {
   emits("submitForm", props.order);
 };
 
+// ==============================
+// Product Management
+// ==============================
+
+/**
+ * Updates the amount of a product
+ * @param index - Index of the product in the array
+ * @param amount - New product amount
+ */
 const updateProductAmount = (index: number, amount: number): void => {
   if (props.order) {
     props.order.products[index].amount = amount;
   }
 };
 
+/**
+ * Removes a product from the order
+ * @param index - Index of the product to remove
+ */
 const removeProduct = (index: number): void => {
   props.order?.products.splice(index, 1);
 };
 
+/**
+ * Adds a new product to the order
+ * @param product - Product to add
+ */
 const addProduct = (product: Product): void => {
   if (props.order) {
     props.order.products.push(product);
   }
   showAddProductFields.value = false;
 };
-
-const cancelEdit = (): void => {
-  emits("close");
-};
 </script>
-
-<style scoped>
-.modal {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-  background-color: #fff;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 600px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-section {
-  margin-bottom: 20px;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-}
-
-.form-section h3 {
-  margin-bottom: 10px;
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.form-actions button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  width: fit-content;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.form-actions button[type="button"] {
-  background-color: #6c757d;
-}
-
-.form-actions button[type="button"]:hover {
-  background-color: #5a6268;
-}
-
-.add-product-button {
-  background-color: #28a745;
-  color: #fff;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.add-product-button:hover {
-  background-color: #218838;
-  transform: scale(1.05);
-}
-
-.add-product-button:focus {
-  outline: none;
-  box-shadow: 0 0 5px rgba(40, 167, 69, 0.8);
-}
-
-.add-product-button:active {
-  background-color: #1e7e34;
-  transform: scale(0.95);
-}
-</style>
