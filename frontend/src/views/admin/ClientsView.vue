@@ -1,54 +1,99 @@
 <template>
-  <div class="clients-container">
-    <div class="header">
-      <h1>{{ $t("pageTitle") }}</h1>
-      <div class="search-container">
+  <div class="max-w-5xl mx-auto p-6">
+    <div
+      class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"
+    >
+      <h1 class="text-2xl font-bold text-gray-800 m-0">
+        {{ $t("pageTitle") }}
+      </h1>
+      <div class="w-full sm:w-72">
         <input
           v-model="searchQuery"
           type="text"
           :placeholder="$t('search')"
-          class="search-input"
+          class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
         />
       </div>
     </div>
 
-    <div v-if="loading" class="loading-container">
-      <div class="loading-spinner"></div>
-      <p>{{ $t("loading") }}</p>
+    <div v-if="loading" class="flex flex-col items-center justify-center py-12">
+      <div
+        class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-4"
+      ></div>
+      <p class="text-gray-600">{{ $t("loading") }}</p>
     </div>
 
-    <div v-else-if="error" class="error-container">
+    <div
+      v-else-if="error"
+      class="text-center p-8 bg-red-50 text-red-600 rounded-md my-4"
+    >
       <p>{{ error }}</p>
-      <button @click="fetchUsers" class="retry-button">
+      <button
+        @click="fetchUsers"
+        class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+      >
         {{ $t("retry") }}
       </button>
     </div>
 
-    <div v-else class="table-responsive">
-      <table class="users-table">
+    <div v-else class="overflow-x-auto">
+      <table
+        class="w-full border-collapse shadow-sm rounded-md overflow-hidden"
+      >
         <thead>
           <tr>
-            <th>{{ $t("columns.name") }}</th>
-            <th>{{ $t("columns.email") }}</th>
-            <th>{{ $t("columns.phone") }}</th>
-            <th>{{ $t("columns.registrationDate") }}</th>
-            <th>{{ $t("columns.role") }}</th>
+            <th
+              class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+            >
+              {{ $t("columns.name") }}
+            </th>
+            <th
+              class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+            >
+              {{ $t("columns.email") }}
+            </th>
+            <th
+              class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+            >
+              {{ $t("columns.phone") }}
+            </th>
+            <th
+              class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+            >
+              {{ $t("columns.registrationDate") }}
+            </th>
+            <th
+              class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+            >
+              {{ $t("columns.role") }}
+            </th>
           </tr>
         </thead>
         <tbody>
           <tr
             v-for="user in sortedUsers"
             :key="user._id"
-            :class="{ 'admin-row': user.isAdmin }"
+            :class="{ 'bg-orange-50': user.isAdmin }"
             @click="showUserDetails(user)"
-            class="clickable-row"
+            class="cursor-pointer hover:bg-gray-50 transition-colors"
           >
-            <td>{{ formatName(user) }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.phone || $t("userInfo.notProvided") }}</td>
-            <td>{{ formatDate(user.registrationDate) }}</td>
-            <td>
-              <span :class="user.isAdmin ? 'admin-badge' : 'user-badge'">
+            <td class="p-4 border-b border-gray-200">{{ formatName(user) }}</td>
+            <td class="p-4 border-b border-gray-200">{{ user.email }}</td>
+            <td class="p-4 border-b border-gray-200">
+              {{ user.phone || $t("userInfo.notProvided") }}
+            </td>
+            <td class="p-4 border-b border-gray-200">
+              {{ formatDate(user.registrationDate) }}
+            </td>
+            <td class="p-4 border-b border-gray-200">
+              <span
+                :class="
+                  user.isAdmin
+                    ? 'bg-orange-500 text-white'
+                    : 'bg-blue-500 text-white'
+                "
+                class="px-3 py-1 rounded-full text-xs font-semibold inline-block"
+              >
                 {{ user.isAdmin ? $t("roles.admin") : $t("roles.user") }}
               </span>
             </td>
@@ -56,7 +101,10 @@
         </tbody>
       </table>
 
-      <p v-if="sortedUsers.length === 0" class="no-results">
+      <p
+        v-if="sortedUsers.length === 0"
+        class="text-center py-8 text-gray-500 italic"
+      >
         {{ $t("noResults") }}
       </p>
     </div>
@@ -73,30 +121,14 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
+
 import { getAllUsers } from "@/services/userService";
+
 import UserDetailsModal from "@/components/admin/users/UserDetailsModal.vue";
 
+import type { User } from "@/types/users";
+
 const { t, locale } = useI18n();
-
-interface DeliveryData {
-  country?: string;
-  city?: string;
-  street?: string;
-  buildingNumber?: string;
-  apartment?: string;
-  postalCode?: string;
-}
-
-interface User {
-  _id: string;
-  email: string;
-  name?: string;
-  surname?: string;
-  phone?: string;
-  registrationDate: string;
-  isAdmin?: boolean;
-  deliveryData?: DeliveryData;
-}
 
 // Reactive state
 const users = ref<User[]>([]);
@@ -187,189 +219,3 @@ const closeModal = () => {
 // Lifecycle hooks
 onMounted(fetchUsers);
 </script>
-
-<style scoped>
-.clients-container {
-  padding: 1.5rem;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-h1 {
-  margin: 0;
-  font-size: 1.8rem;
-  color: #2c3e50;
-}
-
-.search-container {
-  width: 300px;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  transition: all 0.3s ease;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #4299e1;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
-}
-
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 0;
-}
-
-.loading-spinner {
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 3px solid #e2e8f0;
-  border-radius: 50%;
-  border-top-color: #4299e1;
-  animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.error-container {
-  text-align: center;
-  padding: 2rem;
-  color: #e53e3e;
-  background-color: #fff5f5;
-  border-radius: 0.375rem;
-  margin: 1rem 0;
-}
-
-.retry-button {
-  background-color: #4299e1;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  margin-top: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.retry-button:hover {
-  background-color: #3182ce;
-}
-
-.table-responsive {
-  overflow-x: auto;
-}
-
-.users-table {
-  width: 100%;
-  border-collapse: collapse;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border-radius: 0.375rem;
-  overflow: hidden;
-}
-
-.users-table th,
-.users-table td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.users-table th {
-  background-color: #f7fafc;
-  font-weight: 600;
-  color: #4a5568;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.users-table tr:last-child td {
-  border-bottom: none;
-}
-
-.users-table tr:hover td {
-  background-color: #f7fafc;
-}
-
-.no-results {
-  text-align: center;
-  padding: 2rem;
-  color: #718096;
-  font-style: italic;
-}
-
-.admin-row {
-  background-color: rgba(237, 242, 247, 0.7);
-}
-
-.admin-row:hover td {
-  background-color: rgba(237, 242, 247, 0.9) !important;
-}
-
-.admin-badge,
-.user-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-align: center;
-}
-
-.admin-badge {
-  background-color: #ed8936;
-  color: white;
-}
-
-.user-badge {
-  background-color: #4299e1;
-  color: white;
-}
-
-.clickable-row {
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.clickable-row:hover {
-  background-color: rgba(237, 242, 247, 0.5);
-}
-
-@media (max-width: 640px) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .search-container {
-    width: 100%;
-  }
-
-  .users-table th,
-  .users-table td {
-    padding: 0.75rem;
-    font-size: 0.875rem;
-  }
-}
-</style>

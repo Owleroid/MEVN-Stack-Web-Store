@@ -1,32 +1,81 @@
 <template>
-  <div v-if="show" class="modal-overlay" @click="closeModal">
-    <div class="modal-content" @click.stop>
-      <div class="modal-header">
-        <h2>{{ $t("userDetails.title") }}</h2>
-        <button class="close-button" @click="closeModal">&times;</button>
+  <div
+    v-if="show"
+    class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+    @click="closeModal"
+  >
+    <div
+      class="bg-white rounded-lg w-11/12 max-w-3xl max-h-[90vh] overflow-y-auto shadow-lg"
+      @click.stop
+    >
+      <div
+        class="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200"
+      >
+        <h2 class="text-2xl text-gray-700 font-medium m-0">
+          {{ $t("userDetails.title") }}
+        </h2>
+        <button
+          class="bg-transparent border-0 text-gray-400 hover:text-gray-600 text-2xl cursor-pointer transition-colors"
+          @click="closeModal"
+        >
+          &times;
+        </button>
       </div>
-      <div class="modal-body" v-if="user">
-        <div class="user-details-grid">
-          <div class="detail-group">
-            <h3>{{ $t("userDetails.basicInfo") }}</h3>
-            <div class="detail-row">
-              <span class="label">{{ $t("userDetails.name") }}:</span>
-              <span class="value">{{ formatName(user) }}</span>
+
+      <div class="p-4 sm:p-6" v-if="user">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Basic Info -->
+          <div class="bg-gray-50 rounded-md p-4 border border-gray-200">
+            <h3
+              class="text-lg text-gray-700 font-medium mb-4 pb-2 border-b border-gray-200"
+            >
+              {{ $t("userDetails.basicInfo") }}
+            </h3>
+
+            <div class="mb-3 flex flex-col sm:flex-row">
+              <span
+                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              >
+                {{ $t("userDetails.name") }}:
+              </span>
+              <span class="text-gray-800 sm:w-3/5">{{ formatName(user) }}</span>
             </div>
-            <div class="detail-row">
-              <span class="label">{{ $t("userDetails.email") }}:</span>
-              <span class="value">{{ user.email }}</span>
+
+            <div class="mb-3 flex flex-col sm:flex-row">
+              <span
+                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              >
+                {{ $t("userDetails.email") }}:
+              </span>
+              <span class="text-gray-800 sm:w-3/5">{{ user.email }}</span>
             </div>
-            <div class="detail-row">
-              <span class="label">{{ $t("userDetails.phone") }}:</span>
-              <span class="value">{{
-                user.phone || $t("userDetails.notProvided")
-              }}</span>
+
+            <div class="mb-3 flex flex-col sm:flex-row">
+              <span
+                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              >
+                {{ $t("userDetails.phone") }}:
+              </span>
+              <span class="text-gray-800 sm:w-3/5">
+                {{ user.phone || $t("userDetails.notProvided") }}
+              </span>
             </div>
-            <div class="detail-row">
-              <span class="label">{{ $t("userDetails.role") }}:</span>
-              <span class="value">
-                <span :class="user.isAdmin ? 'admin-badge' : 'user-badge'">
+
+            <div class="mb-3 flex flex-col sm:flex-row">
+              <span
+                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              >
+                {{ $t("userDetails.role") }}:
+              </span>
+              <span class="sm:w-3/5">
+                <span
+                  :class="
+                    user.isAdmin
+                      ? 'bg-orange-500 text-white'
+                      : 'bg-blue-500 text-white'
+                  "
+                  class="px-3 py-1 rounded-full text-xs font-semibold inline-block"
+                >
                   {{
                     user.isAdmin
                       ? $t("userDetails.admin")
@@ -35,45 +84,122 @@
                 </span>
               </span>
             </div>
-            <div class="detail-row">
-              <span class="label"
-                >{{ $t("userDetails.registrationDate") }}:</span
+
+            <div class="mb-3 flex flex-col sm:flex-row">
+              <span
+                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
               >
-              <span class="value">{{ formatDate(user.registrationDate) }}</span>
+                {{ $t("userDetails.registrationDate") }}:
+              </span>
+              <span class="text-gray-800 sm:w-3/5">
+                {{ formatDate(user.registrationDate) }}
+              </span>
             </div>
           </div>
 
-          <div class="detail-group" v-if="hasDeliveryData">
-            <h3>{{ $t("userDetails.deliveryInfo") }}</h3>
-            <div class="detail-row" v-if="user.deliveryData?.country">
-              <span class="label">{{ $t("userDetails.country") }}:</span>
-              <span class="value">{{ user.deliveryData.country }}</span>
+          <!-- Delivery Info -->
+          <div
+            v-if="hasDeliveryData"
+            class="bg-gray-50 rounded-md p-4 border border-gray-200"
+          >
+            <h3
+              class="text-lg text-gray-700 font-medium mb-4 pb-2 border-b border-gray-200"
+            >
+              {{ $t("userDetails.deliveryInfo") }}
+            </h3>
+
+            <div
+              v-if="user.deliveryData?.country"
+              class="mb-3 flex flex-col sm:flex-row"
+            >
+              <span
+                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              >
+                {{ $t("userDetails.country") }}:
+              </span>
+              <span class="text-gray-800 sm:w-3/5">{{
+                user.deliveryData.country
+              }}</span>
             </div>
-            <div class="detail-row" v-if="user.deliveryData?.city">
-              <span class="label">{{ $t("userDetails.city") }}:</span>
-              <span class="value">{{ user.deliveryData.city }}</span>
+
+            <div
+              v-if="user.deliveryData?.city"
+              class="mb-3 flex flex-col sm:flex-row"
+            >
+              <span
+                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              >
+                {{ $t("userDetails.city") }}:
+              </span>
+              <span class="text-gray-800 sm:w-3/5">{{
+                user.deliveryData.city
+              }}</span>
             </div>
-            <div class="detail-row" v-if="user.deliveryData?.street">
-              <span class="label">{{ $t("userDetails.street") }}:</span>
-              <span class="value">{{ user.deliveryData.street }}</span>
+
+            <div
+              v-if="user.deliveryData?.street"
+              class="mb-3 flex flex-col sm:flex-row"
+            >
+              <span
+                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              >
+                {{ $t("userDetails.street") }}:
+              </span>
+              <span class="text-gray-800 sm:w-3/5">{{
+                user.deliveryData.street
+              }}</span>
             </div>
-            <div class="detail-row" v-if="user.deliveryData?.buildingNumber">
-              <span class="label">{{ $t("userDetails.buildingNumber") }}:</span>
-              <span class="value">{{ user.deliveryData.buildingNumber }}</span>
+
+            <div
+              v-if="user.deliveryData?.buildingNumber"
+              class="mb-3 flex flex-col sm:flex-row"
+            >
+              <span
+                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              >
+                {{ $t("userDetails.buildingNumber") }}:
+              </span>
+              <span class="text-gray-800 sm:w-3/5">{{
+                user.deliveryData.buildingNumber
+              }}</span>
             </div>
-            <div class="detail-row" v-if="user.deliveryData?.apartment">
-              <span class="label">{{ $t("userDetails.apartment") }}:</span>
-              <span class="value">{{ user.deliveryData.apartment }}</span>
+
+            <div
+              v-if="user.deliveryData?.apartment"
+              class="mb-3 flex flex-col sm:flex-row"
+            >
+              <span
+                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              >
+                {{ $t("userDetails.apartment") }}:
+              </span>
+              <span class="text-gray-800 sm:w-3/5">{{
+                user.deliveryData.apartment
+              }}</span>
             </div>
-            <div class="detail-row" v-if="user.deliveryData?.postalCode">
-              <span class="label">{{ $t("userDetails.postalCode") }}:</span>
-              <span class="value">{{ user.deliveryData.postalCode }}</span>
+
+            <div
+              v-if="user.deliveryData?.postalCode"
+              class="mb-3 flex flex-col sm:flex-row"
+            >
+              <span
+                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              >
+                {{ $t("userDetails.postalCode") }}:
+              </span>
+              <span class="text-gray-800 sm:w-3/5">{{
+                user.deliveryData.postalCode
+              }}</span>
             </div>
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="close-btn" @click="closeModal">
+
+      <div class="p-4 sm:p-6 border-t border-gray-200 flex justify-end">
+        <button
+          class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded transition-colors"
+          @click="closeModal"
+        >
           {{ $t("userDetails.close") }}
         </button>
       </div>
@@ -85,27 +211,9 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
+import type { User } from "@/types/users";
+
 const { t, locale } = useI18n();
-
-interface DeliveryData {
-  country?: string;
-  city?: string;
-  street?: string;
-  buildingNumber?: string;
-  apartment?: string;
-  postalCode?: string;
-}
-
-interface User {
-  _id: string;
-  email: string;
-  name?: string;
-  surname?: string;
-  phone?: string;
-  registrationDate: string;
-  isAdmin?: boolean;
-  deliveryData?: DeliveryData;
-}
 
 const props = defineProps<{
   show: boolean;
@@ -154,156 +262,3 @@ const hasDeliveryData = computed(() => {
   );
 });
 </script>
-
-<style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-}
-
-.modal-content {
-  background-color: white;
-  border-radius: 0.5rem;
-  width: 90%;
-  max-width: 700px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.modal-header h2 {
-  margin: 0;
-  color: #2d3748;
-  font-size: 1.5rem;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #a0aec0;
-  transition: color 0.2s;
-}
-
-.close-button:hover {
-  color: #718096;
-}
-
-.modal-body {
-  padding: 1.5rem;
-}
-
-.user-details-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.detail-group {
-  background-color: #f7fafc;
-  border-radius: 0.375rem;
-  padding: 1rem;
-  border: 1px solid #e2e8f0;
-}
-
-.detail-group h3 {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  color: #4a5568;
-  font-size: 1.25rem;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 0.5rem;
-}
-
-.detail-row {
-  margin-bottom: 0.75rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.label {
-  font-weight: 600;
-  color: #718096;
-  font-size: 0.875rem;
-  margin-bottom: 0.25rem;
-}
-
-.value {
-  color: #2d3748;
-}
-
-.modal-footer {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #e2e8f0;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.close-btn {
-  padding: 0.5rem 1rem;
-  background-color: #e2e8f0;
-  color: #4a5568;
-  border: none;
-  border-radius: 0.375rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.close-btn:hover {
-  background-color: #cbd5e0;
-}
-
-.admin-badge,
-.user-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-align: center;
-}
-
-.admin-badge {
-  background-color: #ed8936;
-  color: white;
-}
-
-.user-badge {
-  background-color: #4299e1;
-  color: white;
-}
-
-@media (min-width: 640px) {
-  .detail-row {
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .label {
-    width: 40%;
-    margin-bottom: 0;
-  }
-
-  .value {
-    width: 60%;
-  }
-}
-</style>
