@@ -1,3 +1,7 @@
 {
-  "criticalProductAmount": "Critical product amount:"
+  "criticalStockAlert": "Critical Stock Alert",
+  "productsLowStock": "The following products are running low on stock:",
+  "product": "Product",
+  "currentAmount": "Current Amount",
+  "allProductsInStock": "All products have sufficient stock"
 }

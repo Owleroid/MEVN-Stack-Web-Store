@@ -1,11 +1,22 @@
 <template>
-  <div class="admin-warehouse">
-    <div class="top-center">
-      <div v-if="warehouses.length === 0">
+  <div class="max-w-5xl mx-auto p-6">
+    <!-- Warehouse Selection Section -->
+    <div class="mb-6 flex flex-col items-center">
+      <div
+        v-if="warehouses.length === 0"
+        class="text-center p-8 bg-red-50 text-red-600 rounded-md"
+      >
         <p>{{ $t("noWarehousesFound") }}</p>
       </div>
-      <div v-else class="warehouse-actions">
-        <select v-model="selectedWarehouseId">
+      <div v-else class="flex items-center gap-4 w-full max-w-md">
+        <label for="warehouseSelect" class="text-lg font-medium text-gray-700"
+          >{{ $t("selectWarehouse") }}:</label
+        >
+        <select
+          id="warehouseSelect"
+          v-model="selectedWarehouseId"
+          class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
           <option
             v-for="warehouse in warehouses"
             :key="warehouse._id"
@@ -17,52 +28,106 @@
       </div>
     </div>
 
+    <!-- Critical Stock Section -->
     <ProductStatusList
       v-if="selectedWarehouse && selectedWarehouse.products.length > 0"
       :products="selectedWarehouse.products"
+      class="mb-6"
     />
 
-    <div v-if="warehouses.length > 0 && categories.length > 0" class="content">
-      <div class="left">
-        <div v-for="category in categories" :key="category._id">
+    <!-- Main Content Area -->
+    <div
+      v-if="warehouses.length > 0 && categories.length > 0"
+      class="flex flex-col md:flex-row gap-6"
+    >
+      <!-- Categories Menu -->
+      <div
+        class="w-full md:w-64 bg-white rounded-lg shadow border border-gray-200 p-4"
+      >
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">
+          {{ $t("categories") }}
+        </h2>
+        <div class="flex flex-col gap-2">
           <button
+            v-for="category in categories"
+            :key="category._id"
             @click="selectCategory(category)"
-            :class="{ active: category._id === selectedCategoryId }"
+            :class="[
+              'py-2.5 px-4 text-sm font-medium rounded-md transition-colors w-full text-left',
+              category._id === selectedCategoryId
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+            ]"
           >
             {{ category.name }}
           </button>
         </div>
       </div>
-      <div class="right">
-        <div v-if="filteredProducts.length === 0">
-          <p>{{ $t("noProductsFound") }}</p>
-          <button @click="redirectToAdminProductPage">
+
+      <!-- Products Section -->
+      <div class="flex-1 bg-white rounded-lg shadow border border-gray-200">
+        <div class="p-4 border-b border-gray-200">
+          <h2 class="text-xl font-semibold text-gray-800">
+            {{ $t("products") }}
+          </h2>
+        </div>
+
+        <div v-if="filteredProducts.length === 0" class="text-center p-8">
+          <p class="text-gray-500 mb-4">{{ $t("noProductsFound") }}</p>
+          <button
+            @click="redirectToAdminProductPage"
+            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors font-medium"
+          >
             {{ $t("addNewProduct") }}
           </button>
         </div>
-        <div v-else>
-          <table>
+
+        <div v-else class="overflow-x-auto">
+          <table class="w-full border-collapse">
             <thead>
               <tr>
-                <th>{{ $t("productName") }}</th>
-                <th>{{ $t("amount") }}</th>
-                <th>{{ $t("action") }}</th>
+                <th
+                  class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                >
+                  {{ $t("productName") }}
+                </th>
+                <th
+                  class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                >
+                  {{ $t("amount") }}
+                </th>
+                <th
+                  class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                >
+                  {{ $t("action") }}
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr
                 v-for="product in filteredProducts"
                 :key="product.product"
-                class="product-row"
+                class="hover:bg-gray-50 transition-colors"
               >
-                <td>{{ product.name }}</td>
-                <td>
-                  <input type="number" v-model.number="product.amount" />
+                <td class="p-4 border-b border-gray-200">{{ product.name }}</td>
+                <td class="p-4 border-b border-gray-200 w-32">
+                  <input
+                    type="number"
+                    v-model.number="product.amount"
+                    min="0"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
                 </td>
-                <td>
+                <td class="p-4 border-b border-gray-200">
                   <button
                     @click="updateProductAmount(product)"
                     :disabled="!hasAmountChanged(product)"
+                    :class="[
+                      'px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                      hasAmountChanged(product)
+                        ? 'bg-green-500 text-white hover:bg-green-600'
+                        : 'bg-gray-200 text-gray-500 cursor-not-allowed',
+                    ]"
                   >
                     {{ $t("updateAmount") }}
                   </button>
@@ -71,6 +136,19 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div
+      v-if="loading"
+      class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+        <div
+          class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-4"
+        ></div>
+        <p class="text-gray-600">{{ $t("loading") }}</p>
       </div>
     </div>
   </div>
@@ -94,22 +172,45 @@ import {
 
 import ProductStatusList from "@/components/admin/warehouses/ProductCriticalStatusList.vue";
 
+// ==============================
+// Composables setup
+// ==============================
+
 const { t } = useI18n();
-
-const warehouses = ref<Warehouse[]>([]);
-const categories = ref<Category[]>([]);
-const productIds = ref<string[]>([]);
-const selectedWarehouseId = ref<string>("");
-const selectedCategoryId = ref<string>("");
-
 const toast = useToast();
 const router = useRouter();
 
+// ==============================
+// State Management
+// ==============================
+
+// Data state
+const warehouses = ref<Warehouse[]>([]);
+const categories = ref<Category[]>([]);
+const productIds = ref<string[]>([]);
+const originalAmounts = ref<{ [key: string]: number }>({});
+const loading = ref<boolean>(true);
+
+// UI state
+const selectedWarehouseId = ref<string>("");
+const selectedCategoryId = ref<string>("");
+
+// ==============================
+// Computed Properties
+// ==============================
+
+/**
+ * Returns the currently selected warehouse
+ */
 const selectedWarehouse = computed(() => {
   return warehouses.value.find(
     (warehouse) => warehouse._id === selectedWarehouseId.value
   );
 });
+
+/**
+ * Returns products filtered by the selected category
+ */
 const filteredProducts = computed(() => {
   if (!selectedWarehouse.value) return [];
   return selectedWarehouse.value.products.filter((product) =>
@@ -117,19 +218,96 @@ const filteredProducts = computed(() => {
   );
 });
 
-const originalAmounts = ref<{ [key: string]: number }>({});
+// ==============================
+// Data Fetching
+// ==============================
 
+/**
+ * Fetches all warehouses from the API
+ */
+const fetchWarehouses = async () => {
+  try {
+    loading.value = true;
+    const response = await getWarehouses();
+    warehouses.value = response;
+    if (warehouses.value.length > 0) {
+      selectedWarehouseId.value = warehouses.value[0]._id || "";
+    }
+  } catch (error) {
+    console.error("Failed to fetch warehouses:", error);
+    toast.error(t("failedToFetchWarehouses"));
+  } finally {
+    loading.value = false;
+  }
+};
+
+/**
+ * Fetches all categories from the API
+ */
+const fetchCategories = async () => {
+  try {
+    loading.value = true;
+    const response = await getAllCategories();
+    categories.value = response.data.categories;
+    if (categories.value.length > 0) {
+      selectedCategoryId.value = categories.value[0]._id || "";
+      fetchProducts();
+    }
+  } catch (error) {
+    console.error("Failed to fetch categories:", error);
+    toast.error(t("failedToFetchCategories"));
+  } finally {
+    loading.value = false;
+  }
+};
+
+/**
+ * Fetches products for the selected category
+ */
+const fetchProducts = async () => {
+  try {
+    loading.value = true;
+    const response = await getProductIdsByCategory(selectedCategoryId.value);
+    productIds.value = response.data.productIds;
+
+    originalAmounts.value = {};
+    if (selectedWarehouse.value) {
+      selectedWarehouse.value.products.forEach((product) => {
+        originalAmounts.value[product.product] = product.amount;
+      });
+    }
+  } catch (error) {
+    console.error("Failed to fetch products by category:", error);
+    toast.error(t("failedToFetchProducts"));
+  } finally {
+    loading.value = false;
+  }
+};
+
+// ==============================
+// Action Handlers
+// ==============================
+
+/**
+ * Selects a category and fetches its products
+ * @param category - The category to select
+ */
 const selectCategory = (category: Category) => {
   selectedCategoryId.value = category._id || "";
   fetchProducts();
 };
 
+/**
+ * Updates the amount of a product in the warehouse
+ * @param product - The product to update with its new amount
+ */
 const updateProductAmount = async (product: {
   product: string;
   name: string;
   amount: number;
 }) => {
   try {
+    loading.value = true;
     await updateWarehouseProductAmount(selectedWarehouseId.value, {
       productId: product.product,
       amount: product.amount,
@@ -143,60 +321,29 @@ const updateProductAmount = async (product: {
   } catch (error) {
     console.error("Failed to update product amount:", error);
     toast.error(t("failedToUpdateProductAmount"));
+  } finally {
+    loading.value = false;
   }
 };
 
-const fetchProducts = async () => {
-  try {
-    const response = await getProductIdsByCategory(selectedCategoryId.value);
-    productIds.value = response.data.productIds;
-
-    originalAmounts.value = {};
-    if (selectedWarehouse.value) {
-      selectedWarehouse.value.products.forEach((product) => {
-        originalAmounts.value[product.product] = product.amount;
-      });
-    }
-  } catch (error) {
-    console.error("Failed to fetch products by category:", error);
-    toast.error(t("failedToFetchProducts"));
-  }
-};
-
-const fetchWarehouses = async () => {
-  try {
-    const response = await getWarehouses();
-    warehouses.value = response;
-    if (warehouses.value.length > 0) {
-      selectedWarehouseId.value = warehouses.value[0]._id || "";
-    }
-  } catch (error) {
-    console.error("Failed to fetch warehouses:", error);
-    toast.error(t("failedToFetchWarehouses"));
-  }
-};
-
-const fetchCategories = async () => {
-  try {
-    const response = await getAllCategories();
-    categories.value = response.data.categories;
-    if (categories.value.length > 0) {
-      selectedCategoryId.value = categories.value[0]._id || "";
-      fetchProducts();
-    }
-  } catch (error) {
-    console.error("Failed to fetch categories:", error);
-    toast.error(t("failedToFetchCategories"));
-  }
-};
-
+/**
+ * Checks if the product amount has changed from its original value
+ * @param product - The product to check
+ */
 const hasAmountChanged = (product: { product: string; amount: number }) => {
   return product.amount !== originalAmounts.value[product.product];
 };
 
+/**
+ * Redirects to the admin products page
+ */
 const redirectToAdminProductPage = () => {
   router.push("/admin/products");
 };
+
+// ==============================
+// Watchers
+// ==============================
 
 watch(selectedWarehouseId, async (newWarehouseId) => {
   if (newWarehouseId) {
@@ -213,174 +360,12 @@ watch(selectedWarehouseId, async (newWarehouseId) => {
   }
 });
 
+// ==============================
+// Lifecycle Hooks
+// ==============================
+
 onMounted(async () => {
   await fetchWarehouses();
   await fetchCategories();
 });
 </script>
-
-<style scoped>
-.admin-warehouse {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.top-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-}
-
-.warehouse-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.warehouse-actions select {
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background-color: #ffffff;
-  font-size: 1em;
-  color: #333;
-  cursor: pointer;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  width: 250px;
-}
-
-.warehouse-actions select:hover {
-  border-color: #007bff;
-  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
-}
-
-.warehouse-actions select:focus {
-  outline: none;
-  border-color: #0056b3;
-  box-shadow: 0 0 6px rgba(0, 86, 179, 0.7);
-}
-
-.content {
-  display: flex;
-  flex-direction: row;
-  gap: 24px;
-  width: 100%;
-}
-
-.left {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  background-color: #ffffff;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  border: 1px solid #ddd;
-}
-
-.left button {
-  padding: 12px 16px;
-  border: none;
-  border-radius: 6px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  font-size: 1em;
-  font-weight: 500;
-  text-align: center;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.left button:hover {
-  background-color: #0056b3;
-  transform: scale(1.02);
-}
-
-.left button.active {
-  background-color: #0056b3;
-  color: white;
-}
-
-.right {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  background-color: #ffffff;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  border: 1px solid #ddd;
-}
-
-.right table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.right th,
-.right td {
-  padding: 12px;
-  border: 1px solid #ddd;
-  text-align: left;
-}
-
-.right th {
-  background-color: #f8f9fa;
-  font-weight: 600;
-  color: #555;
-}
-
-.product-row:hover {
-  background-color: #f1f1f1;
-}
-
-input[type="number"] {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
-  font-size: 1em;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-input[type="number"]:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
-}
-
-.right button {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 6px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  font-size: 0.9em;
-  font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.right button:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
-}
-
-.right button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-</style>

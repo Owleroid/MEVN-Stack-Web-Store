@@ -1,16 +1,64 @@
 <template>
-  <div class="product-status-list">
-    <h3>{{ $t("criticalProductAmount") }}</h3>
-    <ul>
-      <li
-        v-for="product in filteredProducts"
-        :key="product.product"
-        :class="getProductStatusClass(product.amount)"
+  <div class="w-full bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+    <div class="mb-4">
+      <h3 class="text-xl font-semibold text-gray-800">
+        {{ $t("criticalStockAlert") }}
+      </h3>
+    </div>
+
+    <div v-if="filteredProducts.length > 0">
+      <p class="mb-3 text-gray-600">{{ $t("productsLowStock") }}</p>
+
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th
+                class="bg-gray-50 p-3 text-left font-medium text-gray-600 text-sm tracking-wider border-b border-gray-200"
+              >
+                {{ $t("product") }}
+              </th>
+              <th
+                class="bg-gray-50 p-3 text-center font-medium text-gray-600 text-sm tracking-wider border-b border-gray-200 w-32"
+              >
+                {{ $t("currentAmount") }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="product in filteredProducts"
+              :key="product.product"
+              :class="getProductStatusClass(product.amount)"
+            >
+              <td class="p-3 border-b border-gray-200">
+                {{ product.name }}
+              </td>
+              <td class="p-3 border-b border-gray-200 text-center font-medium">
+                {{ product.amount }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div v-else class="text-center py-8">
+      <svg
+        class="w-12 h-12 mx-auto text-green-500 mb-2"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
       >
-        <span>{{ product.name }}</span>
-        <span>{{ product.amount }}</span>
-      </li>
-    </ul>
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        ></path>
+      </svg>
+      <p class="text-gray-600">{{ $t("allProductsInStock") }}</p>
+    </div>
   </div>
 </template>
 
@@ -19,67 +67,44 @@ import { computed } from "vue";
 
 import type { Product } from "@/types/warehouse";
 
-const props = defineProps<{
-  products: Product[];
-}>();
+// ==============================
+// Props
+// ==============================
 
-// Filter products to show only those with amount <= 1
+const props = defineProps({
+  products: {
+    type: Array as () => Product[],
+    required: true,
+  },
+  criticalThreshold: {
+    type: Number,
+    default: 1,
+  },
+});
+
+// ==============================
+// Computed Properties
+// ==============================
+
+/**
+ * Filter products to show only those with amount <= criticalThreshold
+ */
 const filteredProducts = computed(() =>
-  props.products.filter((product) => product.amount <= 1)
+  props.products.filter((product) => product.amount <= props.criticalThreshold)
 );
 
+// ==============================
+// Helper Methods
+// ==============================
+
+/**
+ * Returns the Tailwind class based on product amount
+ * @param amount - The current amount of product
+ * @returns Tailwind classes for the row
+ */
 const getProductStatusClass = (amount: number) => {
-  if (amount === 1) return "yellow";
-  if (amount === 0) return "orange";
-  if (amount < 0) return "red";
+  if (amount === 0) return "bg-red-50";
+  if (amount <= props.criticalThreshold) return "bg-yellow-50";
   return "";
 };
 </script>
-
-<style scoped>
-.product-status-list {
-  width: 100%;
-  margin-top: 20px;
-  padding: 16px;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.product-status-list h3 {
-  margin-bottom: 16px;
-  font-size: 1.4em;
-  color: #333;
-  font-weight: 600;
-}
-
-.product-status-list ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.product-status-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-bottom: 8px;
-  transition: background-color 0.3s ease;
-}
-
-.product-status-list li.yellow {
-  background-color: #fff3cd;
-}
-
-.product-status-list li.orange {
-  background-color: #ffe5b4;
-}
-
-.product-status-list li.red {
-  background-color: #f8d7da;
-}
-</style>

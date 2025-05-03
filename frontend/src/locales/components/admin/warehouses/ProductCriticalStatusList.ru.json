@@ -1,3 +1,7 @@
 {
-  "criticalProductAmount": "Критическое количество продукта:"
+  "criticalStockAlert": "Предупреждение о критическом запасе",
+  "productsLowStock": "Следующие товары заканчиваются на складе:",
+  "product": "Товар",
+  "currentAmount": "Текущее количество",
+  "allProductsInStock": "Все товары имеют достаточный запас"
 }
