@@ -1,42 +1,81 @@
 <template>
-  <div v-if="show" class="modal">
-    <div class="modal-content">
-      <h2>{{ mode === "add" ? $t("addNewCategory") : $t("editCategory") }}</h2>
-      <form @submit.prevent="submitForm">
+  <div
+    v-if="show"
+    class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+    @click="cancelAction"
+  >
+    <div class="bg-white rounded-lg w-11/12 max-w-md p-6 shadow-lg" @click.stop>
+      <h2 class="text-xl font-bold text-gray-800 mb-6 text-center">
+        {{ mode === "add" ? $t("addNewCategory") : $t("editCategory") }}
+      </h2>
+
+      <form @submit.prevent="submitForm" class="space-y-6">
         <!-- Category Name -->
-        <div class="form-group">
-          <label for="categoryName">{{ $t("categoryName") }}</label>
+        <div>
+          <label
+            for="categoryName"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            {{ $t("categoryName") }}
+          </label>
           <input
             type="text"
             id="categoryName"
             v-model="categoryName"
             required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
         <!-- Category Image -->
-        <div class="form-group">
-          <label for="categoryImage">{{ $t("categoryImage") }}</label>
-          <div class="image-selection">
+        <div>
+          <label
+            for="categoryImage"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            {{ $t("categoryImage") }}
+          </label>
+          <div class="flex gap-2">
             <input
               type="text"
               id="categoryImage"
               v-model="categoryImageUrl"
               readonly
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50"
             />
-            <button type="button" @click="openImageManager">
+            <button
+              type="button"
+              @click="openImageManager"
+              class="px-3 py-2 bg-blue-500 text-white rounded-md text-sm font-medium hover:bg-blue-600 transition-colors"
+            >
               {{ $t("selectImage") }}
             </button>
           </div>
         </div>
 
+        <!-- Preview Image if available -->
+        <div v-if="categoryImageUrl" class="flex justify-center">
+          <img
+            :src="categoryImageUrl"
+            alt="Category preview"
+            class="h-32 object-cover rounded-md border border-gray-200"
+          />
+        </div>
+
         <!-- Form Actions -->
-        <div class="form-actions">
-          <button type="submit">
-            {{ mode === "add" ? $t("addCategory") : $t("updateCategory") }}
-          </button>
-          <button type="button" @click="cancelAction">
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+          <button
+            type="button"
+            @click="cancelAction"
+            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+          >
             {{ $t("cancel") }}
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+          >
+            {{ mode === "add" ? $t("addCategory") : $t("updateCategory") }}
           </button>
         </div>
       </form>
@@ -54,8 +93,11 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-
 import ImageManagerModal from "@/components/admin/image-manager/ImageManagerModal.vue";
+
+// ==============================
+// Props & Emits
+// ==============================
 
 const props = defineProps({
   show: Boolean,
@@ -76,10 +118,20 @@ const props = defineProps({
 
 const emits = defineEmits(["submitForm", "cancelAction"]);
 
+// ==============================
+// State Management
+// ==============================
+
+// Form state
 const categoryName = ref(props.initialCategoryName);
 const categoryImageUrl = ref(props.initialCategoryImageUrl);
 
+// UI state
 const showImageManager = ref(false);
+
+// ==============================
+// Watchers
+// ==============================
 
 watch(
   () => props.initialCategoryName,
@@ -95,14 +147,28 @@ watch(
   }
 );
 
+// ==============================
+// Image Manager Functions
+// ==============================
+
+/**
+ * Opens the image manager modal
+ */
 const openImageManager = () => {
   showImageManager.value = true;
 };
 
+/**
+ * Closes the image manager modal
+ */
 const closeImageManager = () => {
   showImageManager.value = false;
 };
 
+/**
+ * Handles image selection from image manager
+ * @param selectedImages - Array of selected images
+ */
 const handleImageSelection = (selectedImages: { url: string }[]) => {
   if (selectedImages.length > 0) {
     categoryImageUrl.value = selectedImages[0].url;
@@ -110,6 +176,13 @@ const handleImageSelection = (selectedImages: { url: string }[]) => {
   closeImageManager();
 };
 
+// ==============================
+// Form Actions
+// ==============================
+
+/**
+ * Submits the form data to parent component
+ */
 const submitForm = () => {
   emits("submitForm", {
     name: categoryName.value,
@@ -117,103 +190,10 @@ const submitForm = () => {
   });
 };
 
+/**
+ * Cancels the form action
+ */
 const cancelAction = () => {
   emits("cancelAction");
 };
 </script>
-
-<style scoped>
-.modal {
-  display: block;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-  background-color: #fff;
-  margin: 10% auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  width: 80%;
-  max-width: 500px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-h2 {
-  margin-top: 0;
-  font-size: 24px;
-  text-align: center;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.image-selection {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.image-selection button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-}
-
-.image-selection button:hover {
-  background-color: #0056b3;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-.form-actions button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  width: fit-content;
-}
-
-.form-actions button[type="button"] {
-  background-color: #6c757d;
-}
-
-.form-actions button:hover {
-  background-color: #0056b3;
-}
-
-.form-actions button[type="button"]:hover {
-  background-color: #5a6268;
-}
-</style>

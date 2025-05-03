@@ -1,5 +1,7 @@
 {
   "chooseNewCategory": "Choose a New Category",
+  "selectCategoryForProducts": "Select category to reassign products to",
+  "selectCategory": "Select category",
   "reassignAndDelete": "Reassign Products and Delete Category",
   "cancel": "Cancel"
 }

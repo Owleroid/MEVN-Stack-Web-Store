@@ -1,5 +1,7 @@
 {
   "chooseNewCategory": "Выберите новую категорию",
+  "selectCategoryForProducts": "Выберите категорию для переназначения продуктов",
+  "selectCategory": "Выберите категорию",
   "reassignAndDelete": "Переназначить продукты и удалить категорию",
   "cancel": "Отмена"
 }

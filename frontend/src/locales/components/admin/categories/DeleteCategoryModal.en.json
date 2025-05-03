@@ -1,4 +1,5 @@
 {
+  "confirmDeletion": "Confirm Deletion",
   "deleteConfirmation": "Are you sure you want to delete this category?",
   "deleteWithProducts": "Delete Category and All Products",
   "reassignAndDelete": "Reassign Products and Delete Category",

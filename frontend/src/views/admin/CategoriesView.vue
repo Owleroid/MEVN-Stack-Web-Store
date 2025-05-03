@@ -1,34 +1,117 @@
 <template>
-  <div class="admin-categories-container">
-    <div class="categories-menu">
-      <h2>{{ $t("categories") }}</h2>
-      <button @click="openAddModal" class="add-category-button">
+  <div class="max-w-5xl mx-auto p-6">
+    <!-- Header Section -->
+    <div
+      class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"
+    >
+      <h1 class="text-2xl font-bold text-gray-800 m-0">
+        {{ $t("categories") }}
+      </h1>
+      <button
+        @click="openAddModal"
+        class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm font-medium"
+      >
         {{ $t("addNewCategory") }}
       </button>
     </div>
-    <div class="categories-list">
-      <table>
+
+    <!-- Loading State -->
+    <div v-if="loading" class="flex flex-col items-center justify-center py-12">
+      <div
+        class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-4"
+      ></div>
+      <p class="text-gray-600">{{ $t("loading") }}</p>
+    </div>
+
+    <!-- Error State -->
+    <div
+      v-else-if="error"
+      class="text-center p-8 bg-red-50 text-red-600 rounded-md my-4"
+    >
+      <p>{{ error }}</p>
+      <button
+        @click="fetchCategories"
+        class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+      >
+        {{ $t("retry") }}
+      </button>
+    </div>
+
+    <!-- Categories Table -->
+    <div v-else class="bg-white rounded-lg shadow-sm overflow-hidden">
+      <table class="w-full border-collapse">
         <thead>
           <tr>
-            <th>{{ $t("categoryName") }}</th>
-            <th>{{ $t("actions") }}</th>
+            <th
+              class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200 w-16"
+            >
+              {{ $t("image") }}
+            </th>
+            <th
+              class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+            >
+              {{ $t("categoryName") }}
+            </th>
+            <th
+              class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+            >
+              {{ $t("actions") }}
+            </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="category in categories" :key="category._id">
-            <td>{{ category.name }}</td>
-            <td class="actions">
-              <button @click="openEditModal(category)">
-                {{ $t("editCategory") }}
-              </button>
-              <button @click="confirmRemoveCategory(category._id ?? '')">
-                {{ $t("delete") }}
-              </button>
+          <tr
+            v-for="category in categories"
+            :key="category._id"
+            class="hover:bg-gray-50 transition-colors"
+          >
+            <td class="p-4 border-b border-gray-200">
+              <div
+                class="w-12 h-12 rounded-md overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center"
+              >
+                <img
+                  v-if="category.imageUrl"
+                  :src="category.imageUrl"
+                  :alt="category.name"
+                  class="w-full h-full object-cover"
+                  @error="handleImageError"
+                />
+                <span v-else class="text-gray-400 text-xs">
+                  {{ $t("noImage") }}
+                </span>
+              </div>
+            </td>
+            <td class="p-4 border-b border-gray-200">{{ category.name }}</td>
+            <td class="p-4 border-b border-gray-200">
+              <div class="flex gap-2">
+                <button
+                  @click="openEditModal(category)"
+                  class="px-3 py-1 bg-blue-500 text-white rounded text-xs font-medium hover:bg-blue-600 transition-colors"
+                >
+                  {{ $t("editCategory") }}
+                </button>
+                <button
+                  @click="confirmRemoveCategory(category._id ?? '')"
+                  class="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600 transition-colors"
+                >
+                  {{ $t("delete") }}
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
+
+      <!-- Empty State -->
+      <p
+        v-if="categories.length === 0"
+        class="text-center py-8 text-gray-500 italic"
+      >
+        {{ $t("noCategories") }}
+      </p>
     </div>
+
+    <!-- Modals remain unchanged -->
     <DeleteCategoryModal
       :show="showDeleteModal"
       @confirmDelete="selectedCategoryId && removeCategory(selectedCategoryId)"
@@ -61,46 +144,93 @@ import { ref, onMounted } from "vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 
+import { useEventBus } from "@/utils/eventBus";
+
+// Component imports
 import DeleteCategoryModal from "@/components/admin/categories/DeleteCategoryModal.vue";
 import ReassignCategoryModal from "@/components/admin/categories/ReassignCategoryModal.vue";
 import AddEditCategoryModal from "@/components/admin/categories/AddEditCategoryModal.vue";
 
+// Type imports
 import type { Category } from "@/types/categories";
 
+// Service imports
 import {
   getAllCategories,
-  deleteCategory,
-  deleteCategoryAndReassignProducts,
   createCategory,
   updateCategory,
+  deleteCategory,
+  deleteCategoryAndReassignProducts,
 } from "@/services/categoryService";
 
-import { useEventBus } from "@/utils/eventBus";
-
+// Composables setup
 const { t } = useI18n();
-const categories = ref<Category[]>([]);
-const { on } = useEventBus();
 const toast = useToast();
+const { on } = useEventBus();
 
+// ==============================
+// State Management
+// ==============================
+
+// Data state
+const categories = ref<Category[]>([]);
+const loading = ref(true); // Initialize as true to show loader immediately
+const error = ref(""); // For error handling
+
+// UI state
 const showDeleteModal = ref(false);
 const showReassignModal = ref(false);
 const showAddEditModal = ref(false);
+const isEdit = ref(false);
+
+// Form state
 const selectedCategoryId = ref<string | undefined>(undefined);
 const newCategoryId = ref<string | null>(null);
 const editCategoryName = ref("");
 const editCategoryImageUrl = ref("");
-const isEdit = ref(false);
 
+// ==============================
+// UI Helpers
+// ==============================
+
+/**
+ * Handles image loading errors by replacing with placeholder
+ * @param event - The error event from the img element
+ */
+const handleImageError = (event: Event) => {
+  const target = event.target as HTMLImageElement;
+  target.src = "/images/placeholder-category.png";
+};
+
+// ==============================
+// Data Fetching
+// ==============================
+
+/**
+ * Fetches all categories from the API
+ */
 const fetchCategories = async () => {
+  loading.value = true;
+  error.value = "";
+
   try {
     const response = await getAllCategories();
     categories.value = response.data.categories;
-  } catch (error) {
-    toast.error(t("fetchCategoriesError"));
-    console.error("Failed to fetch categories:", error);
+  } catch (err: any) {
+    error.value = err.response?.data?.message || t("fetchCategoriesError");
+    console.error("Failed to fetch categories:", err);
+  } finally {
+    loading.value = false;
   }
 };
 
+// ==============================
+// Modal Management
+// ==============================
+
+/**
+ * Opens modal for adding a new category
+ */
 const openAddModal = () => {
   isEdit.value = false;
   editCategoryName.value = "";
@@ -108,6 +238,10 @@ const openAddModal = () => {
   showAddEditModal.value = true;
 };
 
+/**
+ * Opens modal for editing an existing category
+ * @param category - The category to edit
+ */
 const openEditModal = (category: Category) => {
   isEdit.value = true;
   selectedCategoryId.value = category._id ?? undefined;
@@ -116,11 +250,70 @@ const openEditModal = (category: Category) => {
   showAddEditModal.value = true;
 };
 
+/**
+ * Opens the delete confirmation modal
+ * @param id - ID of the category to delete
+ */
 const confirmRemoveCategory = (id: string) => {
   selectedCategoryId.value = id;
   showDeleteModal.value = true;
 };
 
+/**
+ * Closes the add/edit modal and resets form values
+ */
+const cancelAddEdit = () => {
+  showAddEditModal.value = false;
+  isEdit.value = false;
+  editCategoryName.value = "";
+  editCategoryImageUrl.value = "";
+  selectedCategoryId.value = undefined;
+};
+
+/**
+ * Closes all delete-related modals and resets selection state
+ */
+const cancelRemove = () => {
+  showDeleteModal.value = false;
+  showReassignModal.value = false;
+  selectedCategoryId.value = undefined;
+  newCategoryId.value = null;
+};
+
+// ==============================
+// CRUD Operations
+// ==============================
+
+/**
+ * Handles form submission for both adding and editing categories
+ * @param formData - Category data including name and image URL
+ */
+const submitForm = async (formData: { name: string; imageUrl: string }) => {
+  try {
+    if (isEdit.value && selectedCategoryId.value) {
+      await updateCategory(selectedCategoryId.value, formData);
+      toast.success(t("updateCategorySuccess"));
+    } else {
+      await createCategory(formData);
+      toast.success(t("addCategorySuccess"));
+    }
+
+    fetchCategories();
+    showAddEditModal.value = false;
+    selectedCategoryId.value = undefined;
+  } catch (error) {
+    const errorMessage = isEdit.value
+      ? t("updateCategoryError")
+      : t("addCategoryError");
+    toast.error(errorMessage);
+    console.error("Failed to submit category form:", error);
+  }
+};
+
+/**
+ * Deletes a category by ID
+ * @param id - ID of the category to delete
+ */
 const removeCategory = async (id: string) => {
   try {
     await deleteCategory(id);
@@ -134,6 +327,10 @@ const removeCategory = async (id: string) => {
   }
 };
 
+/**
+ * Reassigns products from one category to another, then deletes the original category
+ * @param newCategoryId - Target category ID for reassignment
+ */
 const reassignAndRemoveCategory = async (newCategoryId: string) => {
   try {
     if (selectedCategoryId.value && newCategoryId) {
@@ -153,41 +350,9 @@ const reassignAndRemoveCategory = async (newCategoryId: string) => {
   }
 };
 
-const submitForm = async (formData: { name: string; imageUrl: string }) => {
-  try {
-    if (isEdit.value && selectedCategoryId.value) {
-      await updateCategory(selectedCategoryId.value, formData);
-      toast.success(t("updateCategorySuccess"));
-    } else {
-      await createCategory(formData);
-      toast.success(t("addCategorySuccess"));
-    }
-    fetchCategories();
-    showAddEditModal.value = false;
-    selectedCategoryId.value = undefined;
-  } catch (error) {
-    const errorMessage = isEdit.value
-      ? t("updateCategoryError")
-      : t("addCategoryError");
-    toast.error(errorMessage);
-    console.error("Failed to submit category form:", error);
-  }
-};
-
-const cancelAddEdit = () => {
-  showAddEditModal.value = false;
-  isEdit.value = false;
-  editCategoryName.value = "";
-  editCategoryImageUrl.value = "";
-  selectedCategoryId.value = undefined;
-};
-
-const cancelRemove = () => {
-  showDeleteModal.value = false;
-  showReassignModal.value = false;
-  selectedCategoryId.value = undefined;
-  newCategoryId.value = null;
-};
+// ==============================
+// Lifecycle Hooks
+// ==============================
 
 onMounted(() => {
   fetchCategories();
@@ -195,128 +360,3 @@ onMounted(() => {
   on("categoryUpdated", fetchCategories);
 });
 </script>
-
-<style scoped>
-.admin-categories-container {
-  display: flex;
-  flex-direction: row;
-  gap: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.categories-menu {
-  flex: 1;
-  max-width: 300px;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.categories-menu h2 {
-  font-size: 1.4em;
-  margin-bottom: 16px;
-  color: #333;
-  font-weight: 600;
-}
-
-.categories-menu button {
-  display: block;
-  margin-bottom: 12px;
-  padding: 12px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  border-radius: 6px;
-  width: 100%;
-  text-align: center;
-  font-size: 1em;
-  font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.categories-menu button.active {
-  background-color: #0056b3;
-}
-
-.categories-menu button:hover {
-  background-color: #0056b3;
-  transform: scale(1.02);
-}
-
-.categories-list {
-  flex: 3;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.categories-list h2 {
-  font-size: 1.6em;
-  margin-bottom: 16px;
-  color: #333;
-  font-weight: 600;
-}
-
-.categories-list table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #ffffff;
-}
-
-.categories-list th,
-.categories-list td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  vertical-align: middle;
-  text-align: center;
-}
-
-.categories-list th {
-  background-color: #f8f9fa;
-  font-weight: 600;
-  color: #555;
-}
-
-.categories-list tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.categories-list tr:hover {
-  background-color: #f1f1f1;
-}
-
-.categories-list .actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  align-items: center;
-}
-
-.categories-list button {
-  margin: 0;
-  padding: 10px 16px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  border-radius: 6px;
-  font-size: 0.9em;
-  font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.categories-list button:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
-}
-</style>

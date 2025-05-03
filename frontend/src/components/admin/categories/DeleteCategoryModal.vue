@@ -1,16 +1,45 @@
 <template>
-  <div v-if="show" class="modal">
-    <div class="modal-content">
-      <span class="close" @click="cancelRemove">&times;</span>
-      <p>{{ $t("deleteConfirmation") }}</p>
-      <div class="form-actions">
-        <button @click="confirmDelete">
+  <div
+    v-if="show"
+    class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+    @click="cancelRemove"
+  >
+    <div class="bg-white rounded-lg w-11/12 max-w-md p-6 shadow-lg" @click.stop>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">
+          {{ $t("confirmDeletion") }}
+        </h2>
+        <button
+          class="bg-transparent border-0 text-gray-400 hover:text-gray-600 text-2xl cursor-pointer transition-colors"
+          @click="cancelRemove"
+        >
+          &times;
+        </button>
+      </div>
+
+      <p class="text-center text-gray-700 mb-6">
+        {{ $t("deleteConfirmation") }}
+      </p>
+
+      <div class="flex flex-col gap-3 mt-6">
+        <button
+          @click="confirmDelete"
+          class="px-4 py-2.5 bg-red-500 text-white rounded-md font-medium hover:bg-red-600 transition-colors"
+        >
           {{ $t("deleteWithProducts") }}
         </button>
-        <button @click="openReassignModal">
+
+        <button
+          @click="openReassignModal"
+          class="px-4 py-2.5 bg-blue-500 text-white rounded-md font-medium hover:bg-blue-600 transition-colors"
+        >
           {{ $t("reassignAndDelete") }}
         </button>
-        <button @click="cancelRemove">
+
+        <button
+          @click="cancelRemove"
+          class="px-4 py-2.5 bg-gray-200 text-gray-700 rounded-md font-medium hover:bg-gray-300 transition-colors"
+        >
           {{ $t("cancel") }}
         </button>
       </div>
@@ -19,6 +48,10 @@
 </template>
 
 <script setup lang="ts">
+// ==============================
+// Props & Emits
+// ==============================
+
 const props = defineProps({
   show: Boolean,
 });
@@ -29,90 +62,28 @@ const emits = defineEmits([
   "cancelRemove",
 ]);
 
+// ==============================
+// Action Handlers
+// ==============================
+
+/**
+ * Confirms the deletion of a category with its products
+ */
 const confirmDelete = () => {
   emits("confirmDelete");
 };
 
+/**
+ * Opens modal to reassign products before deletion
+ */
 const openReassignModal = () => {
   emits("openReassignModal");
 };
 
+/**
+ * Cancels the deletion process
+ */
 const cancelRemove = () => {
   emits("cancelRemove");
 };
 </script>
-
-<style scoped>
-.modal {
-  display: block;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-  background-color: #fff;
-  margin: 10% auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  width: 80%;
-  max-width: 500px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-p {
-  margin-top: 0;
-  font-size: 18px;
-  text-align: center;
-}
-
-.form-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.form-actions button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.form-actions button[type="button"] {
-  background-color: #6c757d;
-}
-
-.form-actions button:hover {
-  background-color: #0056b3;
-}
-
-.form-actions button[type="button"]:hover {
-  background-color: #5a6268;
-}
-</style>
