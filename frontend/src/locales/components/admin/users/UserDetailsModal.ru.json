@@ -1,0 +1,23 @@
+{
+  "userDetails": {
+    "title": "Детали пользователя",
+    "basicInfo": "Основная информация",
+    "name": "Имя",
+    "email": "Email",
+    "phone": "Телефон",
+    "role": "Роль",
+    "admin": "Админ",
+    "user": "Пользователь",
+    "noName": "Имя не указано",
+    "registrationDate": "Дата регистрации",
+    "deliveryInfo": "Информация о доставке",
+    "country": "Страна",
+    "city": "Город",
+    "street": "Улица",
+    "buildingNumber": "Номер здания",
+    "apartment": "Квартира",
+    "postalCode": "Почтовый индекс",
+    "close": "Закрыть",
+    "notProvided": "Не указано"
+  }
+}

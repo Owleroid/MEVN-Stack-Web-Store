@@ -1,0 +1,23 @@
+{
+  "userDetails": {
+    "title": "User Details",
+    "basicInfo": "Basic Information",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "role": "Role",
+    "admin": "Admin",
+    "user": "User",
+    "noName": "No name provided",
+    "registrationDate": "Registration Date",
+    "deliveryInfo": "Delivery Information",
+    "country": "Country",
+    "city": "City",
+    "street": "Street",
+    "buildingNumber": "Building Number",
+    "apartment": "Apartment",
+    "postalCode": "Postal Code",
+    "close": "Close",
+    "notProvided": "Not provided"
+  }
+}

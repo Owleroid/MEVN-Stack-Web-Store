@@ -1,0 +1,23 @@
+{
+  "pageTitle": "Client List",
+  "search": "Search by name or email",
+  "loading": "Loading users...",
+  "error": "Failed to load users",
+  "retry": "Retry",
+  "noResults": "No users found matching your search",
+  "columns": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "registrationDate": "Registration Date",
+    "role": "Role"
+  },
+  "roles": {
+    "admin": "Admin",
+    "user": "User"
+  },
+  "userInfo": {
+    "notProvided": "Not provided",
+    "noName": "No name provided"
+  }
+}

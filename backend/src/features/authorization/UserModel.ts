@@ -11,6 +11,7 @@ export interface UserDocument extends Document {
   name?: string;
   surname?: string;
   phone?: string;
+  registrationDate: Date;
   deliveryData?: {
     country?: string;
     city?: string;
@@ -33,6 +34,11 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: false },
   surname: { type: String, required: false },
   phone: { type: String, required: false },
+  registrationDate: {
+    type: Date,
+    required: true,
+    default: Date.now,
+  },
   deliveryData: {
     country: { type: String, required: false },
     city: { type: String, required: false },

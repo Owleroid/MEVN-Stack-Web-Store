@@ -7,6 +7,7 @@ import mongoSanitize from "express-mongo-sanitize";
 import corseConfig from "./config/cors.js";
 import sessionConfig from "./config/session.js";
 
+import userRoutes from "./features/users/userRoutes.js";
 import orderRoutes from "./features/orders/orderRoutes.js";
 import authRoutes from "./features/authorization/authRoutes.js";
 import productRoutes from "./features/products/productRoutes.js";
@@ -27,6 +28,7 @@ app.use(mongoSanitize());
 app.use(session(sessionConfig));
 
 app.use("/api/geo", geoRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/store", storeRoutes);
 app.use("/api/orders", orderRoutes);
