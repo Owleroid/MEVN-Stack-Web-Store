@@ -1,54 +1,116 @@
 <template>
-  <div class="image-manager">
+  <div class="max-w-5xl mx-auto p-6">
     <!-- Upload Section -->
-    <div class="upload-section">
-      <h1>{{ $t("imageManager") }}</h1>
-      <h2>{{ $t("uploadImages") }}</h2>
-      <input type="file" @change="handleFileUpload" multiple />
-      <button
-        @click="handleUploadImages"
-        :disabled="selectedFiles.length === 0"
-      >
-        {{ $t("upload") }}
-      </button>
+    <div class="bg-white rounded-lg shadow border border-gray-200 p-6 mb-8">
+      <h1 class="text-2xl font-bold text-gray-800 mb-4">
+        {{ $t("imageManager") }}
+      </h1>
+      <h2 class="text-lg font-medium text-gray-700 mb-4">
+        {{ $t("uploadImages") }}
+      </h2>
+
+      <div class="flex flex-wrap gap-4 items-center">
+        <label
+          for="fileUpload"
+          class="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-200 transition-colors"
+        >
+          <span class="text-sm font-medium">{{ $t("chooseFiles") }}</span>
+          <input
+            id="fileUpload"
+            type="file"
+            @change="handleFileUpload"
+            multiple
+            class="hidden"
+          />
+        </label>
+
+        <button
+          @click="handleUploadImages"
+          :disabled="selectedFiles.length === 0"
+          class="px-4 py-2 bg-blue-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          {{ $t("upload") }}
+        </button>
+
+        <span v-if="selectedFiles.length > 0" class="text-sm text-gray-600">
+          {{ $t("filesSelected", { count: selectedFiles.length }) }}
+        </span>
+      </div>
     </div>
 
     <!-- Main Content -->
-    <div class="main-content">
-      <!-- Image List -->
-      <div class="image-list">
-        <h2>{{ $t("availableImages") }}</h2>
-        <div v-if="loading">
-          <p>{{ $t("loadingImages") }}</p>
-        </div>
-        <div v-else-if="images.length === 0">
-          <p>{{ $t("noImages") }}</p>
-        </div>
-        <div v-else class="images-grid">
+    <div class="bg-white rounded-lg shadow border border-gray-200">
+      <!-- Image List Header -->
+      <div class="p-4 border-b border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-800">
+          {{ $t("availableImages") }}
+        </h2>
+      </div>
+
+      <!-- Loading State -->
+      <div v-if="loading" class="text-center p-8">
+        <div
+          class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-blue-600"
+        ></div>
+        <p class="mt-4 text-gray-500">{{ $t("loadingImages") }}</p>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="images.length === 0" class="text-center p-8">
+        <p class="text-gray-500">{{ $t("noImages") }}</p>
+      </div>
+
+      <!-- Image Grid -->
+      <div v-else class="p-4">
+        <div
+          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
+        >
           <div
             v-for="image in images"
             :key="image.url"
-            class="image-item"
-            :class="{ selected: selectedImages.includes(image as Image) }"
             @click="toggleImageSelection(image)"
+            class="relative rounded-lg overflow-hidden bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 cursor-pointer"
+            :class="{ 'ring-2 ring-blue-500 bg-blue-50': selectedImages.includes(image as Image) }"
           >
-            <img :src="image.url" :alt="image.name" />
-            <p>{{ image.name }}</p>
+            <img
+              :src="image.url"
+              :alt="image.name"
+              class="w-full h-32 object-cover"
+            />
+            <p class="p-2 text-sm text-gray-700 truncate">{{ image.name }}</p>
           </div>
         </div>
       </div>
 
-      <!-- Batch Actions -->
-      <div class="batch-actions">
-        <button v-if="selectedImages.length > 0" @click="copySelectedUrls">
+      <!-- Batch Actions Footer -->
+      <div
+        class="sticky bottom-0 p-4 border-t border-gray-200 bg-white rounded-b-lg flex flex-wrap gap-2"
+        v-if="selectedImages.length > 0"
+      >
+        <button
+          @click="copySelectedUrls"
+          class="px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
           {{ $t("copyUrls") }}
         </button>
-        <button v-if="selectedImages.length > 0" @click="deleteSelectedImages">
+
+        <button
+          @click="deleteSelectedImages"
+          class="px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+        >
           {{ $t("deleteSelected") }}
         </button>
-        <button v-if="selectedImages.length > 0" @click="cancelSelection">
+
+        <button
+          @click="cancelSelection"
+          class="px-3 py-2 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+        >
           {{ $t("cancel") }}
         </button>
+
+        <span class="ml-auto text-sm text-gray-600 self-center">
+          {{ $t("selectedCount", { count: selectedImages.length }) }}
+        </span>
       </div>
     </div>
   </div>
@@ -59,28 +121,52 @@ import { ref, onMounted } from "vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 
+// ==============================
+// Type Imports
+// ==============================
 import type { Image } from "@/types/imageManager";
 
+// ==============================
+// Service Imports
+// ==============================
 import {
   fetchImages,
   uploadImages as uploadImagesService,
   deleteImages,
 } from "@/services/imageManagerService";
 
+// ==============================
+// Composables Setup
+// ==============================
 const toast = useToast();
 const { t } = useI18n();
 
+// ==============================
+// State Management
+// ==============================
+
+// Image state
 const images = ref<Image[]>([]);
-const selectedFiles = ref<File[]>([]);
 const selectedImages = ref<Image[]>([]);
+
+// Upload state
+const selectedFiles = ref<File[]>([]);
 const loading = ref(false);
 
-// Allowed MIME types and max file size
+// Configuration constants
 const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
 
+// ==============================
+// Data Fetching
+// ==============================
+
+/**
+ * Fetches images from the backend API
+ */
 const fetchImagesFromBackend = async () => {
   loading.value = true;
+
   try {
     const response = await fetchImages();
     images.value = response.images;
@@ -91,29 +177,48 @@ const fetchImagesFromBackend = async () => {
   }
 };
 
+// ==============================
+// File Upload Operations
+// ==============================
+
+/**
+ * Handles file selection from the input field
+ * @param event - File input change event
+ */
 const handleFileUpload = (event: Event) => {
   const target = event.target as HTMLInputElement | null;
   const files = target?.files;
+
   if (files) {
     const validFiles = [];
+
     for (const file of files) {
+      // Validate file type
       if (!allowedMimeTypes.includes(file.type)) {
         toast.error(t("invalidFileType", { fileName: file.name }));
         continue;
       }
+
+      // Validate file size
       if (file.size > maxFileSize) {
         toast.error(t("fileTooLarge", { fileName: file.name }));
         continue;
       }
+
       validFiles.push(file);
     }
+
     selectedFiles.value = validFiles;
+
     if (validFiles.length > 0) {
       toast.success(t("filesSelected", { count: validFiles.length }));
     }
   }
 };
 
+/**
+ * Uploads selected files to the server
+ */
 const handleUploadImages = async () => {
   try {
     await uploadImagesService(selectedFiles.value);
@@ -126,20 +231,14 @@ const handleUploadImages = async () => {
   }
 };
 
-const deleteSelectedImages = async () => {
-  try {
-    const imageNames = selectedImages.value.map((image) => image.name);
-    await deleteImages(imageNames);
-    images.value = images.value.filter(
-      (img) => !selectedImages.value.includes(img)
-    );
-    selectedImages.value = [];
-    toast.success(t("deleteSuccess"));
-  } catch (error) {
-    toast.error(t("deleteError"));
-  }
-};
+// ==============================
+// Image Selection Operations
+// ==============================
 
+/**
+ * Toggles selection state of an image
+ * @param image - The image to select/deselect
+ */
 const toggleImageSelection = (image: Image) => {
   if (selectedImages.value.includes(image)) {
     selectedImages.value = selectedImages.value.filter((img) => img !== image);
@@ -148,138 +247,52 @@ const toggleImageSelection = (image: Image) => {
   }
 };
 
+/**
+ * Cancels current image selection
+ */
+const cancelSelection = () => {
+  selectedImages.value = [];
+};
+
+// ==============================
+// Batch Actions
+// ==============================
+
+/**
+ * Copies URLs of selected images to clipboard
+ */
 const copySelectedUrls = () => {
   const urls = selectedImages.value.map((image) => image.url).join(", ");
+
   navigator.clipboard.writeText(urls).then(() => {
     toast.success(t("copySuccess"));
   });
 };
 
-const cancelSelection = () => {
-  selectedImages.value = [];
+/**
+ * Deletes selected images from the server
+ */
+const deleteSelectedImages = async () => {
+  try {
+    const imageNames = selectedImages.value.map((image) => image.name);
+    await deleteImages(imageNames);
+
+    // Remove deleted images from the local state
+    images.value = images.value.filter(
+      (img) => !selectedImages.value.includes(img)
+    );
+
+    selectedImages.value = [];
+    toast.success(t("deleteSuccess"));
+  } catch (error) {
+    toast.error(t("deleteError"));
+  }
 };
 
+// ==============================
+// Lifecycle Hooks
+// ==============================
 onMounted(() => {
   fetchImagesFromBackend();
 });
 </script>
-
-<style scoped>
-.image-manager {
-  padding: 2rem;
-  background-color: #f4f6f8;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.upload-section {
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.upload-section input {
-  margin-right: 1rem;
-}
-
-.upload-section button {
-  padding: 0.6rem 1.2rem;
-  width: 160px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.upload-section button:hover {
-  background-color: #0056b3;
-}
-
-.main-content {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.image-list {
-  flex: 1;
-}
-
-.images-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 1.5rem;
-}
-
-.batch-actions {
-  display: flex;
-  justify-content: flex-start;
-  gap: 1rem;
-  min-height: 60px;
-  align-items: center;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 0.8rem 1.2rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.batch-actions button {
-  padding: 0.6rem 1.2rem;
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.batch-actions button:hover {
-  background-color: #5a6268;
-}
-
-.image-item {
-  text-align: center;
-  padding: 1rem;
-  border: 2px solid transparent;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: border-color 0.3s ease, background-color 0.3s ease,
-    transform 0.2s ease;
-  background-color: #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.image-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.image-item.selected {
-  border-color: #007bff;
-  background-color: rgba(0, 123, 255, 0.1);
-}
-
-.image-item img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.image-item p {
-  margin-top: 0.8rem;
-  font-size: 0.95rem;
-  color: #495057;
-  font-weight: 500;
-}
-</style>

@@ -1,6 +1,7 @@
 {
   "imageManager": "Менеджер изображений",
   "uploadImages": "Загрузить изображения",
+  "chooseFiles": "Выбрать файлы",
   "upload": "Загрузить",
   "copyUrls": "Скопировать ссылки",
   "deleteSelected": "Удалить выбранные",
@@ -12,6 +13,7 @@
   "invalidFileType": "Недопустимый тип файла: {fileName}",
   "fileTooLarge": "Размер файла превышает 5 МБ: {fileName}",
   "filesSelected": "Выбрано файлов: {count}",
+  "selectedCount": "Выбрано изображений: {count}",
   "uploadSuccess": "Изображения успешно загружены",
   "uploadError": "Не удалось загрузить изображения",
   "deleteSuccess": "Изображения успешно удалены",

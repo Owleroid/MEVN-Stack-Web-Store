@@ -1,6 +1,7 @@
 {
   "imageManager": "Image Manager",
   "uploadImages": "Upload Images",
+  "chooseFiles": "Choose Files",
   "upload": "Upload",
   "copyUrls": "Copy URLs",
   "deleteSelected": "Delete Selected",
@@ -12,6 +13,7 @@
   "invalidFileType": "Invalid file type: {fileName}",
   "fileTooLarge": "File size exceeds 5MB: {fileName}",
   "filesSelected": "{count} files selected",
+  "selectedCount": "{count} images selected",
   "uploadSuccess": "Images uploaded successfully",
   "uploadError": "Failed to upload images",
   "deleteSuccess": "Images deleted successfully",
