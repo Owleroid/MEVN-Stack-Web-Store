@@ -1,204 +1,209 @@
 <template>
   <div
     v-if="show"
-    class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+    class="fixed inset-0 z-10 flex items-center justify-center overflow-auto bg-black/40"
     @click="closeModal"
   >
     <div
-      class="bg-white rounded-lg w-11/12 max-w-3xl max-h-[90vh] overflow-y-auto shadow-lg"
+      class="relative w-11/12 max-w-3xl mx-auto bg-white rounded-lg shadow-lg max-h-[90vh] overflow-y-auto"
       @click.stop
     >
+      <!-- Modal Header -->
       <div
-        class="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200"
+        class="p-6 border-b border-gray-200 flex justify-between items-center"
       >
-        <h2 class="text-2xl text-gray-700 font-medium m-0">
+        <h2 class="text-2xl font-bold text-gray-800">
           {{ $t("userDetails.title") }}
         </h2>
         <button
-          class="bg-transparent border-0 text-gray-400 hover:text-gray-600 text-2xl cursor-pointer transition-colors"
           @click="closeModal"
+          class="text-2xl font-bold text-gray-400 hover:text-gray-800 transition-colors"
         >
           &times;
         </button>
       </div>
 
-      <div class="p-4 sm:p-6" v-if="user">
+      <!-- Modal Content -->
+      <div class="p-6" v-if="user">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Basic Info -->
-          <div class="bg-gray-50 rounded-md p-4 border border-gray-200">
+          <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
             <h3
-              class="text-lg text-gray-700 font-medium mb-4 pb-2 border-b border-gray-200"
+              class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-200"
             >
               {{ $t("userDetails.basicInfo") }}
             </h3>
 
-            <div class="mb-3 flex flex-col sm:flex-row">
-              <span
-                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
-              >
-                {{ $t("userDetails.name") }}:
-              </span>
-              <span class="text-gray-800 sm:w-3/5">{{ formatName(user) }}</span>
-            </div>
-
-            <div class="mb-3 flex flex-col sm:flex-row">
-              <span
-                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
-              >
-                {{ $t("userDetails.email") }}:
-              </span>
-              <span class="text-gray-800 sm:w-3/5">{{ user.email }}</span>
-            </div>
-
-            <div class="mb-3 flex flex-col sm:flex-row">
-              <span
-                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
-              >
-                {{ $t("userDetails.phone") }}:
-              </span>
-              <span class="text-gray-800 sm:w-3/5">
-                {{ user.phone || $t("userDetails.notProvided") }}
-              </span>
-            </div>
-
-            <div class="mb-3 flex flex-col sm:flex-row">
-              <span
-                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
-              >
-                {{ $t("userDetails.role") }}:
-              </span>
-              <span class="sm:w-3/5">
+            <div class="space-y-4">
+              <div class="flex flex-col sm:flex-row">
                 <span
-                  :class="
-                    user.isAdmin
-                      ? 'bg-orange-500 text-white'
-                      : 'bg-blue-500 text-white'
-                  "
-                  class="px-3 py-1 rounded-full text-xs font-semibold inline-block"
+                  class="text-sm font-medium text-gray-600 sm:w-2/5 mb-1 sm:mb-0"
                 >
-                  {{
-                    user.isAdmin
-                      ? $t("userDetails.admin")
-                      : $t("userDetails.user")
-                  }}
+                  {{ $t("userDetails.name") }}:
                 </span>
-              </span>
-            </div>
+                <span class="text-gray-800 sm:w-3/5">{{
+                  formatName(user)
+                }}</span>
+              </div>
 
-            <div class="mb-3 flex flex-col sm:flex-row">
-              <span
-                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
-              >
-                {{ $t("userDetails.registrationDate") }}:
-              </span>
-              <span class="text-gray-800 sm:w-3/5">
-                {{ formatDate(user.registrationDate) }}
-              </span>
+              <div class="flex flex-col sm:flex-row">
+                <span
+                  class="text-sm font-medium text-gray-600 sm:w-2/5 mb-1 sm:mb-0"
+                >
+                  {{ $t("userDetails.email") }}:
+                </span>
+                <span class="text-gray-800 sm:w-3/5">{{ user.email }}</span>
+              </div>
+
+              <div class="flex flex-col sm:flex-row">
+                <span
+                  class="text-sm font-medium text-gray-600 sm:w-2/5 mb-1 sm:mb-0"
+                >
+                  {{ $t("userDetails.phone") }}:
+                </span>
+                <span class="text-gray-800 sm:w-3/5">
+                  {{ user.phone || $t("userDetails.notProvided") }}
+                </span>
+              </div>
+
+              <div class="flex flex-col sm:flex-row">
+                <span
+                  class="text-sm font-medium text-gray-600 sm:w-2/5 mb-1 sm:mb-0"
+                >
+                  {{ $t("userDetails.role") }}:
+                </span>
+                <span class="sm:w-3/5">
+                  <span
+                    :class="user.isAdmin ? 'bg-orange-500' : 'bg-blue-500'"
+                    class="px-2 py-1 rounded-full text-xs font-medium text-white"
+                  >
+                    {{
+                      user.isAdmin
+                        ? $t("userDetails.admin")
+                        : $t("userDetails.user")
+                    }}
+                  </span>
+                </span>
+              </div>
+
+              <div class="flex flex-col sm:flex-row">
+                <span
+                  class="text-sm font-medium text-gray-600 sm:w-2/5 mb-1 sm:mb-0"
+                >
+                  {{ $t("userDetails.registrationDate") }}:
+                </span>
+                <span class="text-gray-800 sm:w-3/5">
+                  {{ formatDate(user.registrationDate) }}
+                </span>
+              </div>
             </div>
           </div>
 
           <!-- Delivery Info -->
           <div
             v-if="hasDeliveryData"
-            class="bg-gray-50 rounded-md p-4 border border-gray-200"
+            class="p-4 bg-gray-50 rounded-lg border border-gray-200"
           >
             <h3
-              class="text-lg text-gray-700 font-medium mb-4 pb-2 border-b border-gray-200"
+              class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-200"
             >
               {{ $t("userDetails.deliveryInfo") }}
             </h3>
 
-            <div
-              v-if="user.deliveryData?.country"
-              class="mb-3 flex flex-col sm:flex-row"
-            >
-              <span
-                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+            <div class="space-y-4">
+              <div
+                v-if="user.deliveryData?.country"
+                class="flex flex-col sm:flex-row"
               >
-                {{ $t("userDetails.country") }}:
-              </span>
-              <span class="text-gray-800 sm:w-3/5">{{
-                user.deliveryData.country
-              }}</span>
-            </div>
+                <span
+                  class="text-sm font-medium text-gray-600 sm:w-2/5 mb-1 sm:mb-0"
+                >
+                  {{ $t("userDetails.country") }}:
+                </span>
+                <span class="text-gray-800 sm:w-3/5">{{
+                  user.deliveryData.country
+                }}</span>
+              </div>
 
-            <div
-              v-if="user.deliveryData?.city"
-              class="mb-3 flex flex-col sm:flex-row"
-            >
-              <span
-                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              <div
+                v-if="user.deliveryData?.city"
+                class="flex flex-col sm:flex-row"
               >
-                {{ $t("userDetails.city") }}:
-              </span>
-              <span class="text-gray-800 sm:w-3/5">{{
-                user.deliveryData.city
-              }}</span>
-            </div>
+                <span
+                  class="text-sm font-medium text-gray-600 sm:w-2/5 mb-1 sm:mb-0"
+                >
+                  {{ $t("userDetails.city") }}:
+                </span>
+                <span class="text-gray-800 sm:w-3/5">{{
+                  user.deliveryData.city
+                }}</span>
+              </div>
 
-            <div
-              v-if="user.deliveryData?.street"
-              class="mb-3 flex flex-col sm:flex-row"
-            >
-              <span
-                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              <div
+                v-if="user.deliveryData?.street"
+                class="flex flex-col sm:flex-row"
               >
-                {{ $t("userDetails.street") }}:
-              </span>
-              <span class="text-gray-800 sm:w-3/5">{{
-                user.deliveryData.street
-              }}</span>
-            </div>
+                <span
+                  class="text-sm font-medium text-gray-600 sm:w-2/5 mb-1 sm:mb-0"
+                >
+                  {{ $t("userDetails.street") }}:
+                </span>
+                <span class="text-gray-800 sm:w-3/5">{{
+                  user.deliveryData.street
+                }}</span>
+              </div>
 
-            <div
-              v-if="user.deliveryData?.buildingNumber"
-              class="mb-3 flex flex-col sm:flex-row"
-            >
-              <span
-                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              <div
+                v-if="user.deliveryData?.buildingNumber"
+                class="flex flex-col sm:flex-row"
               >
-                {{ $t("userDetails.buildingNumber") }}:
-              </span>
-              <span class="text-gray-800 sm:w-3/5">{{
-                user.deliveryData.buildingNumber
-              }}</span>
-            </div>
+                <span
+                  class="text-sm font-medium text-gray-600 sm:w-2/5 mb-1 sm:mb-0"
+                >
+                  {{ $t("userDetails.buildingNumber") }}:
+                </span>
+                <span class="text-gray-800 sm:w-3/5">{{
+                  user.deliveryData.buildingNumber
+                }}</span>
+              </div>
 
-            <div
-              v-if="user.deliveryData?.apartment"
-              class="mb-3 flex flex-col sm:flex-row"
-            >
-              <span
-                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              <div
+                v-if="user.deliveryData?.apartment"
+                class="flex flex-col sm:flex-row"
               >
-                {{ $t("userDetails.apartment") }}:
-              </span>
-              <span class="text-gray-800 sm:w-3/5">{{
-                user.deliveryData.apartment
-              }}</span>
-            </div>
+                <span
+                  class="text-sm font-medium text-gray-600 sm:w-2/5 mb-1 sm:mb-0"
+                >
+                  {{ $t("userDetails.apartment") }}:
+                </span>
+                <span class="text-gray-800 sm:w-3/5">{{
+                  user.deliveryData.apartment
+                }}</span>
+              </div>
 
-            <div
-              v-if="user.deliveryData?.postalCode"
-              class="mb-3 flex flex-col sm:flex-row"
-            >
-              <span
-                class="font-semibold text-gray-500 text-sm sm:w-2/5 mb-1 sm:mb-0"
+              <div
+                v-if="user.deliveryData?.postalCode"
+                class="flex flex-col sm:flex-row"
               >
-                {{ $t("userDetails.postalCode") }}:
-              </span>
-              <span class="text-gray-800 sm:w-3/5">{{
-                user.deliveryData.postalCode
-              }}</span>
+                <span
+                  class="text-sm font-medium text-gray-600 sm:w-2/5 mb-1 sm:mb-0"
+                >
+                  {{ $t("userDetails.postalCode") }}:
+                </span>
+                <span class="text-gray-800 sm:w-3/5">{{
+                  user.deliveryData.postalCode
+                }}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="p-4 sm:p-6 border-t border-gray-200 flex justify-end">
+      <!-- Modal Footer -->
+      <div class="p-6 border-t border-gray-200 flex justify-end">
         <button
-          class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded transition-colors"
           @click="closeModal"
+          class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
         >
           {{ $t("userDetails.close") }}
         </button>
@@ -211,21 +216,61 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
+// ==============================
+// Type Imports
+// ==============================
 import type { User } from "@/types/users";
 
+// ==============================
+// Composables Setup
+// ==============================
 const { t, locale } = useI18n();
 
+// ==============================
+// Props Definition
+// ==============================
+
+/**
+ * Component props
+ */
 const props = defineProps<{
+  /** Whether to show the modal */
   show: boolean;
+  /** User data to display */
   user: User | null;
 }>();
 
-const emits = defineEmits(["close"]);
+// ==============================
+// Events Definition
+// ==============================
 
+/**
+ * Component events
+ */
+const emits = defineEmits<{
+  (e: "close"): void;
+}>();
+
+// ==============================
+// Modal Management
+// ==============================
+
+/**
+ * Closes the modal
+ */
 const closeModal = () => {
   emits("close");
 };
 
+// ==============================
+// Formatting Helpers
+// ==============================
+
+/**
+ * Formats user's full name
+ * @param user - User object
+ * @returns Formatted name
+ */
 const formatName = (user: User): string => {
   if (user.name && user.surname) {
     return `${user.name} ${user.surname}`;
@@ -238,6 +283,11 @@ const formatName = (user: User): string => {
   }
 };
 
+/**
+ * Formats date using locale-aware formatting
+ * @param dateString - ISO date string
+ * @returns Formatted date string
+ */
 const formatDate = (dateString: string): string => {
   if (!dateString) return t("userDetails.notProvided");
 
@@ -249,6 +299,13 @@ const formatDate = (dateString: string): string => {
   }).format(date);
 };
 
+// ==============================
+// Computed Properties
+// ==============================
+
+/**
+ * Checks if user has any delivery data to display
+ */
 const hasDeliveryData = computed(() => {
   const data = props.user?.deliveryData;
   return (
