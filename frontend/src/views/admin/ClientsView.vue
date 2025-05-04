@@ -1,39 +1,35 @@
 <template>
   <div class="max-w-5xl mx-auto p-6">
-    <!-- Header Section -->
-    <div class="bg-white rounded-lg shadow border border-gray-200 p-6 mb-8">
-      <div
-        class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
-      >
-        <h1 class="text-2xl font-bold text-gray-800">
-          {{ $t("pageName") }}
-        </h1>
-        <div class="w-full sm:w-72">
-          <div class="relative">
-            <input
-              v-model="searchQuery"
-              type="text"
-              :placeholder="$t('search')"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-            />
-            <div
-              v-if="searchQuery"
-              @click="searchQuery = ''"
-              class="absolute right-2 top-2 text-gray-400 hover:text-gray-600 cursor-pointer"
-            >
-              &times;
+    <!-- Users List Section -->
+    <div class="bg-white rounded-lg shadow border border-gray-200">
+      <!-- Section Header with Search -->
+      <div class="p-4 border-b border-gray-200">
+        <div
+          class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+        >
+          <h1 class="text-xl font-semibold text-gray-800">
+            {{ $t("usersList") }}
+          </h1>
+
+          <!-- Search Input (moved from header) -->
+          <div class="w-full sm:w-72">
+            <div class="relative">
+              <input
+                v-model="searchQuery"
+                type="text"
+                :placeholder="$t('search')"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              />
+              <div
+                v-if="searchQuery"
+                @click="searchQuery = ''"
+                class="absolute right-2 top-2 text-gray-400 hover:text-gray-600 cursor-pointer"
+              >
+                &times;
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Users List Section -->
-    <div class="bg-white rounded-lg shadow border border-gray-200">
-      <div class="p-4 border-b border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-800">
-          {{ $t("usersList") }}
-        </h2>
       </div>
 
       <!-- Loading State -->
