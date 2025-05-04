@@ -1,16 +1,20 @@
 <template>
+  <!-- Critical Stock Container -->
   <div class="w-full bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+    <!-- Section Header -->
     <div class="mb-4">
       <h3 class="text-xl font-semibold text-gray-800">
         {{ $t("criticalStockAlert") }}
       </h3>
     </div>
 
+    <!-- Products Table (when there are low stock items) -->
     <div v-if="filteredProducts.length > 0">
       <p class="mb-3 text-gray-600">{{ $t("productsLowStock") }}</p>
 
       <div class="overflow-x-auto">
         <table class="w-full border-collapse">
+          <!-- Table Header -->
           <thead>
             <tr>
               <th
@@ -25,6 +29,7 @@
               </th>
             </tr>
           </thead>
+          <!-- Table Body -->
           <tbody>
             <tr
               v-for="product in filteredProducts"
@@ -43,6 +48,7 @@
       </div>
     </div>
 
+    <!-- Empty State - No Critical Products -->
     <div v-else class="text-center py-8">
       <svg
         class="w-12 h-12 mx-auto text-green-500 mb-2"
@@ -102,9 +108,14 @@ const filteredProducts = computed(() =>
  * @param amount - The current amount of product
  * @returns Tailwind classes for the row
  */
-const getProductStatusClass = (amount: number) => {
-  if (amount === 0) return "bg-red-50";
+const getProductStatusClass = (amount: number): string => {
+  // For zero or negative stock, show red background
+  if (amount <= 0) return "bg-red-50";
+
+  // For low stock (but above zero), show yellow background
   if (amount <= props.criticalThreshold) return "bg-yellow-50";
+
+  // Normal stock levels (should not appear in this component)
   return "";
 };
 </script>
