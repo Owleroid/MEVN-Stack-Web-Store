@@ -9,6 +9,7 @@ import sessionConfig from "./config/session.js";
 
 import userRoutes from "./features/users/userRoutes.js";
 import orderRoutes from "./features/orders/orderRoutes.js";
+import supportRoutes from "./features/support/supportRoutes.js";
 import authRoutes from "./features/authorization/authRoutes.js";
 import productRoutes from "./features/products/productRoutes.js";
 import storeRoutes from "./features/store-manager/storeRoutes.js";
@@ -32,6 +33,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/store", storeRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/support", supportRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/warehouses", warehouseRoutes);

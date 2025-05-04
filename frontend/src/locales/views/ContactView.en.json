@@ -1,0 +1,23 @@
+{
+  "title": "Contact Us",
+  "description": "Have a question or feedback? We're here to help. Fill out the form and our team will get back to you as soon as possible.",
+  "email": "Email",
+  "phone": "Phone",
+  "address": "Address",
+  "addressDetails": "123 Main Street, Suite 100, Anytown, USA 12345",
+  "followUs": "Follow Us",
+  "contactUs": "Get in Touch",
+  "formDescription": "Send us a message and we'll respond as soon as possible.",
+  "subjectPlaceholder": "What's your message about?",
+  "messagePlaceholder": "Write your message here...",
+  "send": "Send Message",
+  "sending": "Sending...",
+  "messageSentSuccess": "Your message has been sent successfully! We'll get back to you soon.",
+  "messageSendFailed": "There was an error sending your message. Please try again.",
+  "emailRequired": "Email address is required",
+  "emailInvalid": "Please enter a valid email address",
+  "subject": "Subject",
+  "message": "Message",
+  "messageRequired": "Message is required",
+  "messageTooShort": "Message must be at least 10 characters long"
+}

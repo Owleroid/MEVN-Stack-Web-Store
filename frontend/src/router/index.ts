@@ -29,6 +29,7 @@ import AdminWarehouseView from "@/views/admin/WarehouseView.vue";
 import AdminImageManagerView from "@/views/admin/ImageManagerView.vue";
 import AdminClientsView from "@/views/admin/ClientsView.vue";
 import AdminNewsView from "@/views/admin/NewsView.vue";
+import AdminSupportView from "@/views/admin/SupportView.vue";
 
 const routes = [
   { path: "/", component: HomeView },
@@ -96,6 +97,12 @@ const routes = [
         meta: { requiresAuth: true, requiresAdmin: true },
       },
       { path: "clients", component: AdminClientsView },
+      {
+        path: "support",
+        name: "admin-support",
+        component: AdminSupportView,
+        meta: { requiresAuth: true, requiresAdmin: true },
+      },
       { path: "news", component: AdminNewsView },
     ],
   },

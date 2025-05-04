@@ -1,0 +1,10 @@
+{
+  "newMessages": "New Messages",
+  "noNewMessages": "No new messages at the moment",
+  "actions": "Actions",
+  "respond": "Respond",
+  "status": "Status",
+  "statuses": {
+    "new": "New"
+  }
+}
