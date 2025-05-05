@@ -43,7 +43,7 @@ import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/stores/authStore";
 
 import type { Product } from "@/types/products";
-import type { Category } from "@/types/categories";
+import type { Category } from "@/types/category";
 import {
   getProductsByCategoryId,
   getAllCategories,

@@ -90,39 +90,67 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
-// Use i18n
+// ==============================
+// Composables
+// ==============================
 const { t } = useI18n();
 
+// ==============================
+// Props
+// ==============================
 const props = defineProps<{
   currentPage: number;
   totalItems: number;
   itemsPerPage: number;
 }>();
 
+// ==============================
+// Emits
+// ==============================
 const emit = defineEmits<{
+  /**
+   * Emitted when the current page changes
+   * @param e - Event name
+   * @param page - New page number
+   */
   (e: "update:currentPage", page: number): void;
 }>();
 
-const totalPages = computed(() => {
+// ==============================
+// Computed Properties
+// ==============================
+
+/**
+ * Calculate the total number of pages based on items and itemsPerPage
+ */
+const totalPages = computed((): number => {
   return Math.ceil(props.totalItems / props.itemsPerPage);
 });
 
-const paginationRange = computed(() => {
+/**
+ * Generate an array of page numbers to show in the pagination control
+ * Implements a sliding window approach to show pages around the current page
+ */
+const paginationRange = computed((): number[] => {
   const range: number[] = [];
   const maxDisplayedPages = 5;
 
   if (totalPages.value <= maxDisplayedPages) {
+    // If we have fewer pages than our max display, show all pages
     for (let i = 1; i <= totalPages.value; i++) {
       range.push(i);
     }
   } else {
+    // Calculate a window around the current page
     let start = Math.max(1, props.currentPage - 2);
     let end = Math.min(totalPages.value, start + maxDisplayedPages - 1);
 
+    // Adjust the start if we're near the end
     if (end - start + 1 < maxDisplayedPages) {
       start = Math.max(1, end - maxDisplayedPages + 1);
     }
 
+    // Generate the page numbers
     for (let i = start; i <= end; i++) {
       range.push(i);
     }

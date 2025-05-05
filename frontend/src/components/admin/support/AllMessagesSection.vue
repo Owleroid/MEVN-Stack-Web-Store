@@ -99,14 +99,14 @@ import { computed } from "vue";
 import MessageTable from "./MessageTable.vue";
 import FilterControls from "./FilterControls.vue";
 import Pagination from "./Pagination.vue";
-import type { SupportMessage } from "@/types/support";
+import type { SupportMessage, SupportStatus } from "@/types/support";
 
 const props = defineProps<{
   messages: SupportMessage[];
   loading: boolean;
   error: string;
-  sortOrder: string;
-  statusFilter: string;
+  sortOrder: "newest" | "oldest";
+  statusFilter: SupportStatus | "";
   currentPage: number;
   itemsPerPage: number;
   totalItems: number;
@@ -115,8 +115,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "view", message: SupportMessage): void;
   (e: "respond", message: SupportMessage): void;
-  (e: "update:sortOrder", value: string): void;
-  (e: "update:statusFilter", value: string): void;
+  (e: "update:sortOrder", value: "newest" | "oldest"): void;
+  (e: "update:statusFilter", value: SupportStatus | ""): void;
   (e: "update:currentPage", page: number): void;
   (e: "retry"): void;
 }>();
@@ -124,7 +124,7 @@ const emit = defineEmits<{
 /**
  * Returns appropriate CSS class based on message status
  */
-const getStatusClass = (status: string): string => {
+const getStatusClass = (status: SupportStatus): string => {
   switch (status) {
     case "new":
       return "bg-blue-100 text-blue-800";

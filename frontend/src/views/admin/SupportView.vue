@@ -46,7 +46,11 @@ import NewMessagesSection from "@/components/admin/support/NewMessagesSection.vu
 import AllMessagesSection from "@/components/admin/support/AllMessagesSection.vue";
 
 // Type imports
-import type { SupportMessage } from "@/types/support";
+import type {
+  SupportMessage,
+  SupportStatus,
+  SupportMessageUpdate,
+} from "@/types/support";
 
 // Service imports
 import {
@@ -74,8 +78,8 @@ const error = ref("");
 // UI state
 const showModal = ref(false);
 const isResponding = ref(false);
-const sortOrder = ref("newest");
-const statusFilter = ref("");
+const sortOrder = ref<"newest" | "oldest">("newest");
+const statusFilter = ref<SupportStatus | "">("");
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
 
@@ -86,7 +90,7 @@ const itemsPerPage = ref(10);
 /**
  * Returns messages with "new" status
  */
-const newMessages = computed(() => {
+const newMessages = computed((): SupportMessage[] => {
   return messages.value.filter((message) => message.status === "new");
 });
 
@@ -94,7 +98,7 @@ const newMessages = computed(() => {
  * Returns filtered and sorted messages based on user selection
  * Excludes messages with "new" status since they are shown separately
  */
-const filteredMessages = computed(() => {
+const filteredMessages = computed((): SupportMessage[] => {
   // Exclude messages with "new" status
   let filtered = messages.value.filter((message) => message.status !== "new");
 
@@ -124,7 +128,7 @@ const filteredMessages = computed(() => {
 /**
  * Returns paginated messages for the current page
  */
-const paginatedMessages = computed(() => {
+const paginatedMessages = computed((): SupportMessage[] => {
   const startIndex = (currentPage.value - 1) * itemsPerPage.value;
   return filteredMessages.value.slice(
     startIndex,
@@ -139,25 +143,18 @@ const paginatedMessages = computed(() => {
 /**
  * Fetches all support messages
  */
-const fetchMessages = async () => {
+const fetchMessages = async (): Promise<void> => {
   loading.value = true;
   error.value = "";
 
   try {
+    // Use proper type for the response
     const response = await getAllSupportMessages();
 
-    // Ensure we're working with an array
-    if (Array.isArray(response)) {
-      messages.value = response;
-    } else if (response && Array.isArray(response)) {
-      // If it's an axios response object
-      messages.value = response;
-    } else {
-      console.error("Unexpected response format:", response);
-      messages.value = []; // Default to empty array
-      error.value = t("fetchMessagesError");
-    }
-  } catch (err) {
+    // According to supportService.ts, this should return
+    // { messages: SupportMessage[], pagination: {...} }
+    messages.value = response.messages;
+  } catch (err: unknown) {
     console.error("Error fetching support messages:", err);
     messages.value = []; // Ensure it's always an array
     error.value = t("fetchMessagesError");
@@ -169,7 +166,7 @@ const fetchMessages = async () => {
 /**
  * Opens modal to view a message
  */
-const viewMessage = (message: SupportMessage) => {
+const viewMessage = (message: SupportMessage): void => {
   selectedMessage.value = message;
   isResponding.value = false;
   showModal.value = true;
@@ -178,7 +175,7 @@ const viewMessage = (message: SupportMessage) => {
 /**
  * Opens modal to respond to a message
  */
-const respondToMessage = (message: SupportMessage) => {
+const respondToMessage = (message: SupportMessage): void => {
   selectedMessage.value = message;
   isResponding.value = true;
   showModal.value = true;
@@ -187,7 +184,7 @@ const respondToMessage = (message: SupportMessage) => {
 /**
  * Closes the message modal
  */
-const closeModal = () => {
+const closeModal = (): void => {
   showModal.value = false;
   selectedMessage.value = null;
   isResponding.value = false;
@@ -199,24 +196,27 @@ const closeModal = () => {
 const submitResponse = async (
   messageId: string,
   response: string,
-  status: "new" | "in-progress" | "resolved"
-) => {
+  status: SupportStatus
+): Promise<void> => {
   try {
-    await updateSupportMessage(messageId, { response, status });
+    // Create proper update data object
+    const updateData: SupportMessageUpdate = {
+      response,
+      status,
+    };
+
+    // Update the message
+    const updatedMessage = await updateSupportMessage(messageId, updateData);
 
     // Update the message in the local state
     const index = messages.value.findIndex((msg) => msg._id === messageId);
     if (index !== -1) {
-      messages.value[index] = {
-        ...messages.value[index],
-        response,
-        status,
-      };
+      messages.value[index] = updatedMessage;
     }
 
     toast.success(t("responseSubmitted"));
     closeModal();
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("Error submitting response:", err);
     toast.error(t("responseError"));
   }
@@ -225,7 +225,7 @@ const submitResponse = async (
 /**
  * Deletes a message
  */
-const deleteMessage = async (messageId: string) => {
+const deleteMessage = async (messageId: string): Promise<void> => {
   try {
     await deleteSupportMessage(messageId);
 
@@ -234,7 +234,7 @@ const deleteMessage = async (messageId: string) => {
 
     toast.success(t("messageDeleted"));
     closeModal();
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("Error deleting message:", err);
     toast.error(t("deleteError"));
   }

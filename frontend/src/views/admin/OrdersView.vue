@@ -113,7 +113,11 @@ import OrderTable from "@/components/admin/orders/OrderTable.vue";
 import OrderModal from "@/components/admin/orders/EditOrderModal.vue";
 
 // Type imports
-import type { Order } from "@/types/orders";
+import type {
+  OrderData,
+  OrderStatus,
+  OrdersListResponse,
+} from "@/types/orders";
 
 // Service imports
 import { getAllOrders, editOrderById } from "@/services/orderService";
@@ -129,16 +133,16 @@ const toast = useToast();
 // ==============================
 
 // Data state
-const orders = ref<Order[]>([]);
-const selectedOrder = ref<Order | null>(null);
+const orders = ref<OrderData[]>([]);
+const selectedOrder = ref<OrderData | null>(null);
 
 // UI state
-const showModal = ref(false);
-const isEditing = ref(false);
+const showModal = ref<boolean>(false);
+const isEditing = ref<boolean>(false);
 
 // Filter state
-const sortOrder = ref("newest");
-const statusFilter = ref("");
+const sortOrder = ref<"newest" | "oldest">("newest");
+const statusFilter = ref<OrderStatus | "">("");
 
 // ==============================
 // Computed Properties
@@ -147,14 +151,14 @@ const statusFilter = ref("");
 /**
  * Returns orders that have not been checked yet (new orders)
  */
-const newOrders = computed(() => {
+const newOrders = computed<OrderData[]>(() => {
   return orders.value.filter((order) => !order.checked);
 });
 
 /**
  * Returns filtered and sorted orders based on user selection
  */
-const filteredOrders = computed(() => {
+const filteredOrders = computed<OrderData[]>(() => {
   // Start with checked orders only (not new)
   let filtered = orders.value.filter((order) => order.checked);
 
@@ -167,14 +171,14 @@ const filteredOrders = computed(() => {
   if (sortOrder.value === "newest") {
     filtered = filtered.sort(
       (a, b) =>
-        new Date(b.dateOfCreation).getTime() -
-        new Date(a.dateOfCreation).getTime()
+        new Date(b.dateOfCreation || 0).getTime() -
+        new Date(a.dateOfCreation || 0).getTime()
     );
   } else {
     filtered = filtered.sort(
       (a, b) =>
-        new Date(a.dateOfCreation).getTime() -
-        new Date(b.dateOfCreation).getTime()
+        new Date(a.dateOfCreation || 0).getTime() -
+        new Date(b.dateOfCreation || 0).getTime()
     );
   }
 
@@ -188,11 +192,11 @@ const filteredOrders = computed(() => {
 /**
  * Fetches all orders from the API
  */
-const fetchOrders = async () => {
+const fetchOrders = async (): Promise<void> => {
   try {
-    const response = await getAllOrders();
-    orders.value = response.data.orders;
-  } catch (error) {
+    const response: OrdersListResponse = await getAllOrders();
+    orders.value = response.orders;
+  } catch (error: unknown) {
     console.error("Error fetching orders:", error);
     toast.error(t("fetchOrdersError"));
   }
@@ -206,7 +210,7 @@ const fetchOrders = async () => {
  * Opens the view order modal
  * @param order - Order to view
  */
-const viewOrder = (order: Order) => {
+const viewOrder = (order: OrderData): void => {
   selectedOrder.value = order;
   isEditing.value = false;
   showModal.value = true;
@@ -216,7 +220,7 @@ const viewOrder = (order: Order) => {
  * Opens the edit order modal
  * @param order - Order to edit
  */
-const editOrder = (order: Order) => {
+const editOrder = (order: OrderData): void => {
   selectedOrder.value = order;
   isEditing.value = true;
   showModal.value = true;
@@ -225,7 +229,7 @@ const editOrder = (order: Order) => {
 /**
  * Closes the order modal
  */
-const closeModal = () => {
+const closeModal = (): void => {
   showModal.value = false;
   selectedOrder.value = null;
   isEditing.value = false;
@@ -239,18 +243,18 @@ const closeModal = () => {
  * Updates an order with new information
  * @param updatedOrder - Updated order data
  */
-const updateOrder = async (updatedOrder: Order | null) => {
-  if (!updatedOrder) {
-    console.error("Invalid order: null");
+const updateOrder = async (updatedOrder: OrderData | null): Promise<void> => {
+  if (!updatedOrder || !updatedOrder._id) {
+    console.error("Invalid order: null or missing ID");
     return;
   }
 
   try {
     await editOrderById(updatedOrder._id, updatedOrder);
-    fetchOrders();
+    await fetchOrders();
     closeModal();
     toast.success(t("orderUpdated"));
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error updating order:", error);
     toast.error(t("orderUpdateError"));
   }
@@ -261,19 +265,15 @@ const updateOrder = async (updatedOrder: Order | null) => {
  * @param orderId - ID of the order to update
  * @param status - New status value
  */
-const updateOrderStatus = async (orderId: string, status: string) => {
+const updateOrderStatus = async (
+  orderId: string,
+  status: OrderStatus
+): Promise<void> => {
   try {
-    await editOrderById(orderId, {
-      status: status as
-        | "waiting confirmation"
-        | "packing"
-        | "sended"
-        | "delivered"
-        | "canceled",
-    });
-    fetchOrders();
+    await editOrderById(orderId, { status });
+    await fetchOrders();
     toast.success(t("orderStatusUpdated"));
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error updating order status:", error);
     toast.error(t("orderStatusUpdateError"));
   }

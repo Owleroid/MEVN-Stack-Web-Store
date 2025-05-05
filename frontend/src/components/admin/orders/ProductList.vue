@@ -39,7 +39,13 @@
 </template>
 
 <script setup lang="ts">
-import type { Product } from "@/types/orders";
+import { useI18n } from "vue-i18n";
+import type { OrderProduct } from "@/types/orders";
+
+// ==============================
+// Composables
+// ==============================
+const { t } = useI18n();
 
 // ==============================
 // Props Definition
@@ -50,7 +56,7 @@ import type { Product } from "@/types/orders";
  */
 const props = defineProps<{
   /** The list of products to display */
-  products: Product[];
+  products: OrderProduct[];
   /** Whether the product list is in editing mode */
   isEditing: boolean;
 }>();
@@ -62,7 +68,12 @@ const props = defineProps<{
 /**
  * Component events
  */
-const emits = defineEmits(["updateProductAmount", "removeProduct"]);
+const emit = defineEmits<{
+  /** Emitted when a product amount is updated */
+  (e: "updateProductAmount", index: number, amount: number): void;
+  /** Emitted when a product is removed */
+  (e: "removeProduct", index: number): void;
+}>();
 
 // ==============================
 // Product Management Methods
@@ -73,15 +84,15 @@ const emits = defineEmits(["updateProductAmount", "removeProduct"]);
  * @param index - Index of the product in the array
  * @param amount - New product amount
  */
-const updateProductAmount = (index: number, amount: number) => {
-  emits("updateProductAmount", index, amount);
+const updateProductAmount = (index: number, amount: number): void => {
+  emit("updateProductAmount", index, amount);
 };
 
 /**
  * Removes a product from the list
  * @param index - Index of the product to remove
  */
-const removeProduct = (index: number) => {
-  emits("removeProduct", index);
+const removeProduct = (index: number): void => {
+  emit("removeProduct", index);
 };
 </script>

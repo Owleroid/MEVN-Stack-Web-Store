@@ -1,3 +1,4 @@
+vue
 <template>
   <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200">
@@ -52,7 +53,7 @@
             </ul>
           </td>
           <td class="px-6 py-4 whitespace-nowrap">
-            {{ new Date(order.dateOfCreation).toLocaleString() }}
+            {{ formatDate(order.dateOfCreation) }}
           </td>
           <td class="px-6 py-4 whitespace-nowrap">
             <span
@@ -77,7 +78,13 @@
 </template>
 
 <script setup lang="ts">
-import type { Order } from "@/types/orders";
+import { useI18n } from "vue-i18n";
+import type { OrderData, OrderStatus } from "@/types/orders";
+
+// ==============================
+// Composables
+// ==============================
+const { t } = useI18n();
 
 // ==============================
 // Props Definition
@@ -88,7 +95,7 @@ import type { Order } from "@/types/orders";
  */
 const props = defineProps<{
   /** List of orders to display in the table */
-  orders: Order[];
+  orders: OrderData[];
 }>();
 
 // ==============================
@@ -98,7 +105,22 @@ const props = defineProps<{
 /**
  * Component events
  */
-const emits = defineEmits(["viewOrder", "editOrder"]);
+const emit = defineEmits<{
+  /**
+   * Emitted when an order is clicked to view details
+   */
+  (e: "viewOrder", order: OrderData): void;
+
+  /**
+   * Emitted when the edit button is clicked for an order
+   */
+  (e: "editOrder", order: OrderData): void;
+
+  /**
+   * Emitted when the status of an order is updated
+   */
+  (e: "updateOrderStatus", orderId: string, status: OrderStatus): void;
+}>();
 
 // ==============================
 // Action Handlers
@@ -108,16 +130,16 @@ const emits = defineEmits(["viewOrder", "editOrder"]);
  * Emits event to view order details
  * @param order - The order to view
  */
-const viewOrder = (order: Order) => {
-  emits("viewOrder", order);
+const viewOrder = (order: OrderData): void => {
+  emit("viewOrder", order);
 };
 
 /**
  * Emits event to edit order
  * @param order - The order to edit
  */
-const editOrder = (order: Order) => {
-  emits("editOrder", order);
+const editOrder = (order: OrderData): void => {
+  emit("editOrder", order);
 };
 
 // ==============================
@@ -125,17 +147,35 @@ const editOrder = (order: Order) => {
 // ==============================
 
 /**
+ * Formats a date for display
+ * @param date - The date to format
+ * @returns Formatted date string or placeholder
+ */
+const formatDate = (date?: Date | string): string => {
+  if (!date) return t("dateNotAvailable");
+
+  return new Date(date).toLocaleString();
+};
+
+/**
  * Converts status string from backend format to translation key format
  * @param status - The order status from backend (e.g. "waiting confirmation")
  * @returns The corresponding translation key (e.g. "waitingConfirmation")
  */
-const statusKey = (status: string): string => {
+const statusKey = (status: OrderStatus): string => {
   switch (status) {
     case "waiting confirmation":
-      return "waitingConfirmation";
-    // All other statuses match their keys
+      return "statuses.waitingConfirmation";
+    case "packing":
+      return "statuses.packing";
+    case "sended":
+      return "statuses.sended";
+    case "delivered":
+      return "statuses.delivered";
+    case "canceled":
+      return "statuses.canceled";
     default:
-      return status;
+      return "statuses.unknown";
   }
 };
 
@@ -144,10 +184,9 @@ const statusKey = (status: string): string => {
  * @param status - The order status
  * @returns CSS class for styling the status badge
  */
-const getStatusClass = (status: string): string => {
+const getStatusClass = (status: OrderStatus): string => {
   switch (status) {
     case "waiting confirmation":
-    case "waitingConfirmation":
       return "bg-yellow-100 text-yellow-800";
     case "packing":
       return "bg-blue-100 text-blue-800";

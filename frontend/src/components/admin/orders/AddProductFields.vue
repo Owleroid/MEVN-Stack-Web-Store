@@ -105,6 +105,7 @@ import { useI18n } from "vue-i18n";
 
 // Type imports
 import type { Product } from "@/types/products";
+import type { OrderProduct } from "@/types/orders";
 
 // Service imports
 import { searchProductsByName } from "@/services/productService";
@@ -116,7 +117,9 @@ const props = defineProps<{
   existingProductIds: string[];
 }>();
 
-const emits = defineEmits(["addProduct"]);
+const emit = defineEmits<{
+  (e: "addProduct", product: OrderProduct): void;
+}>();
 
 // ==============================
 // Composables
@@ -127,16 +130,21 @@ const { t } = useI18n();
 // State Management
 // ==============================
 // Form inputs
-const newProductName = ref("");
-const newProductAmount = ref(1);
+const newProductName = ref<string>("");
+const newProductAmount = ref<number>(1);
 
 // Search state
 const searchResults = ref<Product[]>([]);
 const selectedProduct = ref<Product | null>(null);
-const isSearching = ref(false);
+const isSearching = ref<boolean>(false);
 
 // Validation state
-const errors = ref({
+interface ValidationErrors {
+  product: string;
+  amount: string;
+}
+
+const errors = ref<ValidationErrors>({
   product: "",
   amount: "",
 });
@@ -148,7 +156,7 @@ const errors = ref({
  * Searches for products based on entered name
  * Filters out products that are already in the order
  */
-const searchProducts = async () => {
+const searchProducts = async (): Promise<void> => {
   // Reset state
   errors.value.product = "";
 
@@ -169,11 +177,10 @@ const searchProducts = async () => {
     const response = await searchProductsByName(newProductName.value);
 
     // Filter out products already in order
-    searchResults.value = response.data.products.filter(
-      (product: { _id: string }) =>
-        !props.existingProductIds.includes(product._id)
+    searchResults.value = response.products.filter(
+      (product) => !props.existingProductIds.includes(product._id)
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error searching products:", error);
     errors.value.product = t("errorSearchingProducts");
   } finally {
@@ -185,7 +192,7 @@ const searchProducts = async () => {
  * Handles product selection from dropdown
  * @param product - Selected product
  */
-const selectProduct = (product: Product) => {
+const selectProduct = (product: Product): void => {
   selectedProduct.value = product;
   newProductName.value = product.name;
   searchResults.value = [];
@@ -198,7 +205,7 @@ const selectProduct = (product: Product) => {
  * Validates form inputs before submission
  * @returns boolean indicating if form is valid
  */
-const validateForm = () => {
+const validateForm = (): boolean => {
   let isValid = true;
   errors.value = { product: "", amount: "" };
 
@@ -221,12 +228,12 @@ const validateForm = () => {
  * Handles the add product button click
  * Validates input, emits event with product data, and resets form
  */
-const addProduct = () => {
+const addProduct = (): void => {
   if (!validateForm()) return;
 
   if (selectedProduct.value) {
     // Emit product data to parent component
-    emits("addProduct", {
+    emit("addProduct", {
       productId: selectedProduct.value._id,
       name: selectedProduct.value.name,
       amount: newProductAmount.value,
@@ -241,7 +248,7 @@ const addProduct = () => {
 /**
  * Resets form to initial state
  */
-const resetForm = () => {
+const resetForm = (): void => {
   newProductName.value = "";
   newProductAmount.value = 1;
   selectedProduct.value = null;
@@ -256,7 +263,7 @@ const resetForm = () => {
  * @param price - Price to format
  * @returns Formatted price string
  */
-const formatPrice = (price: number) => {
+const formatPrice = (price: number): string => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "EUR",
@@ -264,7 +271,7 @@ const formatPrice = (price: number) => {
 };
 
 // Computed values for selected product display
-const totalPrice = computed(() => {
+const totalPrice = computed((): string => {
   if (selectedProduct.value && newProductAmount.value > 0) {
     return formatPrice(
       selectedProduct.value.price.euros.amount * newProductAmount.value

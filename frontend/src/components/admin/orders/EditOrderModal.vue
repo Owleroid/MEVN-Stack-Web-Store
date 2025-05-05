@@ -34,7 +34,7 @@
             <div>
               <p class="text-sm text-gray-600 mb-1">{{ $t("date") }}:</p>
               <p class="font-medium">
-                {{ new Date(order.dateOfCreation).toLocaleString() }}
+                {{ formatDate(order.dateOfCreation) }}
               </p>
             </div>
 
@@ -50,15 +50,22 @@
                   value="waiting confirmation"
                   :disabled="order.status !== 'waiting confirmation'"
                 >
-                  {{ $t("waitingConfirmation") }}
+                  {{ $t("statuses.waitingConfirmation") }}
                 </option>
-                <option value="packing">{{ $t("packing") }}</option>
-                <option value="sended">{{ $t("sended") }}</option>
-                <option value="delivered">{{ $t("delivered") }}</option>
-                <option value="canceled">{{ $t("canceled") }}</option>
+                <option value="packing">{{ $t("statuses.packing") }}</option>
+                <option value="sended">{{ $t("statuses.sended") }}</option>
+                <option value="delivered">
+                  {{ $t("statuses.delivered") }}
+                </option>
+                <option value="canceled">{{ $t("statuses.canceled") }}</option>
               </select>
               <p v-else class="font-medium">
-                {{ $t(statusKey(order.status)) }}
+                <span
+                  class="px-2 py-1 text-sm rounded-full"
+                  :class="getStatusClass(order.status)"
+                >
+                  {{ $t(statusKey(order.status)) }}
+                </span>
               </p>
             </div>
           </div>
@@ -292,6 +299,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import { useI18n } from "vue-i18n";
 
 // ==============================
 // Component Imports
@@ -302,7 +310,17 @@ import AddProductFields from "@/components/admin/orders/AddProductFields.vue";
 // ==============================
 // Type Imports
 // ==============================
-import type { Product, Order } from "@/types/orders";
+import type {
+  OrderProduct,
+  OrderData,
+  OrderStatus,
+  Address,
+} from "@/types/orders";
+
+// ==============================
+// Composables
+// ==============================
+const { t } = useI18n();
 
 // ==============================
 // Props Definition
@@ -311,16 +329,14 @@ import type { Product, Order } from "@/types/orders";
 /**
  * Component props
  */
-interface Props {
+const props = defineProps<{
   /** Whether to show the modal */
   show: boolean;
   /** Whether the modal is in editing mode */
   isEditing: boolean;
   /** Order data to display/edit */
-  order: Order | null;
-}
-
-const props = defineProps<Props>();
+  order: OrderData | null;
+}>();
 
 // ==============================
 // Events Definition
@@ -329,9 +345,11 @@ const props = defineProps<Props>();
 /**
  * Component events
  */
-const emits = defineEmits<{
+const emit = defineEmits<{
+  /** Emitted when the modal is closed */
   (e: "close"): void;
-  (e: "submitForm", order: Order | null): void;
+  /** Emitted when the form is submitted */
+  (e: "submitForm", order: OrderData | null): void;
 }>();
 
 // ==============================
@@ -341,7 +359,7 @@ const emits = defineEmits<{
 /**
  * Controls visibility of the add product form
  */
-const showAddProductFields = ref(false);
+const showAddProductFields = ref<boolean>(false);
 
 // ==============================
 // Computed Properties
@@ -350,10 +368,11 @@ const showAddProductFields = ref(false);
 /**
  * Returns the shipping address of the current order or an empty object
  */
-const shippingAddress = computed(() => {
+const shippingAddress = computed<Address>(() => {
   if (props.order) {
     if (!props.order.shippingAddress) {
-      props.order.shippingAddress = {
+      // Ensure we always have a valid shipping address object
+      return {
         country: "",
         city: "",
         street: "",
@@ -379,17 +398,57 @@ const shippingAddress = computed(() => {
 // ==============================
 
 /**
+ * Formats a date for display
+ * @param date - The date to format
+ * @returns Formatted date string or placeholder
+ */
+const formatDate = (date?: Date | string): string => {
+  if (!date) return t("dateNotAvailable");
+
+  return new Date(date).toLocaleString();
+};
+
+/**
  * Converts status string from backend format to translation key format
  * @param status - The order status from backend (e.g. "waiting confirmation")
- * @returns The corresponding translation key (e.g. "waitingConfirmation")
+ * @returns The corresponding translation key (e.g. "statuses.waitingConfirmation")
  */
-const statusKey = (status: string): string => {
+const statusKey = (status: OrderStatus): string => {
   switch (status) {
     case "waiting confirmation":
-      return "waitingConfirmation";
-    // All other statuses match their keys
+      return "statuses.waitingConfirmation";
+    case "packing":
+      return "statuses.packing";
+    case "sended":
+      return "statuses.sended";
+    case "delivered":
+      return "statuses.delivered";
+    case "canceled":
+      return "statuses.canceled";
     default:
-      return status;
+      return "statuses.unknown";
+  }
+};
+
+/**
+ * Returns appropriate CSS class based on order status
+ * @param status - The order status
+ * @returns CSS class for styling the status badge
+ */
+const getStatusClass = (status: OrderStatus): string => {
+  switch (status) {
+    case "waiting confirmation":
+      return "bg-yellow-100 text-yellow-800";
+    case "packing":
+      return "bg-blue-100 text-blue-800";
+    case "sended":
+      return "bg-purple-100 text-purple-800";
+    case "delivered":
+      return "bg-green-100 text-green-800";
+    case "canceled":
+      return "bg-red-100 text-red-800";
+    default:
+      return "bg-gray-100 text-gray-800";
   }
 };
 
@@ -401,14 +460,14 @@ const statusKey = (status: string): string => {
  * Closes the modal
  */
 const close = (): void => {
-  emits("close");
+  emit("close");
 };
 
 /**
  * Cancels current editing and closes the modal
  */
 const cancelEdit = (): void => {
-  emits("close");
+  emit("close");
 };
 
 // ==============================
@@ -419,7 +478,7 @@ const cancelEdit = (): void => {
  * Submits the form with updated order data
  */
 const submitForm = (): void => {
-  emits("submitForm", props.order);
+  emit("submitForm", props.order);
 };
 
 // ==============================
@@ -449,7 +508,7 @@ const removeProduct = (index: number): void => {
  * Adds a new product to the order
  * @param product - Product to add
  */
-const addProduct = (product: Product): void => {
+const addProduct = (product: OrderProduct): void => {
   if (props.order) {
     props.order.products.push(product);
   }

@@ -22,7 +22,7 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 
-import type { Category } from "@/types/categories";
+import type { Category } from "@/types/category";
 import { getAllCategories } from "@/services/storeService";
 
 const categories = ref<Category[]>([]);

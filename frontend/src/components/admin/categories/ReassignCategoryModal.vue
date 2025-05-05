@@ -67,7 +67,7 @@ import { ref, watch } from "vue";
 // Props & Emits
 // ==============================
 
-import type { Category } from "@/types/categories";
+import type { Category } from "@/types/category";
 
 const props = defineProps({
   show: Boolean,

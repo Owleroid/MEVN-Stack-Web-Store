@@ -160,9 +160,16 @@ import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 
-import type { Category } from "@/types/categories";
-import type { Warehouse } from "@/types/warehouse";
+// Type imports
+import type { Category } from "@/types/category";
+import type {
+  Warehouse,
+  ProductAmount,
+  ProductUpdateData,
+} from "@/types/warehouse";
+import type { ProductIdsResponse } from "@/types/products";
 
+// Service imports
 import { getAllCategories } from "@/services/categoryService";
 import { getProductIdsByCategory } from "@/services/productService";
 import {
@@ -188,7 +195,7 @@ const router = useRouter();
 const warehouses = ref<Warehouse[]>([]);
 const categories = ref<Category[]>([]);
 const productIds = ref<string[]>([]);
-const originalAmounts = ref<{ [key: string]: number }>({});
+const originalAmounts = ref<Record<string, number>>({});
 const loading = ref<boolean>(true);
 
 // UI state
@@ -202,7 +209,7 @@ const selectedCategoryId = ref<string>("");
 /**
  * Returns the currently selected warehouse
  */
-const selectedWarehouse = computed(() => {
+const selectedWarehouse = computed<Warehouse | undefined>(() => {
   return warehouses.value.find(
     (warehouse) => warehouse._id === selectedWarehouseId.value
   );
@@ -211,7 +218,7 @@ const selectedWarehouse = computed(() => {
 /**
  * Returns products filtered by the selected category
  */
-const filteredProducts = computed(() => {
+const filteredProducts = computed<ProductAmount[]>(() => {
   if (!selectedWarehouse.value) return [];
   return selectedWarehouse.value.products.filter((product) =>
     productIds.value.includes(product.product)
@@ -231,9 +238,9 @@ const fetchWarehouses = async () => {
     const response = await getWarehouses();
     warehouses.value = response;
     if (warehouses.value.length > 0) {
-      selectedWarehouseId.value = warehouses.value[0]._id || "";
+      selectedWarehouseId.value = warehouses.value[0]._id;
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Failed to fetch warehouses:", error);
     toast.error(t("failedToFetchWarehouses"));
   } finally {
@@ -248,12 +255,12 @@ const fetchCategories = async () => {
   try {
     loading.value = true;
     const response = await getAllCategories();
-    categories.value = response.data.categories;
+    categories.value = response.categories;
     if (categories.value.length > 0) {
       selectedCategoryId.value = categories.value[0]._id || "";
       fetchProducts();
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Failed to fetch categories:", error);
     toast.error(t("failedToFetchCategories"));
   } finally {
@@ -267,8 +274,10 @@ const fetchCategories = async () => {
 const fetchProducts = async () => {
   try {
     loading.value = true;
-    const response = await getProductIdsByCategory(selectedCategoryId.value);
-    productIds.value = response.data.productIds;
+    const response: ProductIdsResponse = await getProductIdsByCategory(
+      selectedCategoryId.value
+    );
+    productIds.value = response.productIds;
 
     originalAmounts.value = {};
     if (selectedWarehouse.value) {
@@ -276,7 +285,7 @@ const fetchProducts = async () => {
         originalAmounts.value[product.product] = product.amount;
       });
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Failed to fetch products by category:", error);
     toast.error(t("failedToFetchProducts"));
   } finally {
@@ -290,7 +299,6 @@ const fetchProducts = async () => {
 
 /**
  * Selects a category and fetches its products
- * @param category - The category to select
  */
 const selectCategory = (category: Category) => {
   selectedCategoryId.value = category._id || "";
@@ -299,26 +307,23 @@ const selectCategory = (category: Category) => {
 
 /**
  * Updates the amount of a product in the warehouse
- * @param product - The product to update with its new amount
  */
-const updateProductAmount = async (product: {
-  product: string;
-  name: string;
-  amount: number;
-}) => {
+const updateProductAmount = async (product: ProductAmount) => {
   try {
     loading.value = true;
-    await updateWarehouseProductAmount(selectedWarehouseId.value, {
+    const updateData: ProductUpdateData = {
       productId: product.product,
       amount: product.amount,
-    });
+    };
+
+    await updateWarehouseProductAmount(selectedWarehouseId.value, updateData);
     toast.success(t("productAmountUpdatedSuccessfully"));
     originalAmounts.value[product.product] = product.amount;
 
     const currentWarehouseId = selectedWarehouseId.value;
     await fetchWarehouses();
     selectedWarehouseId.value = currentWarehouseId;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Failed to update product amount:", error);
     toast.error(t("failedToUpdateProductAmount"));
   } finally {
@@ -328,9 +333,8 @@ const updateProductAmount = async (product: {
 
 /**
  * Checks if the product amount has changed from its original value
- * @param product - The product to check
  */
-const hasAmountChanged = (product: { product: string; amount: number }) => {
+const hasAmountChanged = (product: ProductAmount): boolean => {
   return product.amount !== originalAmounts.value[product.product];
 };
 

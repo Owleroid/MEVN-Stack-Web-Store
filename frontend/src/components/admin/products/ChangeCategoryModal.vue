@@ -69,7 +69,7 @@ import { ref, computed, watch } from "vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 
-import type { Category } from "@/types/categories";
+import type { Category } from "@/types/category";
 
 // ==============================
 // Composables setup

@@ -152,7 +152,7 @@ import UserDetailsModal from "@/components/admin/users/UserDetailsModal.vue";
 // ==============================
 // Type Imports
 // ==============================
-import type { User } from "@/types/users";
+import type { UserData } from "@/types/auth";
 
 // ==============================
 // Service Imports
@@ -170,8 +170,8 @@ const toast = useToast();
 // ==============================
 
 // Data state
-const users = ref<User[]>([]);
-const selectedUser = ref<User | null>(null);
+const users = ref<UserData[]>([]);
+const selectedUser = ref<UserData | null>(null);
 
 // UI state
 const loading = ref(true);
@@ -208,11 +208,32 @@ const sortedUsers = computed(() => {
     if (a.isAdmin && !b.isAdmin) return -1;
     if (!a.isAdmin && b.isAdmin) return 1;
 
-    // For users with same role, sort by registration date (newest first)
-    return (
-      new Date(b.registrationDate).getTime() -
-      new Date(a.registrationDate).getTime()
-    );
+    // Handle cases where registration dates might be undefined
+    let dateA: number;
+    let dateB: number;
+
+    if (a.registrationDate) {
+      const dateObj =
+        a.registrationDate instanceof Date
+          ? a.registrationDate
+          : new Date(a.registrationDate);
+      dateA = isNaN(dateObj.getTime()) ? 0 : dateObj.getTime();
+    } else {
+      dateA = 0;
+    }
+
+    if (b.registrationDate) {
+      const dateObj =
+        b.registrationDate instanceof Date
+          ? b.registrationDate
+          : new Date(b.registrationDate);
+      dateB = isNaN(dateObj.getTime()) ? 0 : dateObj.getTime();
+    } else {
+      dateB = 0;
+    }
+
+    // Sort by registration date (newest first)
+    return dateB - dateA;
   });
 });
 
@@ -229,10 +250,14 @@ const fetchUsers = async () => {
 
   try {
     const response = await getAllUsers();
-    users.value = response.data.users;
+    users.value = response.users;
     toast.success(t("usersLoaded"));
-  } catch (err: any) {
-    error.value = err.response?.data?.message || t("error");
+  } catch (err: unknown) {
+    const errorMessage =
+      err instanceof Error
+        ? err.message
+        : (err as any)?.response?.data?.message || t("error");
+    error.value = errorMessage;
     toast.error(t("fetchUsersError"));
     console.error("Error fetching users:", err);
   } finally {
@@ -249,7 +274,7 @@ const fetchUsers = async () => {
  * @param user - User object
  * @returns Formatted name
  */
-const formatName = (user: User): string => {
+const formatName = (user: UserData): string => {
   if (user.name && user.surname) {
     return `${user.name} ${user.surname}`;
   } else if (user.name) {
@@ -263,13 +288,17 @@ const formatName = (user: User): string => {
 
 /**
  * Formats date using locale-aware formatting
- * @param dateString - ISO date string
+ * @param dateInput - Date value (can be string, Date object, or undefined)
  * @returns Formatted date string
  */
-const formatDate = (dateString: string): string => {
-  if (!dateString) return t("userInfo.notProvided");
+const formatDate = (dateInput: string | Date | undefined): string => {
+  if (!dateInput) return t("userInfo.notProvided");
 
-  const date = new Date(dateString);
+  const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
+
+  // Check if date is valid before formatting
+  if (isNaN(date.getTime())) return t("userInfo.notProvided");
+
   return new Intl.DateTimeFormat(locale.value === "ru" ? "ru-RU" : "en-US", {
     year: "numeric",
     month: "short",
@@ -285,7 +314,7 @@ const formatDate = (dateString: string): string => {
  * Opens the user details modal
  * @param user - User to view
  */
-const showUserDetails = (user: User) => {
+const showUserDetails = (user: UserData) => {
   selectedUser.value = user;
   showModal.value = true;
 };

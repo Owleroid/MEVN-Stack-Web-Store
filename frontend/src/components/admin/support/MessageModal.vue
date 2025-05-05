@@ -64,7 +64,15 @@
                   class="px-2 py-1 text-sm rounded-full"
                   :class="getStatusClass(message.status)"
                 >
-                  {{ $t(`statuses.${message.status.replace("-", "")}`) }}
+                  {{
+                    $t(
+                      `statuses.${
+                        message.status === "in-progress"
+                          ? "inProgress"
+                          : message.status
+                      }`
+                    )
+                  }}
                 </span>
               </p>
             </div>
@@ -189,7 +197,7 @@
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
-import type { SupportMessage } from "@/types/support";
+import type { SupportMessage, SupportStatus } from "@/types/support";
 
 // ==============================
 // Composables Setup
@@ -214,7 +222,7 @@ const emit = defineEmits<{
     e: "submitResponse",
     messageId: string,
     response: string,
-    status: "new" | "in-progress" | "resolved"
+    status: SupportStatus
   ): void;
   (e: "deleteMessage", messageId: string): void;
 }>();
@@ -223,7 +231,7 @@ const emit = defineEmits<{
 // State Management
 // ==============================
 const responseText = ref("");
-const selectedStatus = ref<"new" | "in-progress" | "resolved">("in-progress");
+const selectedStatus = ref<SupportStatus>("in-progress");
 const responseError = ref("");
 const showDeleteConfirm = ref(false);
 
@@ -234,14 +242,14 @@ const showDeleteConfirm = ref(false);
 /**
  * Closes the modal
  */
-const close = () => {
+const close = (): void => {
   emit("close");
 };
 
 /**
  * Handles the submit response action
  */
-const handleSubmitResponse = () => {
+const handleSubmitResponse = (): void => {
   if (!props.message) return;
 
   responseError.value = "";
@@ -262,7 +270,7 @@ const handleSubmitResponse = () => {
 /**
  * Handles the confirmation of deletion
  */
-const handleDeleteConfirm = () => {
+const handleDeleteConfirm = (): void => {
   if (!props.message) return;
 
   emit("deleteMessage", props.message._id);
@@ -278,7 +286,7 @@ const handleDeleteConfirm = () => {
  * @param status - The message status
  * @returns CSS class for status badge
  */
-const getStatusClass = (status: string): string => {
+const getStatusClass = (status: SupportStatus): string => {
   switch (status) {
     case "new":
       return "bg-blue-100 text-blue-800";
@@ -293,11 +301,14 @@ const getStatusClass = (status: string): string => {
 
 /**
  * Format date with locale support
- * @param dateString - ISO date string
+ * @param dateString - ISO date string or Date object
  * @returns Formatted date string
  */
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
+const formatDate = (dateString: Date | string): string => {
+  if (!dateString) return t("dateNotAvailable");
+
+  const date = dateString instanceof Date ? dateString : new Date(dateString);
+
   return new Intl.DateTimeFormat(locale.value === "ru" ? "ru-RU" : "en-US", {
     year: "numeric",
     month: "short",

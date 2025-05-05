@@ -191,8 +191,8 @@ import ChangeCategoryModal from "@/components/admin/products/ChangeCategoryModal
 import AddEditProductModal from "@/components/admin/products/AddEditProductModal.vue";
 
 // Type imports
-import type { Product } from "@/types/products";
-import type { Category } from "@/types/categories";
+import type { Product, ProductInput } from "@/types/products";
+import type { Category } from "@/types/category";
 
 // Service imports
 import { getAllCategories } from "@/services/categoryService";
@@ -232,7 +232,26 @@ const showEditProductModal = ref(false);
 // Form state
 const productToChangeCategory = ref<Product | null>(null);
 
-const newProduct = ref({
+// Define our form interfaces matching the expected structure
+interface ProductFormData {
+  name: string;
+  priceRubles: number;
+  priceEuros: number;
+  artist: string;
+  size: string;
+  material: string;
+  parts: string;
+  boxArt: string;
+  description: string;
+  mainImageUrl: string;
+  secondaryImageUrls: string;
+}
+
+interface EditProductFormData extends ProductFormData {
+  id: string;
+}
+
+const newProduct = ref<ProductFormData>({
   name: "",
   priceRubles: 0,
   priceEuros: 0,
@@ -246,7 +265,7 @@ const newProduct = ref({
   secondaryImageUrls: "",
 });
 
-const editProduct = ref({
+const editProduct = ref<EditProductFormData>({
   id: "",
   name: "",
   priceRubles: 0,
@@ -286,13 +305,13 @@ const fetchCategories = async () => {
 
   try {
     const response = await getAllCategories();
-    categories.value = response.data.categories;
+    categories.value = response.categories;
 
     if (categories.value.length > 0) {
       selectedCategory.value = categories.value[0]._id ?? "";
       fetchProducts();
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Failed to fetch categories:", error);
     toast.error(t("failedToFetchCategories"));
   } finally {
@@ -308,8 +327,8 @@ const fetchProducts = async () => {
 
   try {
     const response = await getProductsByCategory(selectedCategory.value);
-    products.value = response.data.products;
-  } catch (error) {
+    products.value = response.products;
+  } catch (error: unknown) {
     console.error("Failed to fetch products:", error);
     toast.error(t("failedToFetchProducts"));
   }
@@ -381,25 +400,25 @@ const closeAddProductModal = () => {
 const openEditProductModal = async (product: Product) => {
   try {
     const response = await getProductById(product._id);
-    const fetchedProduct = response.data.product;
+    const fetchedProduct = response.product;
 
     editProduct.value = {
       id: fetchedProduct._id,
       name: fetchedProduct.name,
       priceRubles: fetchedProduct.price.rubles.amount,
       priceEuros: fetchedProduct.price.euros.amount,
-      artist: fetchedProduct.artist,
+      artist: fetchedProduct.artist || "",
       size: fetchedProduct.size,
       material: fetchedProduct.material,
-      parts: fetchedProduct.parts,
+      parts: fetchedProduct.parts || "",
       boxArt: fetchedProduct.boxArt,
-      description: fetchedProduct.description,
+      description: fetchedProduct.description || "",
       mainImageUrl: fetchedProduct.imageUrls.main,
-      secondaryImageUrls: fetchedProduct.imageUrls.secondary.join(", "),
+      secondaryImageUrls: fetchedProduct.imageUrls.secondary?.join(", ") || "",
     };
 
     showEditProductModal.value = true;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Failed to fetch product:", error);
     toast.error(t("failedToFetchProduct"));
   }
@@ -436,7 +455,7 @@ const changeCategory = async (newCategoryId: string) => {
     fetchProducts();
     toast.success(t("productCategoryUpdatedSuccessfully"));
     closeChangeCategoryModal();
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Failed to update product category:", error);
     toast.error(t("failedToUpdateProductCategory"));
   }
@@ -447,24 +466,27 @@ const changeCategory = async (newCategoryId: string) => {
  */
 const submitAddProductForm = async () => {
   try {
-    const product = {
+    const product: ProductInput = {
       name: newProduct.value.name,
       category: selectedCategory.value,
       price: {
         rubles: { amount: newProduct.value.priceRubles },
         euros: { amount: newProduct.value.priceEuros },
       },
-      artist: newProduct.value.artist,
+      artist: newProduct.value.artist || undefined,
       size: newProduct.value.size,
       material: newProduct.value.material,
-      parts: newProduct.value.parts,
+      parts: newProduct.value.parts || undefined,
       boxArt: newProduct.value.boxArt,
-      description: newProduct.value.description,
+      description: newProduct.value.description || undefined,
       imageUrls: {
         main: newProduct.value.mainImageUrl,
         secondary: newProduct.value.secondaryImageUrls
-          .split(",")
-          .map((url) => url.trim()),
+          ? newProduct.value.secondaryImageUrls
+              .split(",")
+              .map((url) => url.trim())
+              .filter((url) => url !== "")
+          : [],
       },
     };
 
@@ -473,7 +495,7 @@ const submitAddProductForm = async () => {
     toast.success(t("productAddedSuccessfully"));
     closeAddProductModal();
     fetchProducts();
-  } catch (error) {
+  } catch (error: unknown) {
     toast.error(t("failedToAddProduct"));
     console.error("Failed to add product:", error);
   }
@@ -484,24 +506,27 @@ const submitAddProductForm = async () => {
  */
 const submitEditProductForm = async () => {
   try {
-    const product = {
+    const product: ProductInput = {
       name: editProduct.value.name,
       category: selectedCategory.value,
       price: {
         rubles: { amount: editProduct.value.priceRubles },
         euros: { amount: editProduct.value.priceEuros },
       },
-      artist: editProduct.value.artist,
+      artist: editProduct.value.artist || undefined,
       size: editProduct.value.size,
       material: editProduct.value.material,
-      parts: editProduct.value.parts,
+      parts: editProduct.value.parts || undefined,
       boxArt: editProduct.value.boxArt,
-      description: editProduct.value.description,
+      description: editProduct.value.description || undefined,
       imageUrls: {
         main: editProduct.value.mainImageUrl,
         secondary: editProduct.value.secondaryImageUrls
-          .split(",")
-          .map((url) => url.trim()),
+          ? editProduct.value.secondaryImageUrls
+              .split(",")
+              .map((url) => url.trim())
+              .filter((url) => url !== "")
+          : [],
       },
     };
 
@@ -510,7 +535,7 @@ const submitEditProductForm = async () => {
     toast.success(t("productUpdatedSuccessfully"));
     closeEditProductModal();
     fetchProducts();
-  } catch (error) {
+  } catch (error: unknown) {
     toast.error(t("failedToUpdateProduct"));
     console.error("Failed to update product:", error);
   }
@@ -525,7 +550,7 @@ const deleteProduct = async (id: string) => {
     await deleteProductService(id);
     fetchProducts(); // Refresh the list after deletion
     toast.success(t("productDeletedSuccessfully"));
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Failed to delete product:", error);
     toast.error(t("failedToDeleteProduct"));
   }
@@ -537,10 +562,6 @@ const deleteProduct = async (id: string) => {
 
 watch(selectedCategory, (newCategoryId) => {
   if (newCategoryId) {
-    router.push({
-      name: "AdminProducts",
-      params: { categoryId: newCategoryId },
-    });
     fetchProducts();
   }
 });

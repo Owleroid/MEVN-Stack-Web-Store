@@ -25,7 +25,8 @@
         </button>
         <button
           @click="onConfirm"
-          class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          :class="buttonClass"
+          class="px-4 py-2 text-white rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
         >
           {{ confirmText }}
         </button>
@@ -35,33 +36,56 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
+// ==============================
+// Props Definition
+// ==============================
 
-// Define props
+/**
+ * Dialog configuration props
+ */
 const props = defineProps<{
   show: boolean;
   title: string;
   message: string;
   confirmText: string;
   cancelText: string;
+  buttonClass?: string;
 }>();
 
-// Define emits
+// ==============================
+// Emits Definition
+// ==============================
+
+/**
+ * Dialog event emitters
+ */
 const emit = defineEmits<{
   (e: "confirm"): void;
   (e: "cancel"): void;
 }>();
 
-// Handler functions
-const onConfirm = () => {
+// ==============================
+// Action Handlers
+// ==============================
+
+/**
+ * Handles confirm button click
+ */
+const onConfirm = (): void => {
   emit("confirm");
 };
 
-const onCancel = () => {
+/**
+ * Handles cancel button click
+ */
+const onCancel = (): void => {
   emit("cancel");
 };
 
-const onBackdropClick = () => {
+/**
+ * Handles clicks on the backdrop/overlay
+ */
+const onBackdropClick = (): void => {
   emit("cancel");
 };
 </script>

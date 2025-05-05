@@ -1,4 +1,7 @@
 import axios from "axios";
+import type { AxiosResponse } from "axios";
+
+import type { GeoLocation } from "@/types/geo";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -7,11 +10,25 @@ const geoService = axios.create({
   withCredentials: true,
 });
 
-export const getUserLocation = async () => {
+/**
+ * Key used to store user's region in session storage
+ */
+const USER_REGION_KEY = "userRegion";
+
+/**
+ * Fetches the user's geolocation data based on their IP address
+ * @returns Promise resolving to the user's geolocation data or null if an error occurs
+ */
+export const getUserLocation = async (): Promise<GeoLocation | null> => {
   try {
-    const response = await geoService.get("/");
+    const response: AxiosResponse<GeoLocation> = await geoService.get("/");
     const location = response.data;
-    sessionStorage.setItem("userRegion", location.country_code);
+
+    // Store the user's country code in session storage for easy access
+    if (location && location.country_code) {
+      sessionStorage.setItem(USER_REGION_KEY, location.country_code);
+    }
+
     return location;
   } catch (error) {
     console.error("Error fetching user location:", error);
@@ -19,6 +36,12 @@ export const getUserLocation = async () => {
   }
 };
 
-export const getUserRegion = () => {
-  return sessionStorage.getItem("userRegion");
+/**
+ * Retrieves the user's region (country code) from session storage
+ * @returns The user's country code or null if not available
+ */
+export const getUserRegion = (): string | null => {
+  return sessionStorage.getItem(USER_REGION_KEY);
 };
+
+export default geoService;

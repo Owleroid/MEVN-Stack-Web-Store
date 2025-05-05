@@ -39,25 +39,26 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import type { SupportStatus } from "@/types/support";
 
 const props = defineProps<{
-  sortOrder: string;
-  statusFilter: string;
+  sortOrder: "newest" | "oldest";
+  statusFilter: SupportStatus | "";
 }>();
 
 const emit = defineEmits<{
-  (e: "update:sortOrder", value: string): void;
-  (e: "update:statusFilter", value: string): void;
+  (e: "update:sortOrder", value: "newest" | "oldest"): void;
+  (e: "update:statusFilter", value: SupportStatus | ""): void;
 }>();
 
 // Create computed properties for two-way binding (v-model)
 const sortOrderModel = computed({
   get: () => props.sortOrder,
-  set: (value) => emit("update:sortOrder", value),
+  set: (value: "newest" | "oldest") => emit("update:sortOrder", value),
 });
 
 const statusFilterModel = computed({
   get: () => props.statusFilter,
-  set: (value) => emit("update:statusFilter", value),
+  set: (value: SupportStatus | "") => emit("update:statusFilter", value),
 });
 </script>

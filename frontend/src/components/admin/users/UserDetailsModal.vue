@@ -219,7 +219,7 @@ import { useI18n } from "vue-i18n";
 // ==============================
 // Type Imports
 // ==============================
-import type { User } from "@/types/users";
+import type { UserData } from "@/types/auth";
 
 // ==============================
 // Composables Setup
@@ -237,7 +237,7 @@ const props = defineProps<{
   /** Whether to show the modal */
   show: boolean;
   /** User data to display */
-  user: User | null;
+  user: UserData | null;
 }>();
 
 // ==============================
@@ -247,7 +247,10 @@ const props = defineProps<{
 /**
  * Component events
  */
-const emits = defineEmits<{
+const emit = defineEmits<{
+  /**
+   * Emitted when the modal is closed
+   */
   (e: "close"): void;
 }>();
 
@@ -258,8 +261,8 @@ const emits = defineEmits<{
 /**
  * Closes the modal
  */
-const closeModal = () => {
-  emits("close");
+const closeModal = (): void => {
+  emit("close");
 };
 
 // ==============================
@@ -271,7 +274,7 @@ const closeModal = () => {
  * @param user - User object
  * @returns Formatted name
  */
-const formatName = (user: User): string => {
+const formatName = (user: UserData): string => {
   if (user.name && user.surname) {
     return `${user.name} ${user.surname}`;
   } else if (user.name) {
@@ -285,13 +288,17 @@ const formatName = (user: User): string => {
 
 /**
  * Formats date using locale-aware formatting
- * @param dateString - ISO date string
+ * @param dateString - ISO date string or Date object
  * @returns Formatted date string
  */
-const formatDate = (dateString: string): string => {
+const formatDate = (dateString?: Date | string): string => {
   if (!dateString) return t("userDetails.notProvided");
 
-  const date = new Date(dateString);
+  const date = dateString instanceof Date ? dateString : new Date(dateString);
+
+  // Check if date is valid before formatting
+  if (isNaN(date.getTime())) return t("userDetails.notProvided");
+
   return new Intl.DateTimeFormat(locale.value === "ru" ? "ru-RU" : "en-US", {
     year: "numeric",
     month: "short",
@@ -306,9 +313,9 @@ const formatDate = (dateString: string): string => {
 /**
  * Checks if user has any delivery data to display
  */
-const hasDeliveryData = computed(() => {
+const hasDeliveryData = computed((): boolean => {
   const data = props.user?.deliveryData;
-  return (
+  return !!(
     data &&
     (data.country ||
       data.city ||

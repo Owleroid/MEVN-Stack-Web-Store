@@ -152,7 +152,7 @@ import ReassignCategoryModal from "@/components/admin/categories/ReassignCategor
 import AddEditCategoryModal from "@/components/admin/categories/AddEditCategoryModal.vue";
 
 // Type imports
-import type { Category } from "@/types/categories";
+import type { Category } from "@/types/category";
 
 // Service imports
 import {
@@ -215,9 +215,10 @@ const fetchCategories = async () => {
 
   try {
     const response = await getAllCategories();
-    categories.value = response.data.categories;
-  } catch (err: any) {
-    error.value = err.response?.data?.message || t("fetchCategoriesError");
+    categories.value = response.categories;
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    error.value = errorMessage || t("fetchCategoriesError");
     console.error("Failed to fetch categories:", err);
   } finally {
     loading.value = false;
@@ -288,7 +289,7 @@ const cancelRemove = () => {
  * Handles form submission for both adding and editing categories
  * @param formData - Category data including name and image URL
  */
-const submitForm = async (formData: { name: string; imageUrl: string }) => {
+const submitForm = async (formData: Pick<Category, "name" | "imageUrl">) => {
   try {
     if (isEdit.value && selectedCategoryId.value) {
       await updateCategory(selectedCategoryId.value, formData);

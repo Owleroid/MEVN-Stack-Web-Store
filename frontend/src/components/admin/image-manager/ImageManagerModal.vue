@@ -124,7 +124,7 @@ import { useI18n } from "vue-i18n";
 // ==============================
 // Type Imports
 // ==============================
-import type { Image } from "@/types/imageManager";
+import type { ImageInfo } from "@/types/image";
 
 // ==============================
 // Service Imports
@@ -160,7 +160,7 @@ const toast = useToast();
  */
 const emits = defineEmits<{
   (e: "close"): void;
-  (e: "confirm", images: Image[]): void;
+  (e: "confirm", images: ImageInfo[]): void;
 }>();
 
 // ==============================
@@ -168,12 +168,16 @@ const emits = defineEmits<{
 // ==============================
 
 // Image state
-const images = ref<Image[]>([]);
-const selectedImages = ref<Image[]>([]);
+const images = ref<ImageInfo[]>([]);
+const selectedImages = ref<ImageInfo[]>([]);
 
 // Upload state
 const selectedFiles = ref<File[]>([]);
 const loading = ref(false);
+
+// Configuration constants
+const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+const maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
 
 // ==============================
 // Data Fetching
@@ -186,9 +190,10 @@ const fetchImagesFromBackend = async (): Promise<void> => {
   loading.value = true;
 
   try {
-    const response = await fetchImages();
-    images.value = response.images;
-  } catch (error) {
+    const { images: fetchedImages } = await fetchImages();
+    images.value = fetchedImages;
+  } catch (error: unknown) {
+    console.error("Error fetching images:", error);
     toast.error(t("fetchImagesError"));
   } finally {
     loading.value = false;
@@ -204,12 +209,34 @@ const fetchImagesFromBackend = async (): Promise<void> => {
  * @param event - File input change event
  */
 const handleFileUpload = (event: Event): void => {
-  const target = event.target as HTMLInputElement;
-  const files = target.files;
+  const target = event.target as HTMLInputElement | null;
+  const files = target?.files;
 
   if (files) {
-    selectedFiles.value = Array.from(files);
-    toast.success(t("filesSelected", { count: files.length }));
+    const validFiles: File[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      // Validate file type
+      if (!allowedMimeTypes.includes(file.type)) {
+        toast.error(t("invalidFileType", { fileName: file.name }));
+        continue;
+      }
+
+      // Validate file size
+      if (file.size > maxFileSize) {
+        toast.error(t("fileTooLarge", { fileName: file.name }));
+        continue;
+      }
+
+      validFiles.push(file);
+    }
+
+    selectedFiles.value = validFiles;
+
+    if (validFiles.length > 0) {
+      toast.success(t("filesSelected", { count: validFiles.length }));
+    }
   }
 };
 
@@ -217,13 +244,20 @@ const handleFileUpload = (event: Event): void => {
  * Uploads selected files to the server
  */
 const handleUploadImages = async (): Promise<void> => {
+  if (selectedFiles.value.length === 0) return;
+
+  loading.value = true;
+
   try {
     await uploadImages(selectedFiles.value);
     toast.success(t("uploadSuccess"));
     selectedFiles.value = [];
     await fetchImagesFromBackend();
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("Upload Error:", error);
     toast.error(t("uploadError"));
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -236,21 +270,19 @@ const handleUploadImages = async (): Promise<void> => {
  * @param image - The image to check
  * @returns True if the image is selected
  */
-const isSelected = (image: Image): boolean => {
-  return selectedImages.value.some(
-    (img) => img.url === image.url && img.name === image.name
-  );
+const isSelected = (image: ImageInfo): boolean => {
+  return selectedImages.value.some((img) => img.url === image.url);
 };
 
 /**
  * Toggles selection state of an image
  * @param image - The image to select/deselect
  */
-const toggleImageSelection = (image: Image): void => {
+const toggleImageSelection = (image: ImageInfo): void => {
   if (props.allowMultiple) {
     if (isSelected(image)) {
       selectedImages.value = selectedImages.value.filter(
-        (img) => img.url !== image.url || img.name !== image.name
+        (img) => img.url !== image.url
       );
     } else {
       selectedImages.value.push(image);

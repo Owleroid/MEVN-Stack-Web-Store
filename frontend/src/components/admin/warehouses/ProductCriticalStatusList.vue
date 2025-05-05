@@ -71,7 +71,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import type { Product } from "@/types/warehouse";
+import type { ProductAmount } from "@/types/warehouse";
 
 // ==============================
 // Props
@@ -79,7 +79,7 @@ import type { Product } from "@/types/warehouse";
 
 const props = defineProps({
   products: {
-    type: Array as () => Product[],
+    type: Array as () => ProductAmount[],
     required: true,
   },
   criticalThreshold: {
@@ -95,7 +95,7 @@ const props = defineProps({
 /**
  * Filter products to show only those with amount <= criticalThreshold
  */
-const filteredProducts = computed(() =>
+const filteredProducts = computed<ProductAmount[]>(() =>
   props.products.filter((product) => product.amount <= props.criticalThreshold)
 );
 

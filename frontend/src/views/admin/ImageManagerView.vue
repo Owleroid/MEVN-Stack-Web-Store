@@ -70,7 +70,7 @@
             :key="image.url"
             @click="toggleImageSelection(image)"
             class="relative rounded-lg overflow-hidden bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 cursor-pointer"
-            :class="{ 'ring-2 ring-blue-500 bg-blue-50': selectedImages.includes(image as Image) }"
+            :class="{ 'ring-2 ring-blue-500 bg-blue-50': isSelected(image) }"
           >
             <img
               :src="image.url"
@@ -124,7 +124,7 @@ import { useI18n } from "vue-i18n";
 // ==============================
 // Type Imports
 // ==============================
-import type { Image } from "@/types/imageManager";
+import type { ImageInfo } from "@/types/image";
 
 // ==============================
 // Service Imports
@@ -146,8 +146,8 @@ const { t } = useI18n();
 // ==============================
 
 // Image state
-const images = ref<Image[]>([]);
-const selectedImages = ref<Image[]>([]);
+const images = ref<ImageInfo[]>([]);
+const selectedImages = ref<ImageInfo[]>([]);
 
 // Upload state
 const selectedFiles = ref<File[]>([]);
@@ -164,13 +164,14 @@ const maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
 /**
  * Fetches images from the backend API
  */
-const fetchImagesFromBackend = async () => {
+const fetchImagesFromBackend = async (): Promise<void> => {
   loading.value = true;
 
   try {
-    const response = await fetchImages();
-    images.value = response.images;
-  } catch (error) {
+    const { images: fetchedImages } = await fetchImages();
+    images.value = fetchedImages;
+  } catch (error: unknown) {
+    console.error("Error fetching images:", error);
     toast.error(t("fetchImagesError"));
   } finally {
     loading.value = false;
@@ -185,14 +186,15 @@ const fetchImagesFromBackend = async () => {
  * Handles file selection from the input field
  * @param event - File input change event
  */
-const handleFileUpload = (event: Event) => {
+const handleFileUpload = (event: Event): void => {
   const target = event.target as HTMLInputElement | null;
   const files = target?.files;
 
   if (files) {
-    const validFiles = [];
+    const validFiles: File[] = [];
 
-    for (const file of files) {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
       // Validate file type
       if (!allowedMimeTypes.includes(file.type)) {
         toast.error(t("invalidFileType", { fileName: file.name }));
@@ -219,15 +221,21 @@ const handleFileUpload = (event: Event) => {
 /**
  * Uploads selected files to the server
  */
-const handleUploadImages = async () => {
+const handleUploadImages = async (): Promise<void> => {
+  if (selectedFiles.value.length === 0) return;
+
+  loading.value = true;
+
   try {
     await uploadImagesService(selectedFiles.value);
     toast.success(t("uploadSuccess"));
     selectedFiles.value = [];
     await fetchImagesFromBackend();
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Upload Error:", error);
     toast.error(t("uploadError"));
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -236,12 +244,23 @@ const handleUploadImages = async () => {
 // ==============================
 
 /**
+ * Checks if an image is currently selected
+ * @param image - The image to check
+ * @returns True if the image is selected
+ */
+const isSelected = (image: ImageInfo): boolean => {
+  return selectedImages.value.some((img) => img.url === image.url);
+};
+
+/**
  * Toggles selection state of an image
  * @param image - The image to select/deselect
  */
-const toggleImageSelection = (image: Image) => {
-  if (selectedImages.value.includes(image)) {
-    selectedImages.value = selectedImages.value.filter((img) => img !== image);
+const toggleImageSelection = (image: ImageInfo): void => {
+  if (isSelected(image)) {
+    selectedImages.value = selectedImages.value.filter(
+      (img) => img.url !== image.url
+    );
   } else {
     selectedImages.value.push(image);
   }
@@ -250,7 +269,7 @@ const toggleImageSelection = (image: Image) => {
 /**
  * Cancels current image selection
  */
-const cancelSelection = () => {
+const cancelSelection = (): void => {
   selectedImages.value = [];
 };
 
@@ -261,31 +280,42 @@ const cancelSelection = () => {
 /**
  * Copies URLs of selected images to clipboard
  */
-const copySelectedUrls = () => {
+const copySelectedUrls = (): void => {
   const urls = selectedImages.value.map((image) => image.url).join(", ");
 
-  navigator.clipboard.writeText(urls).then(() => {
-    toast.success(t("copySuccess"));
-  });
+  navigator.clipboard
+    .writeText(urls)
+    .then(() => {
+      toast.success(t("copySuccess"));
+    })
+    .catch((error: unknown) => {
+      console.error("Clipboard error:", error);
+      toast.error(t("copyError"));
+    });
 };
 
 /**
  * Deletes selected images from the server
  */
-const deleteSelectedImages = async () => {
+const deleteSelectedImages = async (): Promise<void> => {
+  if (selectedImages.value.length === 0) return;
+
+  loading.value = true;
+
   try {
     const imageNames = selectedImages.value.map((image) => image.name);
     await deleteImages(imageNames);
 
     // Remove deleted images from the local state
-    images.value = images.value.filter(
-      (img) => !selectedImages.value.includes(img)
-    );
+    images.value = images.value.filter((img) => !imageNames.includes(img.name));
 
     selectedImages.value = [];
     toast.success(t("deleteSuccess"));
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("Delete error:", error);
     toast.error(t("deleteError"));
+  } finally {
+    loading.value = false;
   }
 };
 
