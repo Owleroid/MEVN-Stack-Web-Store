@@ -1,9 +1,18 @@
 {
   "pageTitle": "My Orders",
+  "loading": "Loading orders...",
+  "retry": "Try Again",
+  "fetchOrdersError": "Failed to fetch orders",
+  "notAuthenticated": "Please log in to view your orders",
   "order": "Order",
-  "date": "Date",
-  "total": "Total",
-  "status": "Status",
+  "products": "Products",
+  "statuses": {
+    "waiting confirmation": "Waiting Confirmation",
+    "packing": "Packing",
+    "sended": "Shipped",
+    "delivered": "Delivered",
+    "canceled": "Canceled"
+  },
   "recipient": {
     "title": "Recipient Information",
     "email": "Email",
@@ -22,5 +31,6 @@
   },
   "notes": "Order Notes",
   "trackingNumber": "Tracking Number",
-  "noOrders": "You have no orders."
+  "noOrders": "You have no orders.",
+  "startShopping": "Start Shopping"
 }
