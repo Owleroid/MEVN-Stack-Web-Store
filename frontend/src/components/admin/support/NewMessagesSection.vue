@@ -19,15 +19,42 @@
         <th
           class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
         >
+          {{ $t("status") }}
+        </th>
+        <th
+          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+        >
           {{ $t("actions") }}
         </th>
       </template>
 
       <template #rowColumns="{ message }">
+        <!-- Status column -->
+        <td
+          class="px-6 py-4 whitespace-nowrap"
+          @click.stop="$emit('view', message)"
+        >
+          <span
+            class="px-2 py-1 text-sm rounded-full"
+            :class="getStatusClass(message.status)"
+          >
+            {{
+              $t(
+                `statuses.${
+                  message.status === "in-progress"
+                    ? "inProgress"
+                    : message.status
+                }`
+              )
+            }}
+          </span>
+        </td>
+
+        <!-- Actions column -->
         <td class="px-6 py-4 whitespace-nowrap">
           <button
             @click.stop="$emit('respond', message)"
-            class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             {{ $t("respond") }}
           </button>
@@ -39,35 +66,36 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import type { SupportMessage } from "@/types/support";
+
 import MessageTable from "./MessageTable.vue";
 
-// ==============================
+import type { SupportMessage, SupportStatus } from "@/types/support";
+
 // Composables
-// ==============================
 const { t } = useI18n();
 
-// ==============================
 // Props
-// ==============================
 const props = defineProps<{
-  /**
-   * Array of new support messages to display
-   */
   messages: SupportMessage[];
 }>();
 
-// ==============================
 // Events
-// ==============================
 const emit = defineEmits<{
-  /**
-   * Emitted when a message is clicked to view
-   */
   (e: "view", message: SupportMessage): void;
-  /**
-   * Emitted when the respond button is clicked for a message
-   */
   (e: "respond", message: SupportMessage): void;
 }>();
+
+// Utility Functions
+const getStatusClass = (status: SupportStatus): string => {
+  switch (status) {
+    case "new":
+      return "bg-blue-100 text-blue-800";
+    case "in-progress":
+      return "bg-yellow-100 text-yellow-800";
+    case "resolved":
+      return "bg-green-100 text-green-800";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
+};
 </script>

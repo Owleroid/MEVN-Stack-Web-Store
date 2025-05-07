@@ -121,30 +121,19 @@ import { ref, onMounted } from "vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 
-// ==============================
-// Type Imports
-// ==============================
 import type { ImageInfo } from "@/types/image";
 
-// ==============================
-// Service Imports
-// ==============================
 import {
   fetchImages,
   uploadImages as uploadImagesService,
   deleteImages,
 } from "@/services/imageManagerService";
 
-// ==============================
 // Composables Setup
-// ==============================
 const toast = useToast();
 const { t } = useI18n();
 
-// ==============================
 // State Management
-// ==============================
-
 // Image state
 const images = ref<ImageInfo[]>([]);
 const selectedImages = ref<ImageInfo[]>([]);
@@ -157,13 +146,7 @@ const loading = ref(false);
 const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
 
-// ==============================
 // Data Fetching
-// ==============================
-
-/**
- * Fetches images from the backend API
- */
 const fetchImagesFromBackend = async (): Promise<void> => {
   loading.value = true;
 
@@ -178,14 +161,7 @@ const fetchImagesFromBackend = async (): Promise<void> => {
   }
 };
 
-// ==============================
 // File Upload Operations
-// ==============================
-
-/**
- * Handles file selection from the input field
- * @param event - File input change event
- */
 const handleFileUpload = (event: Event): void => {
   const target = event.target as HTMLInputElement | null;
   const files = target?.files;
@@ -218,9 +194,6 @@ const handleFileUpload = (event: Event): void => {
   }
 };
 
-/**
- * Uploads selected files to the server
- */
 const handleUploadImages = async (): Promise<void> => {
   if (selectedFiles.value.length === 0) return;
 
@@ -239,23 +212,11 @@ const handleUploadImages = async (): Promise<void> => {
   }
 };
 
-// ==============================
 // Image Selection Operations
-// ==============================
-
-/**
- * Checks if an image is currently selected
- * @param image - The image to check
- * @returns True if the image is selected
- */
 const isSelected = (image: ImageInfo): boolean => {
   return selectedImages.value.some((img) => img.url === image.url);
 };
 
-/**
- * Toggles selection state of an image
- * @param image - The image to select/deselect
- */
 const toggleImageSelection = (image: ImageInfo): void => {
   if (isSelected(image)) {
     selectedImages.value = selectedImages.value.filter(
@@ -266,20 +227,11 @@ const toggleImageSelection = (image: ImageInfo): void => {
   }
 };
 
-/**
- * Cancels current image selection
- */
 const cancelSelection = (): void => {
   selectedImages.value = [];
 };
 
-// ==============================
 // Batch Actions
-// ==============================
-
-/**
- * Copies URLs of selected images to clipboard
- */
 const copySelectedUrls = (): void => {
   const urls = selectedImages.value.map((image) => image.url).join(", ");
 
@@ -294,9 +246,6 @@ const copySelectedUrls = (): void => {
     });
 };
 
-/**
- * Deletes selected images from the server
- */
 const deleteSelectedImages = async (): Promise<void> => {
   if (selectedImages.value.length === 0) return;
 
@@ -319,9 +268,7 @@ const deleteSelectedImages = async (): Promise<void> => {
   }
 };
 
-// ==============================
 // Lifecycle Hooks
-// ==============================
 onMounted(() => {
   fetchImagesFromBackend();
 });

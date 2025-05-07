@@ -64,31 +64,31 @@
 
       <!-- Users Table -->
       <div v-else class="overflow-x-auto">
-        <table class="w-full border-collapse">
+        <table class="w-full border-collapse table-fixed">
           <thead>
             <tr>
               <th
-                class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200 w-1/5"
               >
                 {{ $t("columns.name") }}
               </th>
               <th
-                class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200 w-1/5"
               >
                 {{ $t("columns.email") }}
               </th>
               <th
-                class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200 w-1/5"
               >
                 {{ $t("columns.phone") }}
               </th>
               <th
-                class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200 w-1/5"
               >
                 {{ $t("columns.registrationDate") }}
               </th>
               <th
-                class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200 w-1/5"
               >
                 {{ $t("columns.role") }}
               </th>
@@ -102,14 +102,16 @@
               @click="showUserDetails(user)"
               class="cursor-pointer hover:bg-gray-50 transition-colors"
             >
-              <td class="p-4 border-b border-gray-200">
+              <td class="p-4 border-b border-gray-200 truncate">
                 {{ formatName(user) }}
               </td>
-              <td class="p-4 border-b border-gray-200">{{ user.email }}</td>
-              <td class="p-4 border-b border-gray-200">
+              <td class="p-4 border-b border-gray-200 truncate">
+                {{ user.email }}
+              </td>
+              <td class="p-4 border-b border-gray-200 truncate">
                 {{ user.phone || $t("userInfo.notProvided") }}
               </td>
-              <td class="p-4 border-b border-gray-200">
+              <td class="p-4 border-b border-gray-200 whitespace-nowrap">
                 {{ formatDate(user.registrationDate) }}
               </td>
               <td class="p-4 border-b border-gray-200">
@@ -144,31 +146,17 @@ import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 
-// ==============================
-// Component Imports
-// ==============================
 import UserDetailsModal from "@/components/admin/users/UserDetailsModal.vue";
 
-// ==============================
-// Type Imports
-// ==============================
 import type { UserData } from "@/types/auth";
 
-// ==============================
-// Service Imports
-// ==============================
 import { getAllUsers } from "@/services/userService";
 
-// ==============================
 // Composables Setup
-// ==============================
 const { t, locale } = useI18n();
 const toast = useToast();
 
-// ==============================
 // State Management
-// ==============================
-
 // Data state
 const users = ref<UserData[]>([]);
 const selectedUser = ref<UserData | null>(null);
@@ -179,13 +167,7 @@ const error = ref("");
 const searchQuery = ref("");
 const showModal = ref(false);
 
-// ==============================
 // Computed Properties
-// ==============================
-
-/**
- * Filters users based on search query
- */
 const filteredUsers = computed(() => {
   if (!searchQuery.value) return users.value;
 
@@ -199,9 +181,6 @@ const filteredUsers = computed(() => {
   );
 });
 
-/**
- * Sorts filtered users with admins first, then by registration date
- */
 const sortedUsers = computed(() => {
   return [...filteredUsers.value].sort((a, b) => {
     // Sort admins first
@@ -237,13 +216,7 @@ const sortedUsers = computed(() => {
   });
 });
 
-// ==============================
 // Data Fetching
-// ==============================
-
-/**
- * Fetches all users from the API
- */
 const fetchUsers = async () => {
   loading.value = true;
   error.value = "";
@@ -251,7 +224,6 @@ const fetchUsers = async () => {
   try {
     const response = await getAllUsers();
     users.value = response.users;
-    toast.success(t("usersLoaded"));
   } catch (err: unknown) {
     const errorMessage =
       err instanceof Error
@@ -265,15 +237,7 @@ const fetchUsers = async () => {
   }
 };
 
-// ==============================
 // Formatting Helpers
-// ==============================
-
-/**
- * Formats user's full name
- * @param user - User object
- * @returns Formatted name
- */
 const formatName = (user: UserData): string => {
   if (user.name && user.surname) {
     return `${user.name} ${user.surname}`;
@@ -286,11 +250,6 @@ const formatName = (user: UserData): string => {
   }
 };
 
-/**
- * Formats date using locale-aware formatting
- * @param dateInput - Date value (can be string, Date object, or undefined)
- * @returns Formatted date string
- */
 const formatDate = (dateInput: string | Date | undefined): string => {
   if (!dateInput) return t("userInfo.notProvided");
 
@@ -306,31 +265,18 @@ const formatDate = (dateInput: string | Date | undefined): string => {
   }).format(date);
 };
 
-// ==============================
 // Modal Management
-// ==============================
-
-/**
- * Opens the user details modal
- * @param user - User to view
- */
 const showUserDetails = (user: UserData) => {
   selectedUser.value = user;
   showModal.value = true;
 };
 
-/**
- * Closes the user details modal
- */
 const closeModal = () => {
   showModal.value = false;
   selectedUser.value = null;
 };
 
-// ==============================
 // Lifecycle Hooks
-// ==============================
-
 onMounted(() => {
   fetchUsers();
 });

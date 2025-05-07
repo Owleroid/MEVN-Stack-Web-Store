@@ -3,6 +3,7 @@
     v-if="totalPages > 1"
     class="px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
   >
+    <!-- Desktop pagination -->
     <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
       <div>
         <p class="text-sm text-gray-700">
@@ -17,6 +18,7 @@
           class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
           aria-label="Pagination"
         >
+          <!-- Previous page button -->
           <button
             @click="
               $emit('update:currentPage', currentPage > 1 ? currentPage - 1 : 1)
@@ -27,6 +29,8 @@
           >
             &laquo;
           </button>
+
+          <!-- Page number buttons -->
           <button
             v-for="page in paginationRange"
             :key="page"
@@ -40,6 +44,8 @@
           >
             {{ page }}
           </button>
+
+          <!-- Next page button -->
           <button
             @click="
               $emit(
@@ -58,6 +64,8 @@
         </nav>
       </div>
     </div>
+
+    <!-- Mobile pagination -->
     <div class="flex-1 flex justify-between sm:hidden">
       <button
         @click="
@@ -90,47 +98,26 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
-// ==============================
 // Composables
-// ==============================
 const { t } = useI18n();
 
-// ==============================
 // Props
-// ==============================
 const props = defineProps<{
   currentPage: number;
   totalItems: number;
   itemsPerPage: number;
 }>();
 
-// ==============================
 // Emits
-// ==============================
 const emit = defineEmits<{
-  /**
-   * Emitted when the current page changes
-   * @param e - Event name
-   * @param page - New page number
-   */
   (e: "update:currentPage", page: number): void;
 }>();
 
-// ==============================
 // Computed Properties
-// ==============================
-
-/**
- * Calculate the total number of pages based on items and itemsPerPage
- */
 const totalPages = computed((): number => {
   return Math.ceil(props.totalItems / props.itemsPerPage);
 });
 
-/**
- * Generate an array of page numbers to show in the pagination control
- * Implements a sliding window approach to show pages around the current page
- */
 const paginationRange = computed((): number[] => {
   const range: number[] = [];
   const maxDisplayedPages = 5;

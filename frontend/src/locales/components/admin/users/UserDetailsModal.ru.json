@@ -1,7 +1,7 @@
 {
   "userDetails": {
     "title": "Детали пользователя",
-    "basicInfo": "Основная информация",
+    "basicInfo": "Основная информация:",
     "name": "Имя",
     "email": "Email",
     "phone": "Телефон",
@@ -10,7 +10,7 @@
     "user": "Пользователь",
     "noName": "Имя не указано",
     "registrationDate": "Дата регистрации",
-    "deliveryInfo": "Информация о доставке",
+    "deliveryInfo": "Информация о доставке:",
     "country": "Страна",
     "city": "Город",
     "street": "Улица",

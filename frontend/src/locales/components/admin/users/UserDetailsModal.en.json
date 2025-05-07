@@ -1,7 +1,7 @@
 {
   "userDetails": {
-    "title": "User Details",
-    "basicInfo": "Basic Information",
+    "title": "User details",
+    "basicInfo": "Basic information:",
     "name": "Name",
     "email": "Email",
     "phone": "Phone",
@@ -10,7 +10,7 @@
     "user": "User",
     "noName": "No name provided",
     "registrationDate": "Registration Date",
-    "deliveryInfo": "Delivery Information",
+    "deliveryInfo": "Delivery information:",
     "country": "Country",
     "city": "City",
     "street": "Street",

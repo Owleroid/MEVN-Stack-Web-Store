@@ -71,17 +71,11 @@ import { useI18n } from "vue-i18n";
 
 import type { Category } from "@/types/category";
 
-// ==============================
 // Composables setup
-// ==============================
-
 const { t } = useI18n();
 const toast = useToast();
 
-// ==============================
 // Props & Emits
-// ==============================
-
 const props = defineProps({
   show: Boolean,
   productToChangeCategory: Object,
@@ -90,19 +84,10 @@ const props = defineProps({
 
 const emits = defineEmits(["close", "changeCategory"]);
 
-// ==============================
 // State Management
-// ==============================
-
 const selectedNewCategory = ref<string>("");
 
-// ==============================
 // Computed Properties
-// ==============================
-
-/**
- * Filters out the current category from the categories list
- */
 const filteredCategories = computed(() => {
   return ((props.categories ?? []) as Category[]).filter(
     (category: Category) =>
@@ -110,37 +95,22 @@ const filteredCategories = computed(() => {
   );
 });
 
-// ==============================
 // Watchers
-// ==============================
-
-/**
- * Reset the selected category when the modal opens
- */
 watch(
   () => props.show,
   (newValue) => {
     if (newValue) {
+      // Reset the selected category when the modal opens
       selectedNewCategory.value = "";
     }
   }
 );
 
-// ==============================
 // Action Handlers
-// ==============================
-
-/**
- * Closes the modal
- */
 const close = () => {
   emits("close");
 };
 
-/**
- * Handles the category change
- * @param newCategoryId - ID of the new category
- */
 const changeCategory = (newCategoryId: string) => {
   if (!newCategoryId) {
     toast.error(t("selectNewCategoryAlert"));

@@ -40,35 +40,27 @@ import { ref, onMounted, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 
-// Component imports
 import MessageModal from "@/components/admin/support/MessageModal.vue";
 import NewMessagesSection from "@/components/admin/support/NewMessagesSection.vue";
 import AllMessagesSection from "@/components/admin/support/AllMessagesSection.vue";
 
-// Type imports
 import type {
   SupportMessage,
   SupportStatus,
   SupportMessageUpdate,
 } from "@/types/support";
 
-// Service imports
 import {
   getAllSupportMessages,
   updateSupportMessage,
   deleteSupportMessage,
 } from "@/services/supportService";
 
-// ==============================
 // Composables Setup
-// ==============================
 const { t } = useI18n();
 const toast = useToast();
 
-// ==============================
 // State Management
-// ==============================
-
 // Data state
 const messages = ref<SupportMessage[]>([]);
 const selectedMessage = ref<SupportMessage | null>(null);
@@ -83,21 +75,11 @@ const statusFilter = ref<SupportStatus | "">("");
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
 
-// ==============================
 // Computed Properties
-// ==============================
-
-/**
- * Returns messages with "new" status
- */
 const newMessages = computed((): SupportMessage[] => {
   return messages.value.filter((message) => message.status === "new");
 });
 
-/**
- * Returns filtered and sorted messages based on user selection
- * Excludes messages with "new" status since they are shown separately
- */
 const filteredMessages = computed((): SupportMessage[] => {
   // Exclude messages with "new" status
   let filtered = messages.value.filter((message) => message.status !== "new");
@@ -125,9 +107,6 @@ const filteredMessages = computed((): SupportMessage[] => {
   return filtered;
 });
 
-/**
- * Returns paginated messages for the current page
- */
 const paginatedMessages = computed((): SupportMessage[] => {
   const startIndex = (currentPage.value - 1) * itemsPerPage.value;
   return filteredMessages.value.slice(
@@ -136,23 +115,13 @@ const paginatedMessages = computed((): SupportMessage[] => {
   );
 });
 
-// ==============================
 // Methods
-// ==============================
-
-/**
- * Fetches all support messages
- */
 const fetchMessages = async (): Promise<void> => {
   loading.value = true;
   error.value = "";
 
   try {
-    // Use proper type for the response
     const response = await getAllSupportMessages();
-
-    // According to supportService.ts, this should return
-    // { messages: SupportMessage[], pagination: {...} }
     messages.value = response.messages;
   } catch (err: unknown) {
     console.error("Error fetching support messages:", err);
@@ -163,49 +132,35 @@ const fetchMessages = async (): Promise<void> => {
   }
 };
 
-/**
- * Opens modal to view a message
- */
 const viewMessage = (message: SupportMessage): void => {
   selectedMessage.value = message;
   isResponding.value = false;
   showModal.value = true;
 };
 
-/**
- * Opens modal to respond to a message
- */
 const respondToMessage = (message: SupportMessage): void => {
   selectedMessage.value = message;
   isResponding.value = true;
   showModal.value = true;
 };
 
-/**
- * Closes the message modal
- */
 const closeModal = (): void => {
   showModal.value = false;
   selectedMessage.value = null;
   isResponding.value = false;
 };
 
-/**
- * Submits a response to a message
- */
 const submitResponse = async (
   messageId: string,
   response: string,
   status: SupportStatus
 ): Promise<void> => {
   try {
-    // Create proper update data object
     const updateData: SupportMessageUpdate = {
       response,
       status,
     };
 
-    // Update the message
     const updatedMessage = await updateSupportMessage(messageId, updateData);
 
     // Update the message in the local state
@@ -222,9 +177,6 @@ const submitResponse = async (
   }
 };
 
-/**
- * Deletes a message
- */
 const deleteMessage = async (messageId: string): Promise<void> => {
   try {
     await deleteSupportMessage(messageId);
@@ -240,19 +192,11 @@ const deleteMessage = async (messageId: string): Promise<void> => {
   }
 };
 
-// ==============================
 // Lifecycle Hooks
-// ==============================
 onMounted(fetchMessages);
 
-// ==============================
 // Watchers
-// ==============================
-
-/**
- * Reset to page 1 when filters change
- */
 watch([sortOrder, statusFilter], () => {
-  currentPage.value = 1;
+  currentPage.value = 1; // Reset to page 1 when filters change
 });
 </script>

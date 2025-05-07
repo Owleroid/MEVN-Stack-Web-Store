@@ -1,12 +1,10 @@
 {
-  "pageName": "Client List",
-  "usersList": "Users List",
+  "usersList": "Users list",
   "search": "Search by name or email",
   "loading": "Loading users...",
   "error": "Failed to load users",
   "retry": "Retry",
   "noResults": "No users found matching your search",
-  "usersLoaded": "Users loaded successfully",
   "fetchUsersError": "Failed to fetch users",
   "columns": {
     "name": "Name",

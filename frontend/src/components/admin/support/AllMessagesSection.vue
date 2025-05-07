@@ -1,11 +1,11 @@
 <template>
   <div class="bg-white rounded-lg shadow border border-gray-200">
+    <!-- Header and Filters -->
     <div class="p-4 border-b border-gray-200">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">
         {{ $t("allMessages") }}
       </h2>
 
-      <!-- Filters -->
       <FilterControls
         :sortOrder="sortOrder"
         :statusFilter="statusFilter"
@@ -95,12 +95,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import MessageTable from "./MessageTable.vue";
 import FilterControls from "./FilterControls.vue";
 import Pagination from "./Pagination.vue";
+
 import type { SupportMessage, SupportStatus } from "@/types/support";
 
+// Props Definition
 const props = defineProps<{
   messages: SupportMessage[];
   loading: boolean;
@@ -112,6 +113,7 @@ const props = defineProps<{
   totalItems: number;
 }>();
 
+// Events Definition
 const emit = defineEmits<{
   (e: "view", message: SupportMessage): void;
   (e: "respond", message: SupportMessage): void;
@@ -121,9 +123,7 @@ const emit = defineEmits<{
   (e: "retry"): void;
 }>();
 
-/**
- * Returns appropriate CSS class based on message status
- */
+// Utility Functions
 const getStatusClass = (status: SupportStatus): string => {
   switch (status) {
     case "new":

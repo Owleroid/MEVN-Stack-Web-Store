@@ -66,11 +66,11 @@
               id="statusFilter"
               class="mt-1 block w-full sm:w-auto min-w-[180px] py-2 px-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
-              <option value="">{{ $t("statuses.all") }}</option>
-              <option value="packing">{{ $t("statuses.packing") }}</option>
-              <option value="sended">{{ $t("statuses.sended") }}</option>
-              <option value="delivered">{{ $t("statuses.delivered") }}</option>
-              <option value="canceled">{{ $t("statuses.canceled") }}</option>
+              <option value="">{{ $t("allStatuses") }}</option>
+              <option value="packing">{{ $t("packing") }}</option>
+              <option value="sended">{{ $t("sended") }}</option>
+              <option value="delivered">{{ $t("delivered") }}</option>
+              <option value="canceled">{{ $t("canceled") }}</option>
             </select>
           </div>
         </div>
@@ -108,30 +108,22 @@ import { ref, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 
-// Component imports
 import OrderTable from "@/components/admin/orders/OrderTable.vue";
 import OrderModal from "@/components/admin/orders/EditOrderModal.vue";
 
-// Type imports
 import type {
   OrderData,
   OrderStatus,
   OrdersListResponse,
 } from "@/types/orders";
 
-// Service imports
 import { getAllOrders, editOrderById } from "@/services/orderService";
 
-// ==============================
 // Composables Setup
-// ==============================
 const { t } = useI18n();
 const toast = useToast();
 
-// ==============================
 // State Management
-// ==============================
-
 // Data state
 const orders = ref<OrderData[]>([]);
 const selectedOrder = ref<OrderData | null>(null);
@@ -144,20 +136,11 @@ const isEditing = ref<boolean>(false);
 const sortOrder = ref<"newest" | "oldest">("newest");
 const statusFilter = ref<OrderStatus | "">("");
 
-// ==============================
 // Computed Properties
-// ==============================
-
-/**
- * Returns orders that have not been checked yet (new orders)
- */
 const newOrders = computed<OrderData[]>(() => {
   return orders.value.filter((order) => !order.checked);
 });
 
-/**
- * Returns filtered and sorted orders based on user selection
- */
 const filteredOrders = computed<OrderData[]>(() => {
   // Start with checked orders only (not new)
   let filtered = orders.value.filter((order) => order.checked);
@@ -185,13 +168,7 @@ const filteredOrders = computed<OrderData[]>(() => {
   return filtered;
 });
 
-// ==============================
 // Data Fetching
-// ==============================
-
-/**
- * Fetches all orders from the API
- */
 const fetchOrders = async (): Promise<void> => {
   try {
     const response: OrdersListResponse = await getAllOrders();
@@ -202,47 +179,26 @@ const fetchOrders = async (): Promise<void> => {
   }
 };
 
-// ==============================
 // Modal Management
-// ==============================
-
-/**
- * Opens the view order modal
- * @param order - Order to view
- */
 const viewOrder = (order: OrderData): void => {
   selectedOrder.value = order;
   isEditing.value = false;
   showModal.value = true;
 };
 
-/**
- * Opens the edit order modal
- * @param order - Order to edit
- */
 const editOrder = (order: OrderData): void => {
   selectedOrder.value = order;
   isEditing.value = true;
   showModal.value = true;
 };
 
-/**
- * Closes the order modal
- */
 const closeModal = (): void => {
   showModal.value = false;
   selectedOrder.value = null;
   isEditing.value = false;
 };
 
-// ==============================
 // CRUD Operations
-// ==============================
-
-/**
- * Updates an order with new information
- * @param updatedOrder - Updated order data
- */
 const updateOrder = async (updatedOrder: OrderData | null): Promise<void> => {
   if (!updatedOrder || !updatedOrder._id) {
     console.error("Invalid order: null or missing ID");
@@ -260,11 +216,6 @@ const updateOrder = async (updatedOrder: OrderData | null): Promise<void> => {
   }
 };
 
-/**
- * Updates the status of an order
- * @param orderId - ID of the order to update
- * @param status - New status value
- */
 const updateOrderStatus = async (
   orderId: string,
   status: OrderStatus
@@ -279,10 +230,7 @@ const updateOrderStatus = async (
   }
 };
 
-// ==============================
 // Lifecycle Hooks
-// ==============================
-
 onMounted(() => {
   fetchOrders();
 });

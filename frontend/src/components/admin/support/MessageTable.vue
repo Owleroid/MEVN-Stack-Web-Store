@@ -1,24 +1,24 @@
 <template>
   <div class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 table-fixed">
       <thead class="bg-gray-50">
         <tr>
           <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4"
+          >
+            {{ $t("customer") }}
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4"
           >
             {{ $t("subject") }}
           </th>
           <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4"
           >
-            {{ $t("email") }}
+            {{ $t("createdAt") }}
           </th>
-          <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-          >
-            {{ $t("date") }}
-          </th>
-          <!-- Additional header columns via slot -->
+          <!-- Dynamic header columns -->
           <slot name="headerColumns"></slot>
         </tr>
       </thead>
@@ -26,26 +26,26 @@
         <tr
           v-for="message in messages"
           :key="message._id"
-          class="hover:bg-gray-50 transition-colors cursor-pointer"
+          class="hover:bg-gray-50 cursor-pointer transition-colors"
           @click="$emit('view', message)"
         >
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900 truncate">
+              {{ message.email }}
+            </div>
+            <div class="text-sm text-gray-500 truncate">
+              {{ truncateText(message.message, 50) }}
+            </div>
+          </td>
           <td class="px-6 py-4">
-            <div class="text-sm font-medium text-gray-900">
-              {{ message.subject || $t("noSubject") }}
-            </div>
-            <div class="text-sm text-gray-500 line-clamp-1">
-              {{ message.message }}
+            <div class="text-sm text-gray-900 truncate">
+              {{ message.subject }}
             </div>
           </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="text-sm text-gray-900">{{ message.email }}</div>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            {{ formatDate(message.createdAt) }}
           </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="text-sm text-gray-500">
-              {{ formatDate(message.createdAt) }}
-            </div>
-          </td>
-          <!-- Additional row columns via scoped slot -->
+          <!-- Dynamic row columns -->
           <slot name="rowColumns" :message="message"></slot>
         </tr>
       </tbody>
@@ -55,49 +55,53 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
+
 import type { SupportMessage } from "@/types/support";
 
-// ==============================
 // Composables
-// ==============================
-const { t, d } = useI18n();
+const { t } = useI18n();
 
-// ==============================
-// Props
-// ==============================
+// Props & Emits
 const props = defineProps<{
-  /**
-   * Array of support messages to display
-   */
   messages: SupportMessage[];
 }>();
 
-// ==============================
-// Emits
-// ==============================
 const emit = defineEmits<{
-  /**
-   * Emitted when a message is clicked to view
-   */
   (e: "view", message: SupportMessage): void;
 }>();
 
-// ==============================
-// Helper Methods
-// ==============================
+// Utility Functions
+const truncateText = (text: string, maxLength: number = 100): string => {
+  if (!text) return "";
+  return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+};
 
-/**
- * Formats a date for display
- * @param date - Date to format (can be Date object or string)
- * @returns Formatted date string
- */
 const formatDate = (date: Date | string): string => {
   if (!date) return t("dateNotAvailable");
 
-  // Create a Date object if a string is provided
-  const dateObj = date instanceof Date ? date : new Date(date);
+  try {
+    // Create a Date object if a string is provided
+    const dateObj = date instanceof Date ? date : new Date(date);
 
-  // Format the date using i18n
-  return d(dateObj, "short");
+    // Check if date is valid before formatting
+    if (isNaN(dateObj.getTime())) {
+      return t("dateNotAvailable");
+    }
+
+    // Format the date using Intl.DateTimeFormat for more consistent results
+    return new Intl.DateTimeFormat(
+      document.documentElement.lang === "ru" ? "ru-RU" : "en-US",
+      {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    ).format(dateObj);
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return t("dateNotAvailable");
+  }
 };
 </script>

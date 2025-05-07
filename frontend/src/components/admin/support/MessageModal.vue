@@ -7,12 +7,6 @@
       class="relative w-11/12 max-w-3xl p-6 mx-auto bg-white rounded-lg shadow-lg"
     >
       <!-- Modal Header -->
-      <button
-        @click="close"
-        class="absolute top-4 right-4 text-2xl font-bold text-gray-400 hover:text-gray-800 transition-colors"
-      >
-        &times;
-      </button>
 
       <h2 class="text-2xl font-bold text-gray-800 mb-6">
         {{ isResponding ? $t("respondToMessage") : $t("messageDetails") }}
@@ -199,23 +193,17 @@ import { useI18n } from "vue-i18n";
 
 import type { SupportMessage, SupportStatus } from "@/types/support";
 
-// ==============================
 // Composables Setup
-// ==============================
 const { t, locale } = useI18n();
 
-// ==============================
 // Props Definition
-// ==============================
 const props = defineProps<{
   show: boolean;
   isResponding: boolean;
   message: SupportMessage | null;
 }>();
 
-// ==============================
 // Emits Definition
-// ==============================
 const emit = defineEmits<{
   (e: "close"): void;
   (
@@ -227,28 +215,17 @@ const emit = defineEmits<{
   (e: "deleteMessage", messageId: string): void;
 }>();
 
-// ==============================
 // State Management
-// ==============================
 const responseText = ref("");
 const selectedStatus = ref<SupportStatus>("in-progress");
 const responseError = ref("");
 const showDeleteConfirm = ref(false);
 
-// ==============================
 // Action Handlers
-// ==============================
-
-/**
- * Closes the modal
- */
 const close = (): void => {
   emit("close");
 };
 
-/**
- * Handles the submit response action
- */
 const handleSubmitResponse = (): void => {
   if (!props.message) return;
 
@@ -267,9 +244,6 @@ const handleSubmitResponse = (): void => {
   );
 };
 
-/**
- * Handles the confirmation of deletion
- */
 const handleDeleteConfirm = (): void => {
   if (!props.message) return;
 
@@ -277,15 +251,7 @@ const handleDeleteConfirm = (): void => {
   showDeleteConfirm.value = false;
 };
 
-// ==============================
 // Helper Methods
-// ==============================
-
-/**
- * Returns appropriate CSS class based on message status
- * @param status - The message status
- * @returns CSS class for status badge
- */
 const getStatusClass = (status: SupportStatus): string => {
   switch (status) {
     case "new":
@@ -299,11 +265,6 @@ const getStatusClass = (status: SupportStatus): string => {
   }
 };
 
-/**
- * Format date with locale support
- * @param dateString - ISO date string or Date object
- * @returns Formatted date string
- */
 const formatDate = (dateString: Date | string): string => {
   if (!dateString) return t("dateNotAvailable");
 
@@ -318,17 +279,12 @@ const formatDate = (dateString: Date | string): string => {
   }).format(date);
 };
 
-// ==============================
 // Watchers
-// ==============================
-
-/**
- * Reset form when message changes
- */
 watch(
   () => props.message,
   (newMessage) => {
     if (newMessage) {
+      // Reset form when message changes
       responseText.value = "";
       selectedStatus.value = newMessage.status || "in-progress";
       responseError.value = "";

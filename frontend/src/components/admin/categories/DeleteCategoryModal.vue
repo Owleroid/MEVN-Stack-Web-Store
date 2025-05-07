@@ -48,10 +48,7 @@
 </template>
 
 <script setup lang="ts">
-// ==============================
 // Props & Emits
-// ==============================
-
 const props = defineProps({
   show: Boolean,
 });
@@ -62,27 +59,15 @@ const emits = defineEmits([
   "cancelRemove",
 ]);
 
-// ==============================
 // Action Handlers
-// ==============================
-
-/**
- * Confirms the deletion of a category with its products
- */
 const confirmDelete = () => {
   emits("confirmDelete");
 };
 
-/**
- * Opens modal to reassign products before deletion
- */
 const openReassignModal = () => {
   emits("openReassignModal");
 };
 
-/**
- * Cancels the deletion process
- */
 const cancelRemove = () => {
   emits("cancelRemove");
 };

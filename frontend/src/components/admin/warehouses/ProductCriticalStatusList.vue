@@ -34,13 +34,18 @@
             <tr
               v-for="product in filteredProducts"
               :key="product.product"
-              :class="getProductStatusClass(product.amount)"
+              :class="getProductStatusClass(product)"
             >
               <td class="p-3 border-b border-gray-200">
                 {{ product.name }}
               </td>
               <td class="p-3 border-b border-gray-200 text-center font-medium">
-                {{ product.amount }}
+                {{
+                  originalAmounts &&
+                  originalAmounts[product.product] !== undefined
+                    ? originalAmounts[product.product]
+                    : product.amount
+                }}
               </td>
             </tr>
           </tbody>
@@ -70,52 +75,44 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-
 import type { ProductAmount } from "@/types/warehouse";
 
-// ==============================
 // Props
-// ==============================
+const props = defineProps<{
+  products: ProductAmount[];
+  criticalThreshold: number;
+  originalAmounts?: Record<string, number>;
+}>();
 
-const props = defineProps({
-  products: {
-    type: Array as () => ProductAmount[],
-    required: true,
-  },
-  criticalThreshold: {
-    type: Number,
-    default: 1,
-  },
+// Computed Properties
+const filteredProducts = computed<ProductAmount[]>(() => {
+  return props.products.filter((product) => {
+    // Use original amount if available, otherwise use current amount
+    const amountToCheck =
+      props.originalAmounts &&
+      props.originalAmounts[product.product] !== undefined
+        ? props.originalAmounts[product.product]
+        : product.amount;
+    return amountToCheck <= props.criticalThreshold;
+  });
 });
 
-// ==============================
-// Computed Properties
-// ==============================
+// Utility Functions
+const getProductStatusClass = (product: ProductAmount): string => {
+  // Get amount to check (original if available)
+  const amountToCheck =
+    props.originalAmounts &&
+    props.originalAmounts[product.product] !== undefined
+      ? props.originalAmounts[product.product]
+      : product.amount;
 
-/**
- * Filter products to show only those with amount <= criticalThreshold
- */
-const filteredProducts = computed<ProductAmount[]>(() =>
-  props.products.filter((product) => product.amount <= props.criticalThreshold)
-);
-
-// ==============================
-// Helper Methods
-// ==============================
-
-/**
- * Returns the Tailwind class based on product amount
- * @param amount - The current amount of product
- * @returns Tailwind classes for the row
- */
-const getProductStatusClass = (amount: number): string => {
   // For zero or negative stock, show red background
-  if (amount <= 0) return "bg-red-50";
+  if (amountToCheck <= 0) return "bg-red-50";
 
   // For low stock (but above zero), show yellow background
-  if (amount <= props.criticalThreshold) return "bg-yellow-50";
+  if (amountToCheck <= props.criticalThreshold) return "bg-yellow-50";
 
-  // Normal stock levels (should not appear in this component)
+  // Normal stock levels
   return "";
 };
 </script>

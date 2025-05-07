@@ -3,5 +3,9 @@
   "subject": "Subject",
   "date": "Date",
   "noSubject": "No Subject",
-  "actions": "Actions"
+  "actions": "Actions",
+  "customer": "Customer",
+  "createdAt": "Date Created",
+  "status": "Status",
+  "dateNotAvailable": "Date not available"
 }

@@ -9,7 +9,7 @@
   "material": "Материал",
   "parts": "Части",
   "boxArt": "Оформление коробки",
-  "description": "Описание",
+  "productDescription": "Описание",
   "mainImageUrl": "URL главного изображения",
   "secondaryImageUrls": "URL дополнительных изображений",
   "selectImage": "Выбрать изображение",

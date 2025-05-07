@@ -294,16 +294,12 @@ import { useToast } from "vue-toastification";
 import { submitSupportMessage } from "@/services/supportService";
 import { useAuthStore } from "@/stores/authStore";
 
-// ==============================
 // Composables Setup
-// ==============================
 const { t } = useI18n();
 const toast = useToast();
 const authStore = useAuthStore();
 
-// ==============================
 // State Management
-// ==============================
 const form = reactive({
   email: authStore.isAuthenticated ? authStore.userEmail : "",
   subject: "",
@@ -318,10 +314,7 @@ const errors = reactive({
 const loading = ref(false);
 const submissionSuccess = ref(false);
 
-// ==============================
-// Form Handling
-// ==============================
-
+// Form Validation
 /**
  * Validates the form data
  * @returns boolean indicating if the form is valid
@@ -352,8 +345,9 @@ const validateForm = (): boolean => {
   return valid;
 };
 
+// Form Submission
 /**
- * Submits the form
+ * Submits the form to the backend API
  */
 const submitForm = async (): Promise<void> => {
   if (!validateForm()) return;

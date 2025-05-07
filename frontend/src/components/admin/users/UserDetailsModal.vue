@@ -15,12 +15,6 @@
         <h2 class="text-2xl font-bold text-gray-800">
           {{ $t("userDetails.title") }}
         </h2>
-        <button
-          @click="closeModal"
-          class="text-2xl font-bold text-gray-400 hover:text-gray-800 transition-colors"
-        >
-          &times;
-        </button>
       </div>
 
       <!-- Modal Content -->
@@ -216,64 +210,28 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
-// ==============================
-// Type Imports
-// ==============================
 import type { UserData } from "@/types/auth";
 
-// ==============================
 // Composables Setup
-// ==============================
 const { t, locale } = useI18n();
 
-// ==============================
 // Props Definition
-// ==============================
-
-/**
- * Component props
- */
 const props = defineProps<{
-  /** Whether to show the modal */
   show: boolean;
-  /** User data to display */
   user: UserData | null;
 }>();
 
-// ==============================
 // Events Definition
-// ==============================
-
-/**
- * Component events
- */
 const emit = defineEmits<{
-  /**
-   * Emitted when the modal is closed
-   */
   (e: "close"): void;
 }>();
 
-// ==============================
 // Modal Management
-// ==============================
-
-/**
- * Closes the modal
- */
 const closeModal = (): void => {
   emit("close");
 };
 
-// ==============================
 // Formatting Helpers
-// ==============================
-
-/**
- * Formats user's full name
- * @param user - User object
- * @returns Formatted name
- */
 const formatName = (user: UserData): string => {
   if (user.name && user.surname) {
     return `${user.name} ${user.surname}`;
@@ -286,11 +244,6 @@ const formatName = (user: UserData): string => {
   }
 };
 
-/**
- * Formats date using locale-aware formatting
- * @param dateString - ISO date string or Date object
- * @returns Formatted date string
- */
 const formatDate = (dateString?: Date | string): string => {
   if (!dateString) return t("userDetails.notProvided");
 
@@ -306,13 +259,7 @@ const formatDate = (dateString?: Date | string): string => {
   }).format(date);
 };
 
-// ==============================
 // Computed Properties
-// ==============================
-
-/**
- * Checks if user has any delivery data to display
- */
 const hasDeliveryData = computed((): boolean => {
   const data = props.user?.deliveryData;
   return !!(

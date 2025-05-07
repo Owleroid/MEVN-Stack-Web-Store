@@ -3,5 +3,9 @@
   "subject": "Тема",
   "date": "Дата",
   "noSubject": "Без темы",
-  "actions": "Действия"
+  "actions": "Действия",
+  "customer": "Клиент",
+  "createdAt": "Дата создания",
+  "status": "Статус",
+  "dateNotAvailable": "Дата недоступна"
 }

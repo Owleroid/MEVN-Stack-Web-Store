@@ -1,5 +1,6 @@
 <template>
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <!-- Sort Order Filter -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
       <label
         for="sortOrder"
@@ -17,6 +18,7 @@
       </select>
     </div>
 
+    <!-- Status Filter -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
       <label
         for="statusFilter"
@@ -39,8 +41,10 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+
 import type { SupportStatus } from "@/types/support";
 
+// Props & Emits
 const props = defineProps<{
   sortOrder: "newest" | "oldest";
   statusFilter: SupportStatus | "";
@@ -51,7 +55,7 @@ const emit = defineEmits<{
   (e: "update:statusFilter", value: SupportStatus | ""): void;
 }>();
 
-// Create computed properties for two-way binding (v-model)
+// Computed Properties for v-model
 const sortOrderModel = computed({
   get: () => props.sortOrder,
   set: (value: "newest" | "oldest") => emit("update:sortOrder", value),

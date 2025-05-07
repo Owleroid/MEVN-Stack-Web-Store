@@ -50,14 +50,14 @@
                   value="waiting confirmation"
                   :disabled="order.status !== 'waiting confirmation'"
                 >
-                  {{ $t("statuses.waitingConfirmation") }}
+                  {{ $t("waitingConfirmation") }}
                 </option>
-                <option value="packing">{{ $t("statuses.packing") }}</option>
-                <option value="sended">{{ $t("statuses.sended") }}</option>
+                <option value="packing">{{ $t("packing") }}</option>
+                <option value="sended">{{ $t("sended") }}</option>
                 <option value="delivered">
-                  {{ $t("statuses.delivered") }}
+                  {{ $t("delivered") }}
                 </option>
-                <option value="canceled">{{ $t("statuses.canceled") }}</option>
+                <option value="canceled">{{ $t("canceled") }}</option>
               </select>
               <p v-else class="font-medium">
                 <span
@@ -301,15 +301,9 @@
 import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 
-// ==============================
-// Component Imports
-// ==============================
 import ProductList from "@/components/admin/orders/ProductList.vue";
 import AddProductFields from "@/components/admin/orders/AddProductFields.vue";
 
-// ==============================
-// Type Imports
-// ==============================
 import type {
   OrderProduct,
   OrderData,
@@ -317,57 +311,26 @@ import type {
   Address,
 } from "@/types/orders";
 
-// ==============================
 // Composables
-// ==============================
 const { t } = useI18n();
 
-// ==============================
 // Props Definition
-// ==============================
-
-/**
- * Component props
- */
 const props = defineProps<{
-  /** Whether to show the modal */
   show: boolean;
-  /** Whether the modal is in editing mode */
   isEditing: boolean;
-  /** Order data to display/edit */
   order: OrderData | null;
 }>();
 
-// ==============================
 // Events Definition
-// ==============================
-
-/**
- * Component events
- */
 const emit = defineEmits<{
-  /** Emitted when the modal is closed */
   (e: "close"): void;
-  /** Emitted when the form is submitted */
   (e: "submitForm", order: OrderData | null): void;
 }>();
 
-// ==============================
 // State Management
-// ==============================
-
-/**
- * Controls visibility of the add product form
- */
 const showAddProductFields = ref<boolean>(false);
 
-// ==============================
 // Computed Properties
-// ==============================
-
-/**
- * Returns the shipping address of the current order or an empty object
- */
 const shippingAddress = computed<Address>(() => {
   if (props.order) {
     if (!props.order.shippingAddress) {
@@ -393,48 +356,30 @@ const shippingAddress = computed<Address>(() => {
   };
 });
 
-// ==============================
 // Utility Functions
-// ==============================
-
-/**
- * Formats a date for display
- * @param date - The date to format
- * @returns Formatted date string or placeholder
- */
 const formatDate = (date?: Date | string): string => {
   if (!date) return t("dateNotAvailable");
 
   return new Date(date).toLocaleString();
 };
 
-/**
- * Converts status string from backend format to translation key format
- * @param status - The order status from backend (e.g. "waiting confirmation")
- * @returns The corresponding translation key (e.g. "statuses.waitingConfirmation")
- */
 const statusKey = (status: OrderStatus): string => {
   switch (status) {
     case "waiting confirmation":
-      return "statuses.waitingConfirmation";
+      return "waitingConfirmation";
     case "packing":
-      return "statuses.packing";
+      return "packing";
     case "sended":
-      return "statuses.sended";
+      return "sended";
     case "delivered":
-      return "statuses.delivered";
+      return "delivered";
     case "canceled":
-      return "statuses.canceled";
+      return "canceled";
     default:
-      return "statuses.unknown";
+      return "unknown";
   }
 };
 
-/**
- * Returns appropriate CSS class based on order status
- * @param status - The order status
- * @returns CSS class for styling the status badge
- */
 const getStatusClass = (status: OrderStatus): string => {
   switch (status) {
     case "waiting confirmation":
@@ -452,62 +397,31 @@ const getStatusClass = (status: OrderStatus): string => {
   }
 };
 
-// ==============================
 // Modal Management
-// ==============================
-
-/**
- * Closes the modal
- */
 const close = (): void => {
   emit("close");
 };
 
-/**
- * Cancels current editing and closes the modal
- */
 const cancelEdit = (): void => {
   emit("close");
 };
 
-// ==============================
 // Form Submission
-// ==============================
-
-/**
- * Submits the form with updated order data
- */
 const submitForm = (): void => {
   emit("submitForm", props.order);
 };
 
-// ==============================
 // Product Management
-// ==============================
-
-/**
- * Updates the amount of a product
- * @param index - Index of the product in the array
- * @param amount - New product amount
- */
 const updateProductAmount = (index: number, amount: number): void => {
   if (props.order) {
     props.order.products[index].amount = amount;
   }
 };
 
-/**
- * Removes a product from the order
- * @param index - Index of the product to remove
- */
 const removeProduct = (index: number): void => {
   props.order?.products.splice(index, 1);
 };
 
-/**
- * Adds a new product to the order
- * @param product - Product to add
- */
 const addProduct = (product: OrderProduct): void => {
   if (props.order) {
     props.order.products.push(product);

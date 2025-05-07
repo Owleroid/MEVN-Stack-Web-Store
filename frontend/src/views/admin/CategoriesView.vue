@@ -111,7 +111,7 @@
       </p>
     </div>
 
-    <!-- Modals remain unchanged -->
+    <!-- Modals -->
     <DeleteCategoryModal
       :show="showDeleteModal"
       @confirmDelete="selectedCategoryId && removeCategory(selectedCategoryId)"
@@ -146,15 +146,12 @@ import { useI18n } from "vue-i18n";
 
 import { useEventBus } from "@/utils/eventBus";
 
-// Component imports
 import DeleteCategoryModal from "@/components/admin/categories/DeleteCategoryModal.vue";
 import ReassignCategoryModal from "@/components/admin/categories/ReassignCategoryModal.vue";
 import AddEditCategoryModal from "@/components/admin/categories/AddEditCategoryModal.vue";
 
-// Type imports
 import type { Category } from "@/types/category";
 
-// Service imports
 import {
   getAllCategories,
   createCategory,
@@ -163,19 +160,16 @@ import {
   deleteCategoryAndReassignProducts,
 } from "@/services/categoryService";
 
-// Composables setup
+// Composables Setup
 const { t } = useI18n();
 const toast = useToast();
 const { on } = useEventBus();
 
-// ==============================
 // State Management
-// ==============================
-
 // Data state
 const categories = ref<Category[]>([]);
-const loading = ref(true); // Initialize as true to show loader immediately
-const error = ref(""); // For error handling
+const loading = ref(true);
+const error = ref("");
 
 // UI state
 const showDeleteModal = ref(false);
@@ -189,26 +183,13 @@ const newCategoryId = ref<string | null>(null);
 const editCategoryName = ref("");
 const editCategoryImageUrl = ref("");
 
-// ==============================
 // UI Helpers
-// ==============================
-
-/**
- * Handles image loading errors by replacing with placeholder
- * @param event - The error event from the img element
- */
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement;
   target.src = "/images/placeholder-category.png";
 };
 
-// ==============================
 // Data Fetching
-// ==============================
-
-/**
- * Fetches all categories from the API
- */
 const fetchCategories = async () => {
   loading.value = true;
   error.value = "";
@@ -225,13 +206,7 @@ const fetchCategories = async () => {
   }
 };
 
-// ==============================
 // Modal Management
-// ==============================
-
-/**
- * Opens modal for adding a new category
- */
 const openAddModal = () => {
   isEdit.value = false;
   editCategoryName.value = "";
@@ -239,10 +214,6 @@ const openAddModal = () => {
   showAddEditModal.value = true;
 };
 
-/**
- * Opens modal for editing an existing category
- * @param category - The category to edit
- */
 const openEditModal = (category: Category) => {
   isEdit.value = true;
   selectedCategoryId.value = category._id ?? undefined;
@@ -251,18 +222,11 @@ const openEditModal = (category: Category) => {
   showAddEditModal.value = true;
 };
 
-/**
- * Opens the delete confirmation modal
- * @param id - ID of the category to delete
- */
 const confirmRemoveCategory = (id: string) => {
   selectedCategoryId.value = id;
   showDeleteModal.value = true;
 };
 
-/**
- * Closes the add/edit modal and resets form values
- */
 const cancelAddEdit = () => {
   showAddEditModal.value = false;
   isEdit.value = false;
@@ -271,9 +235,6 @@ const cancelAddEdit = () => {
   selectedCategoryId.value = undefined;
 };
 
-/**
- * Closes all delete-related modals and resets selection state
- */
 const cancelRemove = () => {
   showDeleteModal.value = false;
   showReassignModal.value = false;
@@ -281,14 +242,7 @@ const cancelRemove = () => {
   newCategoryId.value = null;
 };
 
-// ==============================
 // CRUD Operations
-// ==============================
-
-/**
- * Handles form submission for both adding and editing categories
- * @param formData - Category data including name and image URL
- */
 const submitForm = async (formData: Pick<Category, "name" | "imageUrl">) => {
   try {
     if (isEdit.value && selectedCategoryId.value) {
@@ -311,10 +265,6 @@ const submitForm = async (formData: Pick<Category, "name" | "imageUrl">) => {
   }
 };
 
-/**
- * Deletes a category by ID
- * @param id - ID of the category to delete
- */
 const removeCategory = async (id: string) => {
   try {
     await deleteCategory(id);
@@ -328,10 +278,6 @@ const removeCategory = async (id: string) => {
   }
 };
 
-/**
- * Reassigns products from one category to another, then deletes the original category
- * @param newCategoryId - Target category ID for reassignment
- */
 const reassignAndRemoveCategory = async (newCategoryId: string) => {
   try {
     if (selectedCategoryId.value && newCategoryId) {
@@ -351,10 +297,7 @@ const reassignAndRemoveCategory = async (newCategoryId: string) => {
   }
 };
 
-// ==============================
 // Lifecycle Hooks
-// ==============================
-
 onMounted(() => {
   fetchCategories();
   on("categoryAdded", fetchCategories);

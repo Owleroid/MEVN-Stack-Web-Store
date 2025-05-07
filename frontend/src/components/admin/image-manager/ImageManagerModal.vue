@@ -121,52 +121,27 @@ import { ref, onMounted, watch } from "vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 
-// ==============================
-// Type Imports
-// ==============================
 import type { ImageInfo } from "@/types/image";
 
-// ==============================
-// Service Imports
-// ==============================
 import { fetchImages, uploadImages } from "@/services/imageManagerService";
 
-// ==============================
 // Props Definition
-// ==============================
-
-/**
- * Component props
- */
 const props = defineProps<{
-  /** Whether to show the modal */
   show: boolean;
-  /** Whether multiple images can be selected */
   allowMultiple: boolean;
 }>();
 
-// ==============================
 // Composables Setup
-// ==============================
 const { t } = useI18n();
 const toast = useToast();
 
-// ==============================
 // Events Definition
-// ==============================
-
-/**
- * Component events
- */
 const emits = defineEmits<{
   (e: "close"): void;
   (e: "confirm", images: ImageInfo[]): void;
 }>();
 
-// ==============================
 // State Management
-// ==============================
-
 // Image state
 const images = ref<ImageInfo[]>([]);
 const selectedImages = ref<ImageInfo[]>([]);
@@ -179,13 +154,7 @@ const loading = ref(false);
 const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
 
-// ==============================
 // Data Fetching
-// ==============================
-
-/**
- * Fetches images from the backend API
- */
 const fetchImagesFromBackend = async (): Promise<void> => {
   loading.value = true;
 
@@ -200,14 +169,7 @@ const fetchImagesFromBackend = async (): Promise<void> => {
   }
 };
 
-// ==============================
 // File Upload Operations
-// ==============================
-
-/**
- * Handles file selection from the input field
- * @param event - File input change event
- */
 const handleFileUpload = (event: Event): void => {
   const target = event.target as HTMLInputElement | null;
   const files = target?.files;
@@ -240,9 +202,6 @@ const handleFileUpload = (event: Event): void => {
   }
 };
 
-/**
- * Uploads selected files to the server
- */
 const handleUploadImages = async (): Promise<void> => {
   if (selectedFiles.value.length === 0) return;
 
@@ -261,23 +220,11 @@ const handleUploadImages = async (): Promise<void> => {
   }
 };
 
-// ==============================
 // Image Selection Operations
-// ==============================
-
-/**
- * Checks if an image is currently selected
- * @param image - The image to check
- * @returns True if the image is selected
- */
 const isSelected = (image: ImageInfo): boolean => {
   return selectedImages.value.some((img) => img.url === image.url);
 };
 
-/**
- * Toggles selection state of an image
- * @param image - The image to select/deselect
- */
 const toggleImageSelection = (image: ImageInfo): void => {
   if (props.allowMultiple) {
     if (isSelected(image)) {
@@ -292,31 +239,16 @@ const toggleImageSelection = (image: ImageInfo): void => {
   }
 };
 
-// ==============================
 // Modal Management
-// ==============================
-
-/**
- * Confirms the current image selection and emits event
- */
 const confirmSelection = (): void => {
   emits("confirm", selectedImages.value);
 };
 
-/**
- * Closes the modal
- */
 const close = (): void => {
   emits("close");
 };
 
-// ==============================
 // Watchers
-// ==============================
-
-/**
- * Reset selection when modal closes
- */
 watch(
   () => props.show,
   (newVal) => {
@@ -326,9 +258,7 @@ watch(
   }
 );
 
-// ==============================
 // Lifecycle Hooks
-// ==============================
 onMounted(() => {
   fetchImagesFromBackend();
 });

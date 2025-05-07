@@ -4,6 +4,7 @@
       {{ $t("addNewProduct") }}
     </h3>
 
+    <!-- Product Search Input -->
     <div class="relative">
       <label
         for="newProductName"
@@ -52,6 +53,7 @@
       </p>
     </div>
 
+    <!-- Quantity Input -->
     <div class="mt-6">
       <label
         for="newProductAmount"
@@ -103,16 +105,12 @@
 import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 
-// Type imports
 import type { Product } from "@/types/products";
 import type { OrderProduct } from "@/types/orders";
 
-// Service imports
 import { searchProductsByName } from "@/services/productService";
 
-// ==============================
 // Props & Emits
-// ==============================
 const props = defineProps<{
   existingProductIds: string[];
 }>();
@@ -121,14 +119,10 @@ const emit = defineEmits<{
   (e: "addProduct", product: OrderProduct): void;
 }>();
 
-// ==============================
 // Composables
-// ==============================
 const { t } = useI18n();
 
-// ==============================
 // State Management
-// ==============================
 // Form inputs
 const newProductName = ref<string>("");
 const newProductAmount = ref<number>(1);
@@ -149,13 +143,7 @@ const errors = ref<ValidationErrors>({
   amount: "",
 });
 
-// ==============================
 // Search & Selection Logic
-// ==============================
-/**
- * Searches for products based on entered name
- * Filters out products that are already in the order
- */
 const searchProducts = async (): Promise<void> => {
   // Reset state
   errors.value.product = "";
@@ -188,23 +176,13 @@ const searchProducts = async (): Promise<void> => {
   }
 };
 
-/**
- * Handles product selection from dropdown
- * @param product - Selected product
- */
 const selectProduct = (product: Product): void => {
   selectedProduct.value = product;
   newProductName.value = product.name;
   searchResults.value = [];
 };
 
-// ==============================
 // Form Submission Logic
-// ==============================
-/**
- * Validates form inputs before submission
- * @returns boolean indicating if form is valid
- */
 const validateForm = (): boolean => {
   let isValid = true;
   errors.value = { product: "", amount: "" };
@@ -224,10 +202,6 @@ const validateForm = (): boolean => {
   return isValid;
 };
 
-/**
- * Handles the add product button click
- * Validates input, emits event with product data, and resets form
- */
 const addProduct = (): void => {
   if (!validateForm()) return;
 
@@ -245,9 +219,6 @@ const addProduct = (): void => {
   }
 };
 
-/**
- * Resets form to initial state
- */
 const resetForm = (): void => {
   newProductName.value = "";
   newProductAmount.value = 1;
@@ -255,14 +226,7 @@ const resetForm = (): void => {
   errors.value = { product: "", amount: "" };
 };
 
-// ==============================
 // Helper Functions
-// ==============================
-/**
- * Formats price with currency symbol
- * @param price - Price to format
- * @returns Formatted price string
- */
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",

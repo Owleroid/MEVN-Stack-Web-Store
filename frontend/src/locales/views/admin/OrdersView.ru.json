@@ -6,8 +6,8 @@
   "newestToOldest": "От новых к старым",
   "oldestToNewest": "От старых к новым",
   "filterByStatus": "Фильтр по статусу",
+  "allStatuses": "Все статусы",
   "statuses": {
-    "all": "Все статусы",
     "waitingConfirmation": "Ожидает подтверждения",
     "packing": "Упаковка",
     "sended": "Отправлено",

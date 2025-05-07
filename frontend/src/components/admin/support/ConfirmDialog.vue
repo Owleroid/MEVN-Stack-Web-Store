@@ -36,13 +36,7 @@
 </template>
 
 <script setup lang="ts">
-// ==============================
 // Props Definition
-// ==============================
-
-/**
- * Dialog configuration props
- */
 const props = defineProps<{
   show: boolean;
   title: string;
@@ -52,39 +46,21 @@ const props = defineProps<{
   buttonClass?: string;
 }>();
 
-// ==============================
 // Emits Definition
-// ==============================
-
-/**
- * Dialog event emitters
- */
 const emit = defineEmits<{
   (e: "confirm"): void;
   (e: "cancel"): void;
 }>();
 
-// ==============================
 // Action Handlers
-// ==============================
-
-/**
- * Handles confirm button click
- */
 const onConfirm = (): void => {
   emit("confirm");
 };
 
-/**
- * Handles cancel button click
- */
 const onCancel = (): void => {
   emit("cancel");
 };
 
-/**
- * Handles clicks on the backdrop/overlay
- */
 const onBackdropClick = (): void => {
   emit("cancel");
 };

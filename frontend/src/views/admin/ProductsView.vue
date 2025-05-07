@@ -186,15 +186,12 @@ import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useEventBus } from "@/utils/eventBus";
 
-// Component imports
 import ChangeCategoryModal from "@/components/admin/products/ChangeCategoryModal.vue";
 import AddEditProductModal from "@/components/admin/products/AddEditProductModal.vue";
 
-// Type imports
 import type { Product, ProductInput } from "@/types/products";
 import type { Category } from "@/types/category";
 
-// Service imports
 import { getAllCategories } from "@/services/categoryService";
 import {
   getProductsByCategory,
@@ -205,19 +202,13 @@ import {
   updateProduct,
 } from "@/services/productService";
 
-// ==============================
-// Composables setup
-// ==============================
-
+// Composables Setup
 const { t } = useI18n();
 const router = useRouter();
 const toast = useToast();
 const { on, emit } = useEventBus();
 
-// ==============================
 // State Management
-// ==============================
-
 // Data state
 const categories = ref<Category[]>([]);
 const products = ref<Product[]>([]);
@@ -280,26 +271,13 @@ const editProduct = ref<EditProductFormData>({
   secondaryImageUrls: "",
 });
 
-// ==============================
 // UI Helpers
-// ==============================
-
-/**
- * Handles image loading errors by replacing with placeholder
- * @param event - The error event from the img element
- */
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement;
   target.src = "/images/placeholder-product.png";
 };
 
-// ==============================
 // Data Fetching
-// ==============================
-
-/**
- * Fetches all categories from the API
- */
 const fetchCategories = async () => {
   loading.value = true;
 
@@ -319,9 +297,6 @@ const fetchCategories = async () => {
   }
 };
 
-/**
- * Fetches products for the selected category
- */
 const fetchProducts = async () => {
   if (!selectedCategory.value) return;
 
@@ -334,69 +309,36 @@ const fetchProducts = async () => {
   }
 };
 
-// ==============================
 // Navigation
-// ==============================
-
-/**
- * Navigate to categories management page
- */
 const goToCategories = () => {
   router.push({ name: "AdminCategories" });
 };
 
-// ==============================
 // Category Operations
-// ==============================
-
-/**
- * Select a category to view its products
- * @param categoryId - ID of the selected category
- */
 const selectCategory = (categoryId: string) => {
   selectedCategory.value = categoryId;
   fetchProducts();
 };
 
-// ==============================
 // Modal Management
-// ==============================
-
-/**
- * Opens the category change modal for a product
- * @param product - Product to change category
- */
 const openChangeCategoryModal = (product: Product) => {
   productToChangeCategory.value = product;
   showChangeCategoryModal.value = true;
 };
 
-/**
- * Closes the category change modal
- */
 const closeChangeCategoryModal = () => {
   productToChangeCategory.value = null;
   showChangeCategoryModal.value = false;
 };
 
-/**
- * Opens the add product modal
- */
 const openAddProductModal = () => {
   showAddProductModal.value = true;
 };
 
-/**
- * Closes the add product modal
- */
 const closeAddProductModal = () => {
   showAddProductModal.value = false;
 };
 
-/**
- * Opens the edit product modal
- * @param product - Product to edit
- */
 const openEditProductModal = async (product: Product) => {
   try {
     const response = await getProductById(product._id);
@@ -424,21 +366,11 @@ const openEditProductModal = async (product: Product) => {
   }
 };
 
-/**
- * Closes the edit product modal
- */
 const closeEditProductModal = () => {
   showEditProductModal.value = false;
 };
 
-// ==============================
 // CRUD Operations
-// ==============================
-
-/**
- * Changes a product's category
- * @param newCategoryId - ID of the new category
- */
 const changeCategory = async (newCategoryId: string) => {
   if (!productToChangeCategory.value) return;
 
@@ -461,9 +393,6 @@ const changeCategory = async (newCategoryId: string) => {
   }
 };
 
-/**
- * Add a new product
- */
 const submitAddProductForm = async () => {
   try {
     const product: ProductInput = {
@@ -501,9 +430,6 @@ const submitAddProductForm = async () => {
   }
 };
 
-/**
- * Update an existing product
- */
 const submitEditProductForm = async () => {
   try {
     const product: ProductInput = {
@@ -541,10 +467,6 @@ const submitEditProductForm = async () => {
   }
 };
 
-/**
- * Delete a product
- * @param id - ID of the product to delete
- */
 const deleteProduct = async (id: string) => {
   try {
     await deleteProductService(id);
@@ -556,10 +478,7 @@ const deleteProduct = async (id: string) => {
   }
 };
 
-// ==============================
 // Watchers & Lifecycle
-// ==============================
-
 watch(selectedCategory, (newCategoryId) => {
   if (newCategoryId) {
     fetchProducts();

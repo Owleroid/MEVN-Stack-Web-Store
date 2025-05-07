@@ -93,12 +93,10 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
+
 import ImageManagerModal from "@/components/admin/image-manager/ImageManagerModal.vue";
 
-// ==============================
 // Props & Emits
-// ==============================
-
 const props = defineProps({
   show: Boolean,
   mode: {
@@ -118,10 +116,7 @@ const props = defineProps({
 
 const emits = defineEmits(["submitForm", "cancelAction"]);
 
-// ==============================
 // State Management
-// ==============================
-
 // Form state
 const categoryName = ref(props.initialCategoryName);
 const categoryImageUrl = ref(props.initialCategoryImageUrl);
@@ -129,10 +124,7 @@ const categoryImageUrl = ref(props.initialCategoryImageUrl);
 // UI state
 const showImageManager = ref(false);
 
-// ==============================
 // Watchers
-// ==============================
-
 watch(
   () => props.initialCategoryName,
   (newValue) => {
@@ -147,28 +139,15 @@ watch(
   }
 );
 
-// ==============================
 // Image Manager Functions
-// ==============================
-
-/**
- * Opens the image manager modal
- */
 const openImageManager = () => {
   showImageManager.value = true;
 };
 
-/**
- * Closes the image manager modal
- */
 const closeImageManager = () => {
   showImageManager.value = false;
 };
 
-/**
- * Handles image selection from image manager
- * @param selectedImages - Array of selected images
- */
 const handleImageSelection = (selectedImages: { url: string }[]) => {
   if (selectedImages.length > 0) {
     categoryImageUrl.value = selectedImages[0].url;
@@ -176,13 +155,7 @@ const handleImageSelection = (selectedImages: { url: string }[]) => {
   closeImageManager();
 };
 
-// ==============================
 // Form Actions
-// ==============================
-
-/**
- * Submits the form data to parent component
- */
 const submitForm = () => {
   emits("submitForm", {
     name: categoryName.value,
@@ -190,9 +163,6 @@ const submitForm = () => {
   });
 };
 
-/**
- * Cancels the form action
- */
 const cancelAction = () => {
   emits("cancelAction");
 };

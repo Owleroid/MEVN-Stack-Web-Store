@@ -150,7 +150,7 @@
             for="description"
             class="block text-sm font-medium text-gray-700 mb-1"
           >
-            {{ $t("description") }}:
+            {{ $t("productDescription") }}:
           </label>
           <textarea
             id="description"
@@ -266,12 +266,10 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+
 import ImageManagerModal from "@/components/admin/image-manager/ImageManagerModal.vue";
 
-// ==============================
 // Props & Emits
-// ==============================
-
 const props = defineProps({
   show: Boolean,
   isEdit: Boolean,
@@ -295,37 +293,20 @@ const props = defineProps({
 
 const emits = defineEmits(["close", "submitForm"]);
 
-// ==============================
 // State Management
-// ==============================
-
 const showImageManager = ref(false);
 const allowMultiple = ref(false);
 
-// ==============================
 // Image Manager Methods
-// ==============================
-
-/**
- * Opens the image manager modal
- * @param multiple - Whether to allow multiple image selection
- */
 const openImageManager = (multiple: boolean) => {
   allowMultiple.value = multiple;
   showImageManager.value = true;
 };
 
-/**
- * Closes the image manager modal
- */
 const closeImageManager = () => {
   showImageManager.value = false;
 };
 
-/**
- * Handles image selection from the image manager
- * @param selectedImages - Array of selected image objects
- */
 const handleImageSelection = (selectedImages: { url: string }[]) => {
   if (allowMultiple.value) {
     props.product.secondaryImageUrls = selectedImages
@@ -337,20 +318,11 @@ const handleImageSelection = (selectedImages: { url: string }[]) => {
   closeImageManager();
 };
 
-// ==============================
 // Form Actions
-// ==============================
-
-/**
- * Closes the modal
- */
 const close = () => {
   emits("close");
 };
 
-/**
- * Submits the form
- */
 const submitForm = () => {
   emits("submitForm", props.product);
 };

@@ -32,6 +32,8 @@
     <ProductStatusList
       v-if="selectedWarehouse && selectedWarehouse.products.length > 0"
       :products="selectedWarehouse.products"
+      :criticalThreshold="1"
+      :originalAmounts="originalAmounts"
       class="mb-6"
     />
 
@@ -114,7 +116,6 @@
                   <input
                     type="number"
                     v-model.number="product.amount"
-                    min="0"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </td>
@@ -160,7 +161,6 @@ import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 
-// Type imports
 import type { Category } from "@/types/category";
 import type {
   Warehouse,
@@ -169,7 +169,6 @@ import type {
 } from "@/types/warehouse";
 import type { ProductIdsResponse } from "@/types/products";
 
-// Service imports
 import { getAllCategories } from "@/services/categoryService";
 import { getProductIdsByCategory } from "@/services/productService";
 import {
@@ -179,18 +178,12 @@ import {
 
 import ProductStatusList from "@/components/admin/warehouses/ProductCriticalStatusList.vue";
 
-// ==============================
 // Composables setup
-// ==============================
-
 const { t } = useI18n();
 const toast = useToast();
 const router = useRouter();
 
-// ==============================
 // State Management
-// ==============================
-
 // Data state
 const warehouses = ref<Warehouse[]>([]);
 const categories = ref<Category[]>([]);
@@ -202,22 +195,13 @@ const loading = ref<boolean>(true);
 const selectedWarehouseId = ref<string>("");
 const selectedCategoryId = ref<string>("");
 
-// ==============================
 // Computed Properties
-// ==============================
-
-/**
- * Returns the currently selected warehouse
- */
 const selectedWarehouse = computed<Warehouse | undefined>(() => {
   return warehouses.value.find(
     (warehouse) => warehouse._id === selectedWarehouseId.value
   );
 });
 
-/**
- * Returns products filtered by the selected category
- */
 const filteredProducts = computed<ProductAmount[]>(() => {
   if (!selectedWarehouse.value) return [];
   return selectedWarehouse.value.products.filter((product) =>
@@ -225,13 +209,7 @@ const filteredProducts = computed<ProductAmount[]>(() => {
   );
 });
 
-// ==============================
 // Data Fetching
-// ==============================
-
-/**
- * Fetches all warehouses from the API
- */
 const fetchWarehouses = async () => {
   try {
     loading.value = true;
@@ -248,9 +226,6 @@ const fetchWarehouses = async () => {
   }
 };
 
-/**
- * Fetches all categories from the API
- */
 const fetchCategories = async () => {
   try {
     loading.value = true;
@@ -268,9 +243,6 @@ const fetchCategories = async () => {
   }
 };
 
-/**
- * Fetches products for the selected category
- */
 const fetchProducts = async () => {
   try {
     loading.value = true;
@@ -293,21 +265,21 @@ const fetchProducts = async () => {
   }
 };
 
-// ==============================
 // Action Handlers
-// ==============================
-
-/**
- * Selects a category and fetches its products
- */
 const selectCategory = (category: Category) => {
+  // Reset any unsaved changes when switching categories
+  if (selectedWarehouse.value) {
+    selectedWarehouse.value.products.forEach((product) => {
+      if (originalAmounts.value[product.product] !== undefined) {
+        product.amount = originalAmounts.value[product.product];
+      }
+    });
+  }
+
   selectedCategoryId.value = category._id || "";
   fetchProducts();
 };
 
-/**
- * Updates the amount of a product in the warehouse
- */
 const updateProductAmount = async (product: ProductAmount) => {
   try {
     loading.value = true;
@@ -331,24 +303,15 @@ const updateProductAmount = async (product: ProductAmount) => {
   }
 };
 
-/**
- * Checks if the product amount has changed from its original value
- */
 const hasAmountChanged = (product: ProductAmount): boolean => {
   return product.amount !== originalAmounts.value[product.product];
 };
 
-/**
- * Redirects to the admin products page
- */
 const redirectToAdminProductPage = () => {
   router.push("/admin/products");
 };
 
-// ==============================
 // Watchers
-// ==============================
-
 watch(selectedWarehouseId, async (newWarehouseId) => {
   if (newWarehouseId) {
     const warehouse = warehouses.value.find(
@@ -364,10 +327,7 @@ watch(selectedWarehouseId, async (newWarehouseId) => {
   }
 });
 
-// ==============================
 // Lifecycle Hooks
-// ==============================
-
 onMounted(async () => {
   await fetchWarehouses();
   await fetchCategories();

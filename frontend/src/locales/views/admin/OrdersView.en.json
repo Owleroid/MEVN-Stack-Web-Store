@@ -6,8 +6,8 @@
   "newestToOldest": "Newest to oldest",
   "oldestToNewest": "Oldest to newest",
   "filterByStatus": "Filter by status",
+  "allStatuses": "All Statuses",
   "statuses": {
-    "all": "All statuses",
     "waitingConfirmation": "Waiting Confirmation",
     "packing": "Packing",
     "sended": "Sent",

@@ -40,58 +40,29 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
+
 import type { OrderProduct } from "@/types/orders";
 
-// ==============================
 // Composables
-// ==============================
 const { t } = useI18n();
 
-// ==============================
 // Props Definition
-// ==============================
-
-/**
- * Component props
- */
 const props = defineProps<{
-  /** The list of products to display */
   products: OrderProduct[];
-  /** Whether the product list is in editing mode */
   isEditing: boolean;
 }>();
 
-// ==============================
 // Events Definition
-// ==============================
-
-/**
- * Component events
- */
 const emit = defineEmits<{
-  /** Emitted when a product amount is updated */
   (e: "updateProductAmount", index: number, amount: number): void;
-  /** Emitted when a product is removed */
   (e: "removeProduct", index: number): void;
 }>();
 
-// ==============================
 // Product Management Methods
-// ==============================
-
-/**
- * Updates the product amount and emits the event to parent component
- * @param index - Index of the product in the array
- * @param amount - New product amount
- */
 const updateProductAmount = (index: number, amount: number): void => {
   emit("updateProductAmount", index, amount);
 };
 
-/**
- * Removes a product from the list
- * @param index - Index of the product to remove
- */
 const removeProduct = (index: number): void => {
   emit("removeProduct", index);
 };

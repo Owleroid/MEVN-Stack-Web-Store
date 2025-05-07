@@ -63,12 +63,9 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 
-// ==============================
-// Props & Emits
-// ==============================
-
 import type { Category } from "@/types/category";
 
+// Props & Emits
 const props = defineProps({
   show: Boolean,
   categories: Array as () => Category[],
@@ -77,16 +74,10 @@ const props = defineProps({
 
 const emits = defineEmits(["reassignAndRemoveCategory", "cancelRemove"]);
 
-// ==============================
 // State Management
-// ==============================
-
 const newCategoryId = ref<string | null>(null);
 
-// ==============================
 // Watchers
-// ==============================
-
 watch(
   () => props.show,
   (isVisible) => {
@@ -97,22 +88,13 @@ watch(
   }
 );
 
-// ==============================
 // Action Handlers
-// ==============================
-
-/**
- * Reassigns products to the new category and removes the old one
- */
 const reassignAndRemoveCategory = () => {
   if (newCategoryId.value) {
     emits("reassignAndRemoveCategory", newCategoryId.value);
   }
 };
 
-/**
- * Cancels the reassignment process
- */
 const cancelRemove = () => {
   emits("cancelRemove");
 };

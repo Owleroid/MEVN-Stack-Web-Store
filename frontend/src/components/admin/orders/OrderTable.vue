@@ -79,111 +79,57 @@ vue
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
+
 import type { OrderData, OrderStatus } from "@/types/orders";
 
-// ==============================
 // Composables
-// ==============================
 const { t } = useI18n();
 
-// ==============================
 // Props Definition
-// ==============================
-
-/**
- * Component props
- */
 const props = defineProps<{
-  /** List of orders to display in the table */
   orders: OrderData[];
 }>();
 
-// ==============================
 // Events Definition
-// ==============================
-
-/**
- * Component events
- */
 const emit = defineEmits<{
-  /**
-   * Emitted when an order is clicked to view details
-   */
   (e: "viewOrder", order: OrderData): void;
-
-  /**
-   * Emitted when the edit button is clicked for an order
-   */
   (e: "editOrder", order: OrderData): void;
-
-  /**
-   * Emitted when the status of an order is updated
-   */
   (e: "updateOrderStatus", orderId: string, status: OrderStatus): void;
 }>();
 
-// ==============================
 // Action Handlers
-// ==============================
-
-/**
- * Emits event to view order details
- * @param order - The order to view
- */
 const viewOrder = (order: OrderData): void => {
   emit("viewOrder", order);
 };
 
-/**
- * Emits event to edit order
- * @param order - The order to edit
- */
 const editOrder = (order: OrderData): void => {
   emit("editOrder", order);
 };
 
-// ==============================
 // Utility Functions
-// ==============================
-
-/**
- * Formats a date for display
- * @param date - The date to format
- * @returns Formatted date string or placeholder
- */
 const formatDate = (date?: Date | string): string => {
   if (!date) return t("dateNotAvailable");
 
   return new Date(date).toLocaleString();
 };
 
-/**
- * Converts status string from backend format to translation key format
- * @param status - The order status from backend (e.g. "waiting confirmation")
- * @returns The corresponding translation key (e.g. "waitingConfirmation")
- */
 const statusKey = (status: OrderStatus): string => {
   switch (status) {
     case "waiting confirmation":
-      return "statuses.waitingConfirmation";
+      return "waitingConfirmation";
     case "packing":
-      return "statuses.packing";
+      return "packing";
     case "sended":
-      return "statuses.sended";
+      return "sended";
     case "delivered":
-      return "statuses.delivered";
+      return "delivered";
     case "canceled":
-      return "statuses.canceled";
+      return "canceled";
     default:
-      return "statuses.unknown";
+      return "unknown";
   }
 };
 
-/**
- * Returns appropriate CSS class based on order status
- * @param status - The order status
- * @returns CSS class for styling the status badge
- */
 const getStatusClass = (status: OrderStatus): string => {
   switch (status) {
     case "waiting confirmation":
