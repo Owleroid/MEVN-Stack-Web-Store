@@ -1,34 +1,153 @@
 <template>
-  <div class="category-view">
-    <div class="main-layout">
-      <div class="categories-sidebar">
-        <div
-          v-for="cat in categories"
-          :key="cat._id"
-          class="category-small-card"
-          :class="{ active: cat._id === category?._id }"
-          @click="changeCategory(cat._id ?? '')"
-        >
-          <img :src="cat.imageUrl" :alt="cat.name" />
-          <h3>{{ cat.name }}</h3>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Page Title -->
+    <h1
+      v-if="category"
+      class="text-3xl font-bold text-gray-900 mb-8 text-center"
+    >
+      {{ category.name }}
+    </h1>
+    <h1 v-else class="text-3xl font-bold text-gray-900 mb-8 text-center">
+      {{ $t("collections") }}
+    </h1>
+
+    <!-- Loading State -->
+    <div v-if="loading" class="flex justify-center items-center py-12">
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
+      ></div>
+    </div>
+
+    <!-- Error State -->
+    <div
+      v-else-if="error"
+      class="bg-red-50 border border-red-200 rounded-md p-4 mb-8"
+    >
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg
+            class="h-5 w-5 text-red-400"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-red-700">
+            {{ error }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div v-else class="flex flex-col md:flex-row gap-8">
+      <!-- Categories Sidebar -->
+      <div class="w-full md:w-64 shrink-0">
+        <div class="bg-white rounded-lg shadow-md p-4">
+          <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
+            {{ $t("categories") }}
+          </h2>
+          <div class="space-y-2">
+            <div
+              v-for="cat in categories"
+              :key="cat._id"
+              @click="changeCategory(cat._id ?? '')"
+              class="p-3 rounded-md cursor-pointer transition-colors duration-200 flex items-center gap-3"
+              :class="
+                cat._id === category?._id
+                  ? 'bg-blue-50 border border-blue-100'
+                  : 'hover:bg-gray-50 border border-transparent'
+              "
+            >
+              <div
+                class="w-10 h-10 rounded-md overflow-hidden bg-gray-100 shrink-0"
+              >
+                <img
+                  :src="cat.imageUrl"
+                  :alt="cat.name"
+                  class="w-full h-full object-cover"
+                  @error="handleImageError"
+                />
+              </div>
+              <span
+                class="text-sm font-medium"
+                :class="
+                  cat._id === category?._id ? 'text-blue-600' : 'text-gray-700'
+                "
+              >
+                {{ cat.name }}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="products-section">
-        <h1>{{ category?.name }}</h1>
-        <div v-if="products.length === 0" class="no-products">
-          <p>{{ $t("noProductsForCategory", { category: category?.name }) }}</p>
+      <!-- Products Section -->
+      <div class="flex-1">
+        <!-- Empty State -->
+        <div
+          v-if="products.length === 0"
+          class="bg-white rounded-lg shadow-md p-8 text-center"
+        >
+          <svg
+            class="mx-auto h-12 w-12 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+            />
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">
+            {{ $t("noProductsForCategory", { category: category?.name }) }}
+          </h3>
+          <p class="mt-1 text-sm text-gray-500">
+            {{ $t("checkBackLater") }}
+          </p>
         </div>
-        <div v-else class="products-grid">
+
+        <!-- Products Grid -->
+        <div
+          v-else
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        >
           <div
             v-for="product in products"
             :key="product._id"
-            class="product-card"
+            class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
           >
-            <img :src="product.imageUrls?.main" :alt="product.name" />
-            <h3>{{ product.name }}</h3>
-            <p>{{ formatPrice(product.price[currency]?.amount) }}</p>
-            <AddToCartButton :product="product" />
+            <div class="aspect-w-1 aspect-h-1 w-full overflow-hidden">
+              <img
+                :src="product.imageUrls?.main"
+                :alt="product.name"
+                class="w-full h-full object-cover"
+                @error="handleProductImageError"
+              />
+            </div>
+            <div class="p-4">
+              <h3 class="text-lg font-medium text-gray-900 mb-1 line-clamp-2">
+                {{ product.name }}
+              </h3>
+              <p class="text-lg font-bold text-gray-800 mb-3">
+                {{ formatPrice(product.price[currency]?.amount) }}
+              </p>
+              <AddToCartButton
+                :product="product"
+                class="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors text-sm font-medium"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -40,10 +159,9 @@
 import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+
 import { useAuthStore } from "@/stores/authStore";
 
-import type { Product } from "@/types/products";
-import type { Category } from "@/types/category";
 import {
   getProductsByCategoryId,
   getAllCategories,
@@ -51,56 +169,110 @@ import {
 
 import AddToCartButton from "@/components/general/AddToCartButton.vue";
 
+import type { Product } from "@/types/products";
+import type { Category } from "@/types/category";
+
+// Composables
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
 const authStore = useAuthStore();
 
+// State
 const category = ref<Category | null>(null);
 const products = ref<Product[]>([]);
 const categories = ref<Category[]>([]);
+const loading = ref<boolean>(true);
+const error = ref<string>("");
+
+// Get user's preferred currency
 const currency = authStore.currency as "rubles" | "euros";
 
+// Utilities
 const formatPrice = (price: number): string => {
-  return currency === "rubles" ? `${price} ₽` : `${price} €`;
+  return currency === "rubles"
+    ? new Intl.NumberFormat("ru-RU", {
+        style: "currency",
+        currency: "RUB",
+      }).format(price)
+    : new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "EUR",
+      }).format(price);
 };
 
-const fetchCategories = async () => {
+const handleImageError = (event: Event): void => {
+  const target = event.target as HTMLImageElement;
+  target.src = "/images/placeholder-category.png";
+};
+
+const handleProductImageError = (event: Event): void => {
+  const target = event.target as HTMLImageElement;
+  target.src = "/images/placeholder-product.png";
+};
+
+// Data Fetching
+const fetchCategories = async (): Promise<void> => {
   try {
-    const categoriesResponse = await getAllCategories();
-    categories.value = categoriesResponse.data;
-  } catch (error) {
-    console.error("Error fetching categories:", error);
+    const response = await getAllCategories();
+    categories.value = response;
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    error.value = t("fetchCategoriesError") + ": " + errorMessage;
+    console.error("Error fetching categories:", err);
   }
 };
 
-const fetchProducts = async (categoryId: string) => {
+const fetchProducts = async (categoryId: string): Promise<void> => {
   try {
-    products.value = [];
-    const productsResponse = await getProductsByCategoryId(categoryId);
-    products.value = productsResponse.data;
-  } catch (error) {
-    console.error("Error fetching products:", error);
+    const response = await getProductsByCategoryId(categoryId);
+    products.value = response;
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    error.value = t("fetchProductsError") + ": " + errorMessage;
+    console.error("Error fetching products:", err);
     products.value = [];
   }
 };
 
-const fetchCategoryData = async () => {
+const fetchCategoryData = async (): Promise<void> => {
+  loading.value = true;
+  error.value = "";
+
   const categoryId = route.params.categoryId as string;
+
+  if (!categoryId) {
+    error.value = t("noCategorySelected");
+    loading.value = false;
+    return;
+  }
+
   try {
+    // Find the category in our loaded categories
     category.value =
       categories.value.find((cat) => cat._id === categoryId) || null;
 
-    await fetchProducts(categoryId);
-  } catch (error) {
-    console.error("Error fetching category data:", error);
+    if (!category.value) {
+      error.value = t("categoryNotFound");
+    } else {
+      await fetchProducts(categoryId);
+    }
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    error.value = t("fetchDataError") + ": " + errorMessage;
+    console.error("Error fetching category data:", err);
+  } finally {
+    loading.value = false;
   }
 };
 
-const changeCategory = (categoryId: string) => {
+// Navigation
+const changeCategory = (categoryId: string): void => {
+  if (!categoryId) return;
   router.push(`/collections/${categoryId}`);
 };
 
+// Watchers
 watch(
   () => route.params.categoryId,
   async (newCategoryId) => {
@@ -110,81 +282,9 @@ watch(
   }
 );
 
+// Lifecycle Hooks
 onMounted(async () => {
   await fetchCategories();
   await fetchCategoryData();
 });
 </script>
-
-<style scoped>
-.category-view {
-  padding: 20px;
-}
-
-.main-layout {
-  display: flex;
-  gap: 20px;
-}
-
-.categories-sidebar {
-  width: 250px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  border-right: 1px solid #ddd;
-  padding-right: 10px;
-}
-
-.category-small-card {
-  cursor: pointer;
-  text-align: center;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 8px;
-  transition: transform 0.2s;
-}
-
-.category-small-card.active {
-  border-color: #007bff;
-  background-color: #f0f8ff;
-}
-
-.category-small-card:hover {
-  transform: scale(1.05);
-}
-
-.category-small-card img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
-
-.products-section {
-  flex: 1;
-}
-
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-}
-
-.product-card {
-  text-align: center;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-}
-
-.product-card img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
-
-.no-products {
-  text-align: center;
-  font-size: 1.2em;
-  color: #888;
-}
-</style>

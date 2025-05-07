@@ -291,8 +291,10 @@
 import { ref, reactive } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
-import { submitSupportMessage } from "@/services/supportService";
+
 import { useAuthStore } from "@/stores/authStore";
+
+import { submitSupportMessage } from "@/services/supportService";
 
 // Composables Setup
 const { t } = useI18n();
