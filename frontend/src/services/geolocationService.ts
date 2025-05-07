@@ -13,10 +13,11 @@ const geoService = axios.create({
 /**
  * Key used to store user's region in session storage
  */
-const USER_REGION_KEY = "userRegion";
+export const USER_REGION_KEY = "userRegion";
 
 /**
  * Fetches the user's geolocation data based on their IP address
+ * Using the hybrid approach with multiple API services and fallback
  * @returns Promise resolving to the user's geolocation data or null if an error occurs
  */
 export const getUserLocation = async (): Promise<GeoLocation | null> => {
@@ -27,9 +28,9 @@ export const getUserLocation = async (): Promise<GeoLocation | null> => {
     // Store the user's country code in session storage for easy access
     if (location && location.country_code) {
       sessionStorage.setItem(USER_REGION_KEY, location.country_code);
+      return location;
     }
-
-    return location;
+    throw new Error("Invalid location data");
   } catch (error) {
     console.error("Error fetching user location:", error);
     return null;
@@ -42,6 +43,14 @@ export const getUserLocation = async (): Promise<GeoLocation | null> => {
  */
 export const getUserRegion = (): string | null => {
   return sessionStorage.getItem(USER_REGION_KEY);
+};
+
+/**
+ * Manually sets the user's region
+ * @param region The region code to set
+ */
+export const setUserRegion = (region: string): void => {
+  sessionStorage.setItem(USER_REGION_KEY, region);
 };
 
 export default geoService;

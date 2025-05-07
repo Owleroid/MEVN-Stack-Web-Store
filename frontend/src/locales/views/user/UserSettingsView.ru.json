@@ -25,5 +25,19 @@
   },
   "passwordChangeSuccess": "Пароль успешно изменен!",
   "passwordMismatch": "Пароли не совпадают.",
-  "passwordChangeError": "Не удалось изменить пароль."
+  "passwordChangeError": "Не удалось изменить пароль.",
+  "regionSettings": {
+    "title": "Настройки региона",
+    "currentRegion": "Ваш текущий регион",
+    "change": "Изменить регион",
+    "updateSuccess": "Регион успешно обновлен"
+  },
+  "regionSelector": {
+    "title": "Выберите ваш регион",
+    "description": "Пожалуйста, выберите ваш регион для настройки языка и валюты.",
+    "russia": "Россия",
+    "eu": "Европейский Союз",
+    "other": "Другие страны",
+    "confirm": "Подтвердить выбор"
+  }
 }

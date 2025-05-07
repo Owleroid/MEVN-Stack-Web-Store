@@ -25,5 +25,19 @@
   },
   "passwordChangeSuccess": "Password changed successfully!",
   "passwordMismatch": "Passwords do not match.",
-  "passwordChangeError": "Failed to change password."
+  "passwordChangeError": "Failed to change password.",
+  "regionSettings": {
+    "title": "Region Settings",
+    "currentRegion": "Your current region",
+    "change": "Change Region",
+    "updateSuccess": "Region updated successfully"
+  },
+  "regionSelector": {
+    "title": "Select Your Region",
+    "description": "Please select your region to customize language and currency settings.",
+    "russia": "Russia",
+    "eu": "European Union",
+    "other": "Other Countries",
+    "confirm": "Confirm Selection"
+  }
 }

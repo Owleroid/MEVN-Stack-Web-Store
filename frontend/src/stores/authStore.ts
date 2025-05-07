@@ -17,6 +17,7 @@ import {
 } from "@/services/authService";
 
 export const useAuthStore = defineStore("auth", {
+  // Application State
   state: () => ({
     isAuthenticated: sessionStorage.getItem("isAuthenticated") === "true",
     userId: sessionStorage.getItem("userId") || "",
@@ -28,6 +29,7 @@ export const useAuthStore = defineStore("auth", {
     userData: null as UserData | null,
   }),
 
+  // Computed Properties
   getters: {
     isLoggedIn(): boolean {
       return this.isAuthenticated && !!this.userId;
@@ -46,17 +48,21 @@ export const useAuthStore = defineStore("auth", {
     },
   },
 
+  // Methods
   actions: {
+    // Authentication Actions
     async login(email: string, password: string): Promise<AuthResponse> {
       try {
         const response = await login(email, password);
 
         if (response.success && response.userId) {
+          // Update authentication state
           this.isAuthenticated = true;
           this.userId = response.userId;
           this.userEmail = email;
           this.isAdmin = !!response.isAdmin;
 
+          // Store auth data in session storage
           sessionStorage.setItem("isAuthenticated", "true");
           sessionStorage.setItem("userId", response.userId);
           sessionStorage.setItem("userEmail", email);
@@ -67,25 +73,11 @@ export const useAuthStore = defineStore("auth", {
             sessionStorage.removeItem("isAdmin");
           }
 
-          // Fetch user data
+          // Fetch additional user data
           await this.fetchUserData();
 
-          // Fetch and store user location
-          const location = await getUserLocation();
-          if (location) {
-            this.userRegion = location.country_code;
-            sessionStorage.setItem("userRegion", location.country_code);
-
-            // Set language and currency based on user region
-            if (location.country_code === "RU") {
-              this.setLanguage("ru");
-              this.currency = "rubles";
-            } else {
-              this.setLanguage("en");
-              this.currency = "euros";
-            }
-            sessionStorage.setItem("currency", this.currency);
-          }
+          // Determine user's geographical region
+          await this.determineUserRegion();
         }
 
         return response;
@@ -118,6 +110,7 @@ export const useAuthStore = defineStore("auth", {
       this.setLanguage("en");
       this.currency = "euros";
 
+      // Clear session storage
       sessionStorage.removeItem("isAuthenticated");
       sessionStorage.removeItem("userId");
       sessionStorage.removeItem("userEmail");
@@ -127,6 +120,7 @@ export const useAuthStore = defineStore("auth", {
       sessionStorage.removeItem("currency");
     },
 
+    // User Registration and Password Management
     async signup(email: string, password: string): Promise<AuthResponse> {
       try {
         return await signup(email, password);
@@ -155,6 +149,7 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
+    // User Data Management
     async fetchUserData(): Promise<UserData | null> {
       try {
         if (!this.userId) return null;
@@ -206,6 +201,7 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
+    // Localization and Region Settings
     setLanguage(language: string): void {
       this.language = language;
       sessionStorage.setItem("language", language);
@@ -218,6 +214,42 @@ export const useAuthStore = defineStore("auth", {
     setCurrency(currency: "rubles" | "euros"): void {
       this.currency = currency;
       sessionStorage.setItem("currency", currency);
+    },
+
+    // Geolocation
+    async determineUserRegion(): Promise<string> {
+      // Check if we already have a region stored
+      const storedRegion = sessionStorage.getItem("userRegion");
+      if (storedRegion) {
+        this.userRegion = storedRegion;
+        return storedRegion;
+      }
+
+      // Try automatic geolocation
+      try {
+        const location = await getUserLocation();
+        if (location && location.country_code) {
+          this.userRegion = location.country_code;
+          sessionStorage.setItem("userRegion", location.country_code);
+
+          // Set language and currency based on user region
+          if (location.country_code === "RU") {
+            this.setLanguage("ru");
+            this.currency = "rubles";
+          } else {
+            this.setLanguage("en");
+            this.currency = "euros";
+          }
+          sessionStorage.setItem("currency", this.currency);
+
+          return location.country_code;
+        }
+      } catch (error) {
+        console.error("Automatic geolocation failed:", error);
+      }
+
+      // If we reach here, automatic geolocation failed
+      return "";
     },
   },
 });

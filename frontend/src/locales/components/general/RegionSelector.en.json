@@ -1,0 +1,8 @@
+{
+  "title": "Select Your Region",
+  "description": "Please select your region to ensure your orders are processed correctly. This helps us determine the appropriate warehouse, shipping options, language, and currency for your location.",
+  "russia": "Russia",
+  "eu": "European Union",
+  "other": "Other Countries",
+  "confirm": "Confirm Selection"
+}
