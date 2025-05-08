@@ -19,12 +19,10 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
-import { useToast } from "vue-toastification";
-
 import type { Product } from "@/types/products";
 
 import { useEventBus } from "@/utils/eventBus";
+
 import { addToCart as addToCartService } from "@/services/cartService";
 
 // Component Props
@@ -35,14 +33,11 @@ interface Props {
 const props = defineProps<Props>();
 
 // Composables Setup
-const toast = useToast();
 const { emit } = useEventBus();
-const { t } = useI18n();
 
 // Action Handlers
 function addToCart(): void {
   addToCartService(props.product);
-  toast.success(t("addedToCart", { product: props.product.name }));
   emit("cart-updated");
 }
 </script>

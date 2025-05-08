@@ -1,10 +1,10 @@
 {
   "newMessages": "Новые сообщения",
   "noNewMessages": "На данный момент нет новых сообщений",
+  "status": "Статус",
   "actions": "Действия",
   "respond": "Ответить",
-  "status": "Статус",
-  "statuses": {
-    "new": "Новое"
-  }
+  "new": "Новое",
+  "inProgress": "В обработке",
+  "resolved": "Решено"
 }

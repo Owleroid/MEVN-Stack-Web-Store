@@ -6,9 +6,7 @@
   "status": "Status",
   "actions": "Actions",
   "respond": "Respond",
-  "statuses": {
-    "new": "New",
-    "inProgress": "In Progress",
-    "resolved": "Resolved"
-  }
+  "new": "New",
+  "inProgress": "In Progress",
+  "resolved": "Resolved"
 }

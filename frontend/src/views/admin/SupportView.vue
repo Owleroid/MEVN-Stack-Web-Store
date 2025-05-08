@@ -125,7 +125,7 @@ const fetchMessages = async (): Promise<void> => {
     messages.value = response.messages;
   } catch (err: unknown) {
     console.error("Error fetching support messages:", err);
-    messages.value = []; // Ensure it's always an array
+    messages.value = [];
     error.value = t("fetchMessagesError");
   } finally {
     loading.value = false;
@@ -197,6 +197,6 @@ onMounted(fetchMessages);
 
 // Watchers
 watch([sortOrder, statusFilter], () => {
-  currentPage.value = 1; // Reset to page 1 when filters change
+  currentPage.value = 1;
 });
 </script>

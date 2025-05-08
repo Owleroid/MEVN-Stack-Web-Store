@@ -1,35 +1,7 @@
 {
-  "newMessages": "New Messages",
-  "noNewMessages": "No new messages at the moment",
-  "allMessages": "All Messages",
-  "sortByDate": "Sort by date",
-  "newestToOldest": "Newest to oldest",
-  "oldestToNewest": "Oldest to newest",
-  "filterByStatus": "Filter by status",
-  "statuses": {
-    "all": "All statuses",
-    "new": "New",
-    "inProgress": "In Progress",
-    "resolved": "Resolved"
-  },
-  "noMessagesFound": "No messages found",
   "fetchMessagesError": "Failed to fetch messages",
   "responseSubmitted": "Response has been successfully submitted",
   "responseError": "Error submitting response",
   "messageDeleted": "Message has been successfully deleted",
-  "deleteError": "Error deleting message",
-  "email": "Email",
-  "subject": "Subject",
-  "date": "Date",
-  "actions": "Actions",
-  "status": "Status",
-  "respond": "Respond",
-  "showing": "Showing",
-  "to": "to",
-  "of": "of",
-  "results": "results",
-  "previous": "Previous",
-  "next": "Next",
-  "loading": "Loading messages...",
-  "retry": "Try Again"
+  "deleteError": "Error deleting message"
 }

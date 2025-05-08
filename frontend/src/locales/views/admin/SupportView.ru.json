@@ -1,35 +1,7 @@
 {
-  "newMessages": "Новые сообщения",
-  "noNewMessages": "На данный момент нет новых сообщений",
-  "allMessages": "Все сообщения",
-  "sortByDate": "Сортировать по дате",
-  "newestToOldest": "Сначала новые",
-  "oldestToNewest": "Сначала старые",
-  "filterByStatus": "Фильтр по статусу",
-  "statuses": {
-    "all": "Все статусы",
-    "new": "Новое",
-    "inProgress": "В обработке",
-    "resolved": "Решено"
-  },
-  "noMessagesFound": "Сообщения не найдены",
   "fetchMessagesError": "Не удалось загрузить сообщения",
   "responseSubmitted": "Ответ успешно отправлен",
   "responseError": "Ошибка при отправке ответа",
   "messageDeleted": "Сообщение успешно удалено",
-  "deleteError": "Ошибка при удалении сообщения",
-  "email": "Электронная почта",
-  "subject": "Тема",
-  "date": "Дата",
-  "actions": "Действия",
-  "status": "Статус",
-  "respond": "Ответить",
-  "showing": "Показано с",
-  "to": "по",
-  "of": "из",
-  "results": "результатов",
-  "previous": "Назад",
-  "next": "Вперед",
-  "loading": "Загрузка сообщений...",
-  "retry": "Повторить"
+  "deleteError": "Ошибка при удалении сообщения"
 }

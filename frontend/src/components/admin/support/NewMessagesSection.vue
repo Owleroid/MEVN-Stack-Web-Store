@@ -40,7 +40,7 @@
           >
             {{
               $t(
-                `statuses.${
+                `${
                   message.status === "in-progress"
                     ? "inProgress"
                     : message.status
@@ -65,14 +65,9 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
-
 import MessageTable from "./MessageTable.vue";
 
 import type { SupportMessage, SupportStatus } from "@/types/support";
-
-// Composables
-const { t } = useI18n();
 
 // Props
 const props = defineProps<{

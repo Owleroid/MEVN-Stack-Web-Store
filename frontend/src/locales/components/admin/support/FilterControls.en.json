@@ -3,9 +3,7 @@
   "newestToOldest": "Newest to oldest",
   "oldestToNewest": "Oldest to newest",
   "filterByStatus": "Filter by status",
-  "statuses": {
-    "all": "All statuses",
-    "inProgress": "In Progress",
-    "resolved": "Resolved"
-  }
+  "all": "All statuses",
+  "inProgress": "In Progress",
+  "resolved": "Resolved"
 }

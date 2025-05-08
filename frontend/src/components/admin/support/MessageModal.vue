@@ -47,11 +47,11 @@
                 id="status"
                 class="w-full sm:w-auto p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="new">{{ $t("statuses.new") }}</option>
+                <option value="new">{{ $t("new") }}</option>
                 <option value="in-progress">
-                  {{ $t("statuses.inProgress") }}
+                  {{ $t("inProgress") }}
                 </option>
-                <option value="resolved">{{ $t("statuses.resolved") }}</option>
+                <option value="resolved">{{ $t("resolved") }}</option>
               </select>
               <p v-else class="font-medium">
                 <span
@@ -60,7 +60,7 @@
                 >
                   {{
                     $t(
-                      `statuses.${
+                      `${
                         message.status === "in-progress"
                           ? "inProgress"
                           : message.status

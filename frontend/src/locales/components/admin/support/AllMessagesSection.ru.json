@@ -6,9 +6,7 @@
   "status": "Статус",
   "actions": "Действия",
   "respond": "Ответить",
-  "statuses": {
-    "new": "Новое",
-    "inProgress": "В обработке",
-    "resolved": "Решено"
-  }
+  "new": "Новое",
+  "inProgress": "В обработке",
+  "resolved": "Решено"
 }

@@ -1,10 +1,5 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Page Title -->
-    <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center">
-      {{ $t("collections") }}
-    </h1>
-
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center items-center py-12">
       <div
@@ -90,9 +85,6 @@
           >
             {{ category.name }}
           </h2>
-          <p class="mt-2 text-sm text-gray-500">
-            {{ $t("viewCategory") }}
-          </p>
         </div>
       </div>
     </div>
@@ -106,7 +98,7 @@ import { useI18n } from "vue-i18n";
 
 import type { Category } from "@/types/category";
 
-import { getAllCategories } from "@/services/categoryService";
+import { getAllCategories } from "@/services/storeService";
 
 // Composables Setup
 const { t } = useI18n();
@@ -124,12 +116,7 @@ const fetchCategories = async (): Promise<void> => {
 
   try {
     const response = await getAllCategories();
-
-    if (response.success && response.categories) {
-      categories.value = response.categories;
-    } else {
-      throw new Error("Failed to fetch categories");
-    }
+    categories.value = response;
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : String(err);
     error.value = t("fetchCategoriesError") + ": " + errorMessage;

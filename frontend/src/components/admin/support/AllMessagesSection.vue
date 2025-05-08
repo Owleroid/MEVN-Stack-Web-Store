@@ -63,7 +63,7 @@
           >
             {{
               $t(
-                `statuses.${
+                `${
                   message.status === "in-progress"
                     ? "inProgress"
                     : message.status

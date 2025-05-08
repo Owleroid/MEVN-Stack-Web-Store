@@ -31,9 +31,9 @@
         id="statusFilter"
         class="mt-1 block w-full sm:w-auto min-w-[180px] py-2 px-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
       >
-        <option value="">{{ $t("statuses.all") }}</option>
-        <option value="in-progress">{{ $t("statuses.inProgress") }}</option>
-        <option value="resolved">{{ $t("statuses.resolved") }}</option>
+        <option value="">{{ $t("all") }}</option>
+        <option value="in-progress">{{ $t("inProgress") }}</option>
+        <option value="resolved">{{ $t("resolved") }}</option>
       </select>
     </div>
   </div>

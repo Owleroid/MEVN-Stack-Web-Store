@@ -1,6 +1,7 @@
 {
   "viewMessage": "View Message",
   "respondToMessage": "Respond to Message",
+  "messageDetails": "Message Details",
   "from": "From",
   "subject": "Subject",
   "noSubject": "No Subject",
@@ -12,23 +13,20 @@
   "enterResponse": "Enter your response here...",
   "responseRequired": "Response is required",
   "updateStatus": "Update Status",
-  "statuses": {
-    "new": "New",
-    "inProgress": "In Progress",
-    "resolved": "Resolved"
-  },
+  "new": "New",
+  "inProgress": "In Progress",
+  "resolved": "Resolved",
   "saveResponse": "Save Response",
   "sending": "Sending...",
   "deleteMessage": "Delete Message",
-  "deleteConfirmation": "Are you sure you want to delete this message? This action cannot be undone.",
-  "cancel": "Cancel",
   "delete": "Delete",
+  "cancel": "Cancel",
   "close": "Close",
   "noResponse": "No response yet",
-  "messageDetails": "Message Details",
   "messageContent": "Message Content",
   "previousResponse": "Previous Response",
   "confirmDelete": "Confirm Deletion",
   "deleteConfirmMessage": "Are you sure you want to delete this message? This action cannot be undone.",
-  "sendResponse": "Send Response"
+  "sendResponse": "Send Response",
+  "dateNotAvailable": "Date not available"
 }
