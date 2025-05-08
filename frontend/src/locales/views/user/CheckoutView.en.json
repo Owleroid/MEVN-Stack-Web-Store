@@ -1,8 +1,11 @@
 {
   "checkout": "Checkout",
   "orderSummary": "Order Summary",
+  "quantity": "Quantity",
   "total": "Total",
   "deliveryInfo": "Delivery Information",
+  "pleaseEnterDeliveryDetails": "Please enter your delivery details",
+  "shippingAddress": "Shipping Address",
   "name": "Name",
   "surname": "Surname",
   "phone": "Phone",
@@ -13,10 +16,15 @@
   "buildingNumber": "Building Number",
   "apartment": "Apartment",
   "postalCode": "Postal Code",
+  "orderNotes": "Order Notes",
   "placeOrder": "Place Order",
+  "backToCart": "Back to Cart",
+  "shippingCalculatedAtCheckout": "Shipping and taxes calculated at checkout",
   "emailAlreadyRegistered": "Email is already registered. Please log in to continue.",
   "fetchUserDataError": "An error occurred while fetching user data. Please try again.",
   "checkEmailError": "An error occurred while checking the email. Please try again.",
   "orderSuccess": "Order placed successfully!",
-  "orderError": "An error occurred while creating the order. Please try again."
+  "orderError": "An error occurred while creating the order. Please try again.",
+  "emptyCart": "Your cart is empty.",
+  "emptyCartError": "Cannot place order with an empty cart."
 }

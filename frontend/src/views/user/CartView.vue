@@ -1,43 +1,153 @@
 <template>
-  <div class="cart-page">
-    <h1>{{ $t("yourCart") }}</h1>
-    <div v-if="cart.length === 0">
-      <p>{{ $t("emptyCart") }}</p>
-      <button @click="redirectToStore">{{ $t("goToStore") }}</button>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Empty Cart State -->
+    <div
+      v-if="cart.length === 0"
+      class="text-center py-16 bg-gray-50 rounded-lg border border-gray-200"
+    >
+      <svg
+        class="mx-auto h-12 w-12 text-gray-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+        />
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">
+        {{ $t("emptyCart") }}
+      </h3>
+      <button
+        @click="redirectToStore"
+        class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      >
+        {{ $t("goToStore") }}
+      </button>
     </div>
-    <div v-else>
-      <ul>
-        <li v-for="item in cart" :key="item.product._id">
-          <img :src="item.product.imageUrls?.main" :alt="item.product.name" />
-          <div>
-            <p>{{ item.product.name }}</p>
-            <p>{{ item.product.price.euros.amount }} €</p>
-            <input
-              type="number"
-              v-model.number="item.quantity"
-              @change="updateQuantity(item.product._id, item.quantity)"
-              min="1"
+
+    <!-- Cart Items -->
+    <div v-else class="bg-white shadow overflow-hidden sm:rounded-lg">
+      <!-- Cart Items List -->
+      <ul class="divide-y divide-gray-200">
+        <li
+          v-for="item in cart"
+          :key="item.product._id"
+          class="px-4 py-6 sm:px-6 flex items-center gap-4"
+        >
+          <!-- Product Image -->
+          <div
+            class="flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32 bg-gray-200 rounded-md overflow-hidden"
+          >
+            <img
+              :src="item.product.imageUrls?.main || '/placeholder-image.jpg'"
+              :alt="item.product.name"
+              class="w-full h-full object-cover"
+              @error="handleImageError"
             />
-            <button @click="deleteFromCart(item.product._id)">
-              {{ $t("remove") }}
+          </div>
+
+          <!-- Product Details -->
+          <div class="flex-grow">
+            <h3 class="text-lg font-medium text-gray-900">
+              {{ item.product.name }}
+            </h3>
+            <p class="mt-1 text-sm text-gray-500">
+              {{ formatPrice(item.product.price[currency].amount) }}
+            </p>
+          </div>
+
+          <!-- Quantity Input -->
+          <div class="flex items-center">
+            <label for="quantity" class="sr-only">{{ $t("quantity") }}</label>
+            <div class="flex rounded-md shadow-sm">
+              <input
+                type="number"
+                id="quantity"
+                v-model.number="item.quantity"
+                min="1"
+                @change="updateQuantity(item.product._id, item.quantity)"
+                class="w-16 focus:ring-blue-500 focus:border-blue-500 block px-4 py-2 sm:text-sm border-gray-300 rounded-md"
+              />
+            </div>
+          </div>
+
+          <!-- Remove Button -->
+          <div>
+            <button
+              type="button"
+              @click="deleteFromCart(item.product._id)"
+              class="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              <svg
+                class="h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="sr-only">{{ $t("remove") }}</span>
             </button>
           </div>
         </li>
       </ul>
-      <div class="cart-summary">
-        <p>{{ $t("total") }}: {{ totalPrice }} €</p>
-        <button @click="checkout">{{ $t("checkout") }}</button>
+
+      <!-- Cart Summary -->
+      <div class="px-4 py-6 sm:px-6 bg-gray-50">
+        <div class="flex justify-between text-base font-medium text-gray-900">
+          <p>{{ $t("total") }}</p>
+          <p>{{ formatPrice(totalPrice) }}</p>
+        </div>
+        <p class="mt-0.5 text-sm text-gray-500">
+          {{ $t("shippingCalculatedAtCheckout") }}
+        </p>
+
+        <div class="mt-6 flex justify-center">
+          <button
+            @click="checkout"
+            class="px-8 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            {{ $t("checkout") }}
+          </button>
+        </div>
+
+        <div class="mt-6 flex justify-center text-sm text-center text-gray-500">
+          <p>
+            {{ $t("or") }}
+            <button
+              @click="redirectToStore"
+              class="text-blue-600 font-medium hover:text-blue-500 ml-1"
+            >
+              {{ $t("continueShopping") }}
+              <span aria-hidden="true"> &rarr;</span>
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
-import { useRouter } from "vue-router";
 import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+
+import { useAuthStore } from "@/stores/authStore";
+
+import { useEventBus } from "@/utils/eventBus";
 
 import type { CartItem } from "@/types/cart";
+import type { Currency } from "@/types/orders";
 
 import {
   getCart,
@@ -45,65 +155,68 @@ import {
   updateCartQuantity,
 } from "@/services/cartService";
 
-const cart = ref<CartItem[]>([]);
+// Composables Setup
+const router = useRouter();
+const authStore = useAuthStore();
+const { emit } = useEventBus();
 
-const totalPrice = computed(() => {
+// State Management
+const cart = ref<CartItem[]>([]);
+const currency = computed<Currency>(
+  () => (authStore.currency as Currency) || "euros"
+);
+
+// Computed Properties
+const totalPrice = computed<number>(() => {
   return cart.value.reduce(
-    (total, item) => total + item.product.price.euros.amount * item.quantity,
+    (total, item) =>
+      total + item.product.price[currency.value].amount * item.quantity,
     0
   );
 });
 
+// Utility Functions
+const formatPrice = (price: number): string => {
+  return currency.value === "rubles"
+    ? new Intl.NumberFormat("ru-RU", {
+        style: "currency",
+        currency: "RUB",
+      }).format(price)
+    : new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "EUR",
+      }).format(price);
+};
+
+const handleImageError = (event: Event): void => {
+  const target = event.target as HTMLImageElement;
+  target.src = "/images/placeholder-product.png";
+};
+
+// Cart Operations
+const deleteFromCart = (productId: string): void => {
+  removeFromCart(productId);
+  cart.value = getCart();
+  emit("cart-updated");
+};
+
+const updateQuantity = (productId: string, quantity: number): void => {
+  updateCartQuantity(productId, quantity);
+  cart.value = getCart();
+  emit("cart-updated");
+};
+
+// Navigation Actions
+const checkout = (): void => {
+  router.push("/checkout");
+};
+
+const redirectToStore = (): void => {
+  router.push("/collections");
+};
+
+// Lifecycle Hooks
 onMounted(() => {
   cart.value = getCart();
 });
-
-const router = useRouter();
-const { t } = useI18n();
-
-function deleteFromCart(productId: string) {
-  removeFromCart(productId);
-  cart.value = getCart();
-}
-
-function updateQuantity(productId: string, quantity: number) {
-  updateCartQuantity(productId, quantity);
-  cart.value = getCart();
-}
-
-function checkout() {
-  router.push("/checkout");
-}
-
-function redirectToStore() {
-  router.push("/categories");
-}
 </script>
-
-<style scoped>
-.cart-page {
-  padding: 20px;
-}
-
-.cart-page ul {
-  list-style: none;
-  padding: 0;
-}
-
-.cart-page li {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.cart-page img {
-  width: 100px;
-  height: 100px;
-  margin-right: 20px;
-}
-
-.cart-summary {
-  margin-top: 20px;
-  text-align: right;
-}
-</style>

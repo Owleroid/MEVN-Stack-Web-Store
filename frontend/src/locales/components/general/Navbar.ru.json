@@ -10,5 +10,6 @@
   "settings": "Настройки",
   "orders": "Заказы",
   "adminPanel": "Админ-панель",
-  "logout": "Выйти"
+  "logout": "Выйти",
+  "loadingTranslations": "Загрузка переводов..."
 }

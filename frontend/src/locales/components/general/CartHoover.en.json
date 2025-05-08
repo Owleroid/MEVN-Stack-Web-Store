@@ -2,5 +2,6 @@
   "cart": "Cart",
   "emptyCart": "Your cart is empty.",
   "quantity": "Quantity",
-  "viewFullCart": "View Full Cart"
+  "viewFullCart": "View Full Cart",
+  "total": "Total"
 }

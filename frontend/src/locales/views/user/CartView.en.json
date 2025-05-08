@@ -2,7 +2,11 @@
   "yourCart": "Your Cart",
   "emptyCart": "Your cart is empty.",
   "goToStore": "Go to Store",
+  "quantity": "Quantity",
   "remove": "Remove",
   "total": "Total",
-  "checkout": "Checkout"
+  "checkout": "Checkout",
+  "shippingCalculatedAtCheckout": "Shipping and taxes calculated at checkout",
+  "or": "or",
+  "continueShopping": "Continue Shopping"
 }

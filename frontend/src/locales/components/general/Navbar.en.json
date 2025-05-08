@@ -10,5 +10,6 @@
   "settings": "Settings",
   "orders": "Orders",
   "adminPanel": "Admin Panel",
-  "logout": "Logout"
+  "logout": "Logout",
+  "loadingTranslations": "Loading translations..."
 }

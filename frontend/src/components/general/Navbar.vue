@@ -1,167 +1,245 @@
 <template>
-  <nav v-if="!translationsLoading">
-    <ul class="left">
-      <li>
-        <router-link to="/">{{ $t("mainPage") }}</router-link>
-      </li>
-      <li>
-        <router-link to="/collections">{{ $t("collections") }}</router-link>
-      </li>
-      <li>
-        <router-link to="/news">{{ $t("news") }}</router-link>
-      </li>
-      <li>
-        <router-link to="/about">{{ $t("about") }}</router-link>
-      </li>
-      <li>
-        <router-link to="/contact">{{ $t("contact") }}</router-link>
-      </li>
-    </ul>
-    <ul class="right">
-      <li class="language-switcher">
-        <button @click="toggleLanguage">{{ currentLanguage }}</button>
-      </li>
-      <li class="cart-link">
-        <router-link to="/cart">{{ $t("cart") }}</router-link>
-        <div class="cart-hover-container" v-if="!isCartPage">
-          <CartHoover />
+  <nav
+    v-if="!translationsLoading"
+    class="bg-gray-800 text-white px-4 py-3 shadow-md"
+  >
+    <div
+      class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center"
+    >
+      <!-- Main Navigation Links -->
+      <div class="flex space-x-6 mb-4 sm:mb-0 items-center">
+        <router-link
+          to="/"
+          class="text-white hover:text-gray-200 transition-colors"
+        >
+          {{ $t("mainPage") }}
+        </router-link>
+        <router-link
+          to="/collections"
+          class="text-white hover:text-gray-200 transition-colors"
+        >
+          {{ $t("collections") }}
+        </router-link>
+        <router-link
+          to="/news"
+          class="text-white hover:text-gray-200 transition-colors"
+        >
+          {{ $t("news") }}
+        </router-link>
+        <router-link
+          to="/about"
+          class="text-white hover:text-gray-200 transition-colors"
+        >
+          {{ $t("about") }}
+        </router-link>
+        <router-link
+          to="/contact"
+          class="text-white hover:text-gray-200 transition-colors"
+        >
+          {{ $t("contact") }}
+        </router-link>
+      </div>
+
+      <!-- Right Side Navigation -->
+      <div class="flex items-center space-x-6">
+        <!-- Language Switcher -->
+        <button
+          @click="toggleLanguage"
+          class="px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded-md transition-colors"
+        >
+          {{ currentLanguage }}
+        </button>
+
+        <!-- Cart Icon with Badge -->
+        <div class="relative group">
+          <router-link
+            to="/cart"
+            class="text-white hover:text-gray-200 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+            <!-- Cart Badge -->
+            <span
+              v-if="cartItemsCount > 0"
+              class="absolute top-0 right-0 -mt-2 -mr-2 px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full"
+            >
+              {{ cartItemsCount }}
+            </span>
+          </router-link>
+
+          <!-- Transparent bridge for cart dropdown -->
+          <div class="absolute w-full h-2 top-full left-0 bg-transparent"></div>
+
+          <!-- Cart Hover Panel -->
+          <div
+            v-if="!isCartPage && cartItemsCount > 0"
+            class="hidden group-hover:block absolute right-0 mt-0 w-80 bg-white rounded-md shadow-lg z-50 cart-hover-panel"
+          >
+            <CartHoover />
+          </div>
         </div>
-      </li>
-      <li v-if="!authStore.isAuthenticated">
-        <router-link to="/login">{{ $t("login") }}</router-link>
-      </li>
-      <li v-if="!authStore.isAuthenticated">
-        <router-link to="/signup">{{ $t("signup") }}</router-link>
-      </li>
-      <li v-if="authStore.isAuthenticated" class="dropdown">
-        <span>{{ authStore.userEmail }}</span>
-        <div class="dropdown-content">
-          <router-link to="/settings">{{ $t("settings") }}</router-link>
-          <router-link to="/orders">{{ $t("orders") }}</router-link>
-          <router-link v-if="authStore.isAdmin" to="/admin">{{
-            $t("adminPanel")
-          }}</router-link>
+
+        <!-- User Management Links -->
+        <div
+          v-if="!authStore.isAuthenticated"
+          class="flex items-center space-x-4"
+        >
+          <router-link
+            to="/login"
+            class="text-white hover:text-gray-200 transition-colors"
+          >
+            {{ $t("login") }}
+          </router-link>
+          <router-link
+            to="/signup"
+            class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+          >
+            {{ $t("signup") }}
+          </router-link>
         </div>
-      </li>
-      <li v-if="authStore.isAuthenticated">
-        <button @click="authStore.logout">{{ $t("logout") }}</button>
-      </li>
-    </ul>
+
+        <!-- User Dropdown -->
+        <div v-if="authStore.isAuthenticated" class="relative group">
+          <button
+            class="flex items-center space-x-1 hover:text-gray-200 focus:outline-none"
+          >
+            <span class="hidden md:inline">{{ authStore.userEmail }}</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          <!-- Transparent bridge for user dropdown -->
+          <div class="absolute w-full h-2 top-full left-0 bg-transparent"></div>
+
+          <div
+            class="absolute right-0 mt-0 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block z-50"
+          >
+            <router-link
+              to="/settings"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              {{ $t("settings") }}
+            </router-link>
+            <router-link
+              to="/orders"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              {{ $t("orders") }}
+            </router-link>
+            <router-link
+              v-if="authStore.isAdmin"
+              to="/admin"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              {{ $t("adminPanel") }}
+            </router-link>
+            <button
+              @click="handleLogout"
+              class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              {{ $t("logout") }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </nav>
-  <div v-else>Loading translations...</div>
+
+  <!-- Loading State -->
+  <div v-else class="bg-gray-800 text-white p-4 text-center">
+    <div
+      class="inline-block animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"
+    ></div>
+    <span>{{ $t("loadingTranslations") }}</span>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
+import i18n from "@/i18n";
+import { translationsLoaded, loadLocaleMessages } from "@/i18n";
 
 import CartHoover from "./CartHoover.vue";
-import { useAuthStore } from "@/stores/authStore";
-import { translationsLoaded, loadLocaleMessages } from "@/i18n";
-import i18n from "@/i18n";
 
+import { useAuthStore } from "@/stores/authStore";
+
+import { getCartItemsCount } from "@/services/cartService";
+
+import { useEventBus } from "@/utils/eventBus";
+
+// Composables Setup
 const authStore = useAuthStore();
 const route = useRoute();
 const { locale } = useI18n();
+const { on } = useEventBus();
 
-const isCartPage = computed(() => route.path === "/cart");
+// State Management
+const cartItemsCount = ref<number>(0);
 
-const currentLanguage = computed(() => (locale.value === "en" ? "EN" : "RU"));
+// Computed Properties
+const isCartPage = computed<boolean>(() => route.path === "/cart");
+const currentLanguage = computed<string>(() =>
+  locale.value === "en" ? "EN" : "RU"
+);
+const translationsLoading = computed<boolean>(() => !translationsLoaded.value);
 
-const toggleLanguage = async () => {
-  if (locale.value === "en") {
-    locale.value = "ru";
-    sessionStorage.setItem("language", "ru");
-  } else {
-    locale.value = "en";
-    sessionStorage.setItem("language", "en");
-  }
+// Language Management
+const toggleLanguage = async (): Promise<void> => {
+  const newLanguage = locale.value === "en" ? "ru" : "en";
 
-  // Force reload translations
-  const messages = await loadLocaleMessages(locale.value);
-  i18n.global.setLocaleMessage(locale.value, messages);
+  // Update locale
+  locale.value = newLanguage;
+  sessionStorage.setItem("language", newLanguage);
+
+  // Update i18n
+  const messages = await loadLocaleMessages(newLanguage);
+  i18n.global.setLocaleMessage(newLanguage, messages);
 };
 
-const translationsLoading = computed(() => !translationsLoaded.value);
+// Authentication Management
+const handleLogout = async (): Promise<void> => {
+  try {
+    await authStore.logout();
+    updateCartCount(); // Refresh cart count after logout
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
+};
+
+// Cart Management
+const updateCartCount = (): void => {
+  cartItemsCount.value = getCartItemsCount();
+};
+
+// Lifecycle Hooks
+onMounted(() => {
+  updateCartCount();
+  on("cart-updated", updateCartCount);
+});
 </script>
-
-<style scoped>
-nav {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem;
-  background-color: #333;
-  color: white;
-}
-
-ul {
-  list-style: none;
-  display: flex;
-  gap: 1rem;
-}
-
-a {
-  color: white;
-  text-decoration: none;
-}
-
-button {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-
-.cart-link {
-  position: relative;
-}
-
-.cart-hover-container {
-  display: none;
-  position: absolute;
-  top: 100%;
-  right: 0;
-  z-index: 10;
-  background: white;
-  color: black;
-  border: 1px solid #ccc;
-  padding: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  height: auto;
-  width: auto;
-}
-
-.cart-link:hover .cart-hover-container {
-  display: block;
-}
-
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-}
-
-.dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
-
-.dropdown-content a:hover {
-  background-color: #f1f1f1;
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-</style>
