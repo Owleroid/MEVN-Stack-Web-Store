@@ -1,0 +1,15 @@
+{
+  "cancelOrderTitle": "Отменить заказ",
+  "cancelOrderWarning": "Это действие нельзя отменить",
+  "orderSummary": "Сводка заказа",
+  "orderId": "ID заказа",
+  "date": "Дата",
+  "products": "Товары",
+  "cancelOrderDescription": "При отмене этого заказа:",
+  "cancelOrderEffect1": "Все товары будут возвращены на склад",
+  "cancelOrderEffect2": "Заказ нельзя будет редактировать",
+  "cancelOrderEffect3": "Клиент будет уведомлен об отмене",
+  "cancel": "Назад",
+  "confirmCancel": "Да, отменить заказ",
+  "dateNotAvailable": "Дата недоступна"
+}

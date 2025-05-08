@@ -40,28 +40,9 @@
 
             <div class="col-span-1 md:col-span-2">
               <p class="text-sm text-gray-600 mb-1">{{ $t("status") }}:</p>
-              <select
-                v-if="isEditing"
-                v-model="order.status"
-                id="status"
-                class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option
-                  value="waiting confirmation"
-                  :disabled="order.status !== 'waiting confirmation'"
-                >
-                  {{ $t("waitingConfirmation") }}
-                </option>
-                <option value="packing">{{ $t("packing") }}</option>
-                <option value="sended">{{ $t("sended") }}</option>
-                <option value="delivered">
-                  {{ $t("delivered") }}
-                </option>
-                <option value="canceled">{{ $t("canceled") }}</option>
-              </select>
-              <p v-else class="font-medium">
+              <p class="font-medium">
                 <span
-                  class="px-2 py-1 text-sm rounded-full"
+                  class="px-2 py-1 text-sm rounded-full inline-block"
                   :class="getStatusClass(order.status)"
                 >
                   {{ $t(statusKey(order.status)) }}

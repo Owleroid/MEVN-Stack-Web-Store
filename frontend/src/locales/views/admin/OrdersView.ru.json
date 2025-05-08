@@ -19,5 +19,6 @@
   "orderUpdated": "Заказ успешно обновлен",
   "orderUpdateError": "Ошибка при обновлении заказа",
   "orderStatusUpdated": "Статус заказа обновлен",
-  "orderStatusUpdateError": "Не удалось обновить статус заказа"
+  "orderStatusUpdateError": "Не удалось обновить статус заказа",
+  "orderCanceled": "Заказ успешно отменен"
 }

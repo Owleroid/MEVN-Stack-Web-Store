@@ -221,12 +221,33 @@ const updateOrderStatus = async (
   status: OrderStatus
 ): Promise<void> => {
   try {
-    await editOrderById(orderId, { status });
+    // Find the current order
+    const currentOrder = orders.value.find((order) => order._id === orderId);
+    if (!currentOrder) {
+      throw new Error("Order not found");
+    }
+
+    // Clone the order to avoid UI issues during update
+    const orderToUpdate = { ...currentOrder };
+
+    // Set the new status
+    orderToUpdate.status = status;
+
+    // Update the order with the complete data
+    await editOrderById(orderId, orderToUpdate);
     await fetchOrders();
-    toast.success(t("orderStatusUpdated"));
+
+    // Show appropriate success message
+    if (status === "canceled") {
+      toast.success(t("orderCanceled"));
+    } else {
+      toast.success(t("orderStatusUpdated"));
+    }
   } catch (error: unknown) {
     console.error("Error updating order status:", error);
     toast.error(t("orderStatusUpdateError"));
+    // Refresh to reset any UI inconsistencies
+    await fetchOrders();
   }
 };
 

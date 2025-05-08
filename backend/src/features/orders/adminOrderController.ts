@@ -3,9 +3,12 @@ import { Request, Response, NextFunction } from "express";
 
 import Warehouse from "../warehouses/WarehouseModel.js";
 import Order, { OrderDocument, OrderProduct } from "./OrderModel.js";
+
 import {
   updateWarehouseStock,
   recalculateTotalPrice,
+  returnProductsToWarehouse,
+  removeProductsFromWarehouse,
 } from "./adminOrderService.js";
 
 import ApiError, { ErrorType } from "../../utils/apiError.js";
@@ -52,7 +55,7 @@ export const editOrderById = transactionHandler(
   async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    _next: NextFunction,
     session: mongoose.ClientSession
   ) => {
     const { orderId } = req.params;
@@ -68,6 +71,9 @@ export const editOrderById = transactionHandler(
       throw new ApiError(404, "Order not found", ErrorType.RESOURCE_NOT_FOUND);
     }
 
+    const oldStatus = existingOrder.status;
+
+    // Mark order as checked when status changes from waiting confirmation
     if (
       existingOrder.status === "waiting confirmation" &&
       newStatus !== "waiting confirmation"
@@ -87,12 +93,32 @@ export const editOrderById = transactionHandler(
     }
 
     try {
-      await updateWarehouseStock(
-        existingOrder,
-        updatedProducts,
-        warehouse,
-        session
-      );
+      // 1. Handle status change from active to canceled
+      if (oldStatus !== "canceled" && newStatus === "canceled") {
+        // Return ALL original products to warehouse
+        await returnProductsToWarehouse(
+          existingOrder.products,
+          warehouse,
+          session
+        );
+
+        // No need to handle product changes since order is now canceled
+      }
+      // 2. Handle status change from canceled to active
+      else if (oldStatus === "canceled" && newStatus !== "canceled") {
+        // Remove ALL new products from warehouse
+        await removeProductsFromWarehouse(updatedProducts, warehouse, session);
+      }
+      // 3. Handle normal product changes (no status change or between active statuses)
+      else {
+        // Calculate differences between original and updated products
+        await updateWarehouseStock(
+          existingOrder,
+          updatedProducts,
+          warehouse,
+          session
+        );
+      }
     } catch (error: unknown) {
       if (error instanceof ApiError) {
         throw error;

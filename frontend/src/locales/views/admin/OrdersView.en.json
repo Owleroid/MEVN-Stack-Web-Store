@@ -19,5 +19,6 @@
   "orderUpdated": "Order has been successfully updated",
   "orderUpdateError": "Error updating order",
   "orderStatusUpdated": "Order status has been updated",
-  "orderStatusUpdateError": "Failed to update order status"
+  "orderStatusUpdateError": "Failed to update order status",
+  "orderCanceled": "Order has been canceled successfully"
 }

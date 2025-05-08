@@ -157,3 +157,85 @@ export const recalculateTotalPrice = async (
     );
   }
 };
+
+/**
+ * Return products to warehouse when order is canceled
+ */
+export const returnProductsToWarehouse = async (
+  products: OrderProduct[],
+  warehouse: WarehouseDocument,
+  session: mongoose.ClientSession
+): Promise<void> => {
+  for (const product of products) {
+    const { productId, amount } = product; // Changed from quantity to amount
+
+    // Find the product in warehouse stock
+    const warehouseProduct = warehouse.products.find(
+      (p) => p.product.toString() === productId.toString()
+    );
+
+    if (!warehouseProduct) {
+      continue; // Skip if product not found in warehouse
+    }
+
+    // Increase available quantity in warehouse
+    warehouseProduct.amount += amount; // Changed from quantity to amount
+
+    if (isNaN(warehouseProduct.amount)) {
+      throw new ApiError(
+        500,
+        `Error updating stock: result is NaN for product ${productId}`,
+        ErrorType.INTERNAL
+      );
+    }
+  }
+
+  await warehouse.save({ session });
+};
+
+/**
+ * Remove products from warehouse when order is changed from canceled to active
+ */
+export const removeProductsFromWarehouse = async (
+  products: OrderProduct[],
+  warehouse: WarehouseDocument,
+  session: mongoose.ClientSession
+): Promise<void> => {
+  for (const product of products) {
+    const { productId, amount } = product; // Changed from quantity to amount
+
+    const warehouseProduct = warehouse.products.find(
+      (p) => p.product.toString() === productId.toString()
+    );
+
+    if (!warehouseProduct) {
+      throw new ApiError(
+        400,
+        `Product ${productId} not found in warehouse.`,
+        ErrorType.BAD_REQUEST
+      );
+    }
+
+    // Check if there's enough stock
+    if (warehouseProduct.amount < amount) {
+      throw new ApiError(
+        400,
+        `Insufficient stock for product ${productId}. Available: ${warehouseProduct.amount}, Required: ${amount}`,
+        ErrorType.BAD_REQUEST
+      );
+    }
+
+    // Decrease available quantity in warehouse
+    warehouseProduct.amount -= amount; // Changed from quantity to amount
+
+    if (isNaN(warehouseProduct.amount)) {
+      throw new ApiError(
+        500,
+        `Error updating stock: result is NaN for product ${productId}`,
+        ErrorType.INTERNAL
+      );
+    }
+  }
+
+  await warehouse.save({ session });
+};

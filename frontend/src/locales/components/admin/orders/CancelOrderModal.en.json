@@ -1,0 +1,15 @@
+{
+  "cancelOrderTitle": "Cancel Order",
+  "cancelOrderWarning": "This action cannot be undone",
+  "orderSummary": "Order Summary",
+  "orderId": "Order ID",
+  "date": "Date",
+  "products": "Products",
+  "cancelOrderDescription": "When you cancel this order:",
+  "cancelOrderEffect1": "All products will be returned to inventory",
+  "cancelOrderEffect2": "The order cannot be edited afterward",
+  "cancelOrderEffect3": "The customer will be notified of the cancellation",
+  "cancel": "Back",
+  "confirmCancel": "Yes, Cancel Order",
+  "dateNotAvailable": "Date not available"
+}
