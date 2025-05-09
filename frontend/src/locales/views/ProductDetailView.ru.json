@@ -1,0 +1,14 @@
+{
+  "home": "Главная",
+  "collections": "Коллекции",
+  "description": "Описание",
+  "artist": "Художник",
+  "size": "Размер",
+  "material": "Материал",
+  "parts": "Детали",
+  "boxArt": "Оформление коробки",
+  "discount": "Скидка",
+  "noProductSelected": "Товар не выбран",
+  "productNotFound": "Товар не найден",
+  "fetchProductError": "Ошибка при загрузке товара"
+}

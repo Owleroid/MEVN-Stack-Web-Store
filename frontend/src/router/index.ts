@@ -7,6 +7,7 @@ import { getUserLocation, getUserRegion } from "@/services/geolocationService";
 import HomeView from "@/views/HomeView.vue";
 import CollectionsListView from "@/views/CollectionsListView.vue";
 import CollectionProductsView from "@/views/CollectionProductsView.vue";
+import ProductDetailView from "@/views/ProductDetailView.vue";
 import AboutView from "@/views/AboutView.vue";
 import ContactView from "@/views/ContactView.vue";
 import NewsView from "@/views/NewsView.vue";
@@ -45,6 +46,14 @@ const routes = [
     name: "Collection",
     component: CollectionProductsView,
     props: true,
+  },
+  {
+    path: "/product/:productId",
+    name: "ProductDetail",
+    component: ProductDetailView,
+    meta: {
+      title: "Product Detail",
+    },
   },
   { path: "/about", component: AboutView },
   { path: "/contact", component: ContactView },

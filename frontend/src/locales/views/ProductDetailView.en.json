@@ -1,0 +1,14 @@
+{
+  "home": "Home",
+  "collections": "Collections",
+  "description": "Description",
+  "artist": "Artist",
+  "size": "Size",
+  "material": "Material",
+  "parts": "Parts",
+  "boxArt": "Box Art",
+  "discount": "Discount",
+  "noProductSelected": "No product selected",
+  "productNotFound": "Product not found",
+  "fetchProductError": "Failed to fetch product"
+}

@@ -128,21 +128,25 @@
             :key="product._id"
             class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
           >
-            <div class="aspect-w-1 aspect-h-1 w-full overflow-hidden">
-              <img
-                :src="product.imageUrls?.main"
-                :alt="product.name"
-                class="w-full h-full object-cover"
-                @error="handleProductImageError"
-              />
-            </div>
-            <div class="p-4">
-              <h3 class="text-lg font-medium text-gray-900 mb-1 line-clamp-2">
-                {{ product.name }}
-              </h3>
-              <p class="text-lg font-bold text-gray-800 mb-3">
-                {{ formatPrice(product.price[currency]?.amount) }}
-              </p>
+            <router-link :to="`/product/${product._id}`" class="block">
+              <div class="aspect-w-1 aspect-h-1 w-full overflow-hidden">
+                <img
+                  :src="product.imageUrls?.main"
+                  :alt="product.name"
+                  class="w-full h-full object-cover"
+                  @error="handleProductImageError"
+                />
+              </div>
+              <div class="p-4">
+                <h3 class="text-lg font-medium text-gray-900 mb-1 line-clamp-2">
+                  {{ product.name }}
+                </h3>
+                <p class="text-lg font-bold text-gray-800 mb-3">
+                  {{ formatPrice(product.price[currency]?.amount) }}
+                </p>
+              </div>
+            </router-link>
+            <div class="px-4 pb-4">
               <AddToCartButton
                 :product="product"
                 class="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors text-sm font-medium"
