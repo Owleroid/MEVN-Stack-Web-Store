@@ -331,7 +331,24 @@ const closeChangeCategoryModal = () => {
   showChangeCategoryModal.value = false;
 };
 
+const resetNewProductForm = () => {
+  newProduct.value = {
+    name: "",
+    priceRubles: 0,
+    priceEuros: 0,
+    artist: "",
+    size: "",
+    material: "",
+    parts: "",
+    boxArt: "",
+    description: "",
+    mainImageUrl: "",
+    secondaryImageUrls: "",
+  };
+};
+
 const openAddProductModal = () => {
+  resetNewProductForm();
   showAddProductModal.value = true;
 };
 
