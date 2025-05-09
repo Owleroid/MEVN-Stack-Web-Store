@@ -7,6 +7,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 interface ImageInfo {
   name: string;
   url: string;
+  createdAt: string;
 }
 
 interface DeleteImagesRequest extends Request {
@@ -23,10 +24,19 @@ const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME!;
 export const fetchImages = asyncHandler(
   async (_req: Request, res: Response, _next: NextFunction) => {
     const [files] = await storage.bucket(bucketName).getFiles();
-    const images: ImageInfo[] = files.map((file) => ({
-      name: file.name,
-      url: `https://storage.googleapis.com/${bucketName}/${file.name}`,
-    }));
+
+    // Get metadata for each file to retrieve creation date
+    const imagesPromises = files.map(async (file) => {
+      const [metadata] = await file.getMetadata();
+
+      return {
+        name: file.name,
+        url: `https://storage.googleapis.com/${bucketName}/${file.name}`,
+        createdAt: metadata.timeCreated || new Date().toISOString(),
+      };
+    });
+
+    const images = await Promise.all(imagesPromises);
 
     res.status(200).json({
       success: true,
@@ -54,10 +64,14 @@ export const uploadImages = asyncHandler(
           contentType: file.mimetype,
         });
 
-        stream.on("finish", () => {
+        stream.on("finish", async () => {
+          // Get metadata to include creation date
+          const [metadata] = await blob.getMetadata();
+
           uploadedImages.push({
             name: file.originalname,
             url: `https://storage.googleapis.com/${bucketName}/${file.originalname}`,
+            createdAt: metadata.timeCreated || new Date().toISOString(),
           });
           resolve();
         });

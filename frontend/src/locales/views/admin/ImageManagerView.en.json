@@ -18,5 +18,9 @@
   "uploadError": "Failed to upload images",
   "deleteSuccess": "Images deleted successfully",
   "deleteError": "Failed to delete images",
-  "copySuccess": "URLs copied to clipboard"
+  "copySuccess": "URLs copied to clipboard",
+  "copyError": "Failed to copy URLs",
+  "sortBy": "Sort by",
+  "uploadDate": "Upload date",
+  "fileName": "File name"
 }

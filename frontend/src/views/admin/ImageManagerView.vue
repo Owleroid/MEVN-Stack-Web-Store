@@ -40,11 +40,49 @@
 
     <!-- Main Content -->
     <div class="bg-white rounded-lg shadow border border-gray-200">
-      <!-- Image List Header -->
+      <!-- Image List Header with Sorting Controls -->
       <div class="p-4 border-b border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-800">
-          {{ $t("availableImages") }}
-        </h2>
+        <div
+          class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+        >
+          <h2 class="text-xl font-semibold text-gray-800">
+            {{ $t("availableImages") }}
+          </h2>
+
+          <!-- Sorting Controls -->
+          <div class="flex items-center space-x-4">
+            <label class="text-sm text-gray-600">{{ $t("sortBy") }}:</label>
+            <select
+              v-model="sortBy"
+              class="py-1 px-3 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="createdAt">{{ $t("uploadDate") }}</option>
+              <option value="name">{{ $t("fileName") }}</option>
+            </select>
+
+            <button
+              @click="toggleSortDirection"
+              class="p-1 rounded-md hover:bg-gray-100"
+              title="Toggle sort direction"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-gray-600"
+                :class="{ 'rotate-180': sortDirection === 'desc' }"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Loading State -->
@@ -66,7 +104,7 @@
           class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
         >
           <div
-            v-for="image in images"
+            v-for="image in sortedImages"
             :key="image.url"
             @click="toggleImageSelection(image)"
             class="relative rounded-lg overflow-hidden bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 cursor-pointer"
@@ -77,7 +115,12 @@
               :alt="image.name"
               class="w-full h-32 object-cover"
             />
-            <p class="p-2 text-sm text-gray-700 truncate">{{ image.name }}</p>
+            <div class="p-2">
+              <p class="text-sm text-gray-700 truncate">{{ image.name }}</p>
+              <p class="text-xs text-gray-500 mt-1">
+                {{ formatDate(image.createdAt) }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -117,7 +160,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 
@@ -142,9 +185,46 @@ const selectedImages = ref<ImageInfo[]>([]);
 const selectedFiles = ref<File[]>([]);
 const loading = ref(false);
 
+// Sorting state
+const sortBy = ref<"createdAt" | "name">("createdAt");
+const sortDirection = ref<"asc" | "desc">("desc"); // Default newest first
+
 // Configuration constants
 const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
+
+// Computed properties
+const sortedImages = computed(() => {
+  if (images.value.length === 0) return [];
+
+  return [...images.value].sort((a, b) => {
+    if (sortBy.value === "createdAt") {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return sortDirection.value === "asc" ? dateA - dateB : dateB - dateA;
+    } else {
+      // Sort by name
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      return sortDirection.value === "asc"
+        ? nameA.localeCompare(nameB)
+        : nameB.localeCompare(nameA);
+    }
+  });
+});
+
+// Methods
+const toggleSortDirection = () => {
+  sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
+};
+
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString(
+    document.documentElement.lang === "ru" ? "ru-RU" : "en-US",
+    { year: "numeric", month: "short", day: "numeric" }
+  );
+};
 
 // Data Fetching
 const fetchImagesFromBackend = async (): Promise<void> => {

@@ -1,12 +1,22 @@
 {
   "imageManager": "Image Manager",
   "uploadImages": "Upload Images",
+  "chooseFiles": "Choose Files",
+  "upload": "Upload",
   "loadingImages": "Loading images...",
   "noImages": "No images available.",
   "fetchImagesError": "Failed to fetch images.",
-  "upload": "Upload",
   "confirm": "Confirm",
   "cancel": "Cancel",
   "selectImage": "Select Image",
-  "selectImages": "Select Images"
+  "selectImages": "Select Images",
+  "filesSelected": "{count} files selected",
+  "uploadSuccess": "Images uploaded successfully",
+  "uploadError": "Failed to upload images",
+  "invalidFileType": "Invalid file type: {fileName}",
+  "fileTooLarge": "File size exceeds 5MB: {fileName}",
+  "availableImages": "Available Images",
+  "sortBy": "Sort by",
+  "uploadDate": "Upload date",
+  "fileName": "File name"
 }

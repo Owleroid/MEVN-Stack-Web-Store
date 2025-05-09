@@ -1,12 +1,22 @@
 {
   "imageManager": "Менеджер изображений",
   "uploadImages": "Загрузить изображения",
+  "chooseFiles": "Выбрать файлы",
+  "upload": "Загрузить",
   "loadingImages": "Загрузка изображений...",
   "noImages": "Нет доступных изображений.",
   "fetchImagesError": "Не удалось загрузить изображения.",
-  "upload": "Загрузить",
   "confirm": "Подтвердить",
   "cancel": "Отмена",
   "selectImage": "Выбрать изображение",
-  "selectImages": "Выбрать изображения"
+  "selectImages": "Выбрать изображения",
+  "filesSelected": "Выбрано файлов: {count}",
+  "uploadSuccess": "Изображения успешно загружены",
+  "uploadError": "Не удалось загрузить изображения",
+  "invalidFileType": "Недопустимый тип файла: {fileName}",
+  "fileTooLarge": "Размер файла превышает 5 МБ: {fileName}",
+  "availableImages": "Доступные изображения",
+  "sortBy": "Сортировать по",
+  "uploadDate": "Дате загрузки",
+  "fileName": "Имени файла"
 }
