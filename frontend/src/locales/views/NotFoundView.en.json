@@ -1,0 +1,10 @@
+{
+  "notFoundTitle": "404 - Page Not Found",
+  "notFoundMessage": "The page you're looking for doesn't exist or has been moved.",
+  "goToHome": "Go to Home",
+  "contactSupport": "Contact Support",
+  "helpfulLinks": "You might find these links helpful:",
+  "browseProducts": "Browse Products",
+  "loginToAccount": "Login to Your Account",
+  "createAccount": "Create an Account"
+}
