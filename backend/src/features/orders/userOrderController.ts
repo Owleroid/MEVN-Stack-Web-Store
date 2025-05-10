@@ -94,18 +94,10 @@ export const createOrder = transactionHandler(
 );
 
 export const getOrdersByUserId = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.params;
 
     const orders = await Order.find({ userId });
-
-    if (!orders || orders.length === 0) {
-      throw new ApiError(
-        404,
-        "No orders found for this user",
-        ErrorType.RESOURCE_NOT_FOUND
-      );
-    }
 
     res.status(200).json({
       success: true,

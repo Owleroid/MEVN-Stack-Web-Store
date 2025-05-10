@@ -233,6 +233,7 @@
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
+import axios from "axios";
 
 import type {
   OrderData,
@@ -276,10 +277,11 @@ const getStatusClass = (status: OrderStatus): string => {
 async function fetchOrders(userId: string) {
   loading.value = true;
   error.value = "";
+  orders.value = [];
 
   try {
     const response: OrdersListResponse = await getOrdersByUserId(userId);
-    orders.value = response.orders;
+    orders.value = response.orders || [];
   } catch (err) {
     console.error("Failed to fetch orders:", err);
     error.value = t("fetchOrdersError");
