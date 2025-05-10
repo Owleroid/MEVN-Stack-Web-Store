@@ -24,7 +24,37 @@
             v-model="categoryName"
             required
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            @input="generateSlugFromName"
           />
+        </div>
+
+        <!-- Category Slug -->
+        <div>
+          <label
+            for="categorySlug"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            {{ $t("slug") }}
+          </label>
+          <div class="flex gap-2">
+            <input
+              type="text"
+              id="categorySlug"
+              v-model="categorySlug"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <button
+              type="button"
+              @click="generateSlugFromName"
+              class="px-3 py-2 bg-gray-200 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-300 transition-colors"
+            >
+              {{ $t("generate") }}
+            </button>
+          </div>
+          <p class="mt-1 text-xs text-gray-500">
+            {{ $t("slugHelpText") }}
+          </p>
         </div>
 
         <!-- Category Image -->
@@ -112,6 +142,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  initialCategorySlug: {
+    type: String,
+    default: "",
+  },
 });
 
 const emits = defineEmits(["submitForm", "cancelAction"]);
@@ -120,6 +154,7 @@ const emits = defineEmits(["submitForm", "cancelAction"]);
 // Form state
 const categoryName = ref(props.initialCategoryName);
 const categoryImageUrl = ref(props.initialCategoryImageUrl);
+const categorySlug = ref(props.initialCategorySlug);
 
 // UI state
 const showImageManager = ref(false);
@@ -138,6 +173,23 @@ watch(
     categoryImageUrl.value = newValue;
   }
 );
+
+watch(
+  () => props.initialCategorySlug,
+  (newValue) => {
+    categorySlug.value = newValue;
+  }
+);
+
+// Generate slug from category name
+const generateSlugFromName = () => {
+  if (categoryName.value) {
+    categorySlug.value = categoryName.value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
+};
 
 // Image Manager Functions
 const openImageManager = () => {
@@ -160,6 +212,7 @@ const submitForm = () => {
   emits("submitForm", {
     name: categoryName.value,
     imageUrl: categoryImageUrl.value,
+    slug: categorySlug.value,
   });
 };
 

@@ -27,6 +27,6 @@ router.get("/:id", isAuthenticated, isAdmin, getProductById);
 router.post("/", isAuthenticated, isAdmin, addProduct);
 router.put("/:id", isAuthenticated, isAdmin, editProduct);
 router.put("/:id/category", isAuthenticated, isAdmin, updateProductCategory);
-router.delete("/delete-product/:id", isAuthenticated, isAdmin, deleteProduct);
+router.delete("/:id", isAuthenticated, isAdmin, deleteProduct);
 
 export default router;

@@ -1,0 +1,11 @@
+{
+  "collections": "Collections",
+  "categories": "Categories",
+  "noProductsForCategory": "No products available for {category}",
+  "checkBackLater": "Check back later for new items",
+  "noCategorySelected": "No category selected",
+  "categoryNotFound": "Category not found",
+  "fetchDataError": "Error loading data",
+  "fetchCategoriesError": "Failed to fetch categories",
+  "fetchProductsError": "Failed to fetch products"
+}

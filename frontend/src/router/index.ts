@@ -42,7 +42,7 @@ const routes = [
     component: CollectionsListView,
   },
   {
-    path: "/collections/:categoryId",
+    path: "/collections/:slug",
     name: "Collection",
     component: CollectionProductsView,
     props: true,
@@ -124,7 +124,14 @@ const router = createRouter({
 });
 
 // Navigation guard to check authentication, admin access, and user location
-router.beforeEach(async (to, _from, next) => {
+router.beforeEach(async (to, from, next) => {
+  // Log warning for deprecated routes
+  if (to.meta.deprecated) {
+    console.warn(
+      `The route "${to.path}" is deprecated and may be removed in the future.`
+    );
+  }
+
   const authStore = useAuthStore();
 
   // Check if user region is already stored in session

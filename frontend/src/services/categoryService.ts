@@ -38,6 +38,20 @@ export const getCategory = async (id: string): Promise<CategoryResponse> => {
 };
 
 /**
+ * Retrieves a specific category by slug
+ * @param slug - The slug of the category to fetch
+ * @returns Promise resolving to the category data
+ */
+export const getCategoryBySlug = async (
+  slug: string
+): Promise<CategoryResponse> => {
+  const response: AxiosResponse<CategoryResponse> = await categoryService.get(
+    `/slug/${slug}`
+  );
+  return response.data;
+};
+
+/**
  * Deletes a category and its associated products
  * @param id - The ID of the category to delete
  * @returns Promise resolving to success status and message
@@ -71,7 +85,7 @@ export const deleteCategoryAndReassignProducts = async (
  * @returns Promise resolving to success status and new category ID
  */
 export const createCategory = async (
-  category: Pick<Category, "name" | "imageUrl">
+  category: Pick<Category, "name" | "imageUrl" | "slug">
 ): Promise<CategoryActionResponse> => {
   const response: AxiosResponse<CategoryActionResponse> =
     await categoryService.post("/", category);
@@ -86,7 +100,7 @@ export const createCategory = async (
  */
 export const updateCategory = async (
   id: string,
-  category: Partial<Pick<Category, "name" | "imageUrl">>
+  category: Partial<Pick<Category, "name" | "imageUrl" | "slug">>
 ): Promise<CategoryActionResponse> => {
   const response: AxiosResponse<CategoryActionResponse> =
     await categoryService.put(`/${id}`, category);

@@ -6,5 +6,8 @@
   "selectImage": "Select Image",
   "addCategory": "Add Category",
   "updateCategory": "Update Category",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "slug": "URL Slug",
+  "generate": "Generate",
+  "slugHelpText": "Used in URLs for the category. Will be auto-generated if left empty."
 }

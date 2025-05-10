@@ -7,6 +7,7 @@ import {
   updateCategory,
   deleteCategory,
   deleteCategoryAndReassignProducts,
+  getCategoryBySlug,
 } from "./categoryController.js";
 
 import { isAuthenticated, isAdmin } from "../authorization/authMiddleware.js";
@@ -14,6 +15,7 @@ import { isAuthenticated, isAdmin } from "../authorization/authMiddleware.js";
 const router = express.Router();
 
 router.get("/", isAuthenticated, isAdmin, getAllCategories);
+router.get("/slug/:slug", isAuthenticated, isAdmin, getCategoryBySlug);
 router.get("/:id", isAuthenticated, isAdmin, getCategoryById);
 router.post("/", isAuthenticated, isAdmin, createCategory);
 router.put("/:id", isAuthenticated, isAdmin, updateCategory);

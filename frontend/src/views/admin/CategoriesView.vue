@@ -133,6 +133,7 @@
       :mode="isEdit ? 'edit' : 'add'"
       :initialCategoryName="editCategoryName"
       :initialCategoryImageUrl="editCategoryImageUrl"
+      :initialCategorySlug="editCategorySlug"
       @submitForm="submitForm"
       @cancelAction="cancelAddEdit"
     />
@@ -182,6 +183,7 @@ const selectedCategoryId = ref<string | undefined>(undefined);
 const newCategoryId = ref<string | null>(null);
 const editCategoryName = ref("");
 const editCategoryImageUrl = ref("");
+const editCategorySlug = ref("");
 
 // UI Helpers
 const handleImageError = (event: Event) => {
@@ -216,9 +218,10 @@ const openAddModal = () => {
 
 const openEditModal = (category: Category) => {
   isEdit.value = true;
-  selectedCategoryId.value = category._id ?? undefined;
+  selectedCategoryId.value = category._id;
   editCategoryName.value = category.name;
   editCategoryImageUrl.value = category.imageUrl;
+  editCategorySlug.value = category.slug;
   showAddEditModal.value = true;
 };
 
@@ -232,6 +235,7 @@ const cancelAddEdit = () => {
   isEdit.value = false;
   editCategoryName.value = "";
   editCategoryImageUrl.value = "";
+  editCategorySlug.value = "";
   selectedCategoryId.value = undefined;
 };
 
@@ -243,7 +247,9 @@ const cancelRemove = () => {
 };
 
 // CRUD Operations
-const submitForm = async (formData: Pick<Category, "name" | "imageUrl">) => {
+const submitForm = async (
+  formData: Pick<Category, "name" | "imageUrl" | "slug">
+) => {
   try {
     if (isEdit.value && selectedCategoryId.value) {
       await updateCategory(selectedCategoryId.value, formData);

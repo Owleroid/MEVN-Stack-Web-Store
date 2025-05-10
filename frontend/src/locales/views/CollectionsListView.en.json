@@ -1,0 +1,9 @@
+{
+  "noCollections": "No collections available",
+  "underConstruction": "This section is under construction",
+  "fetchCategoriesError": "Failed to fetch categories",
+  "categoryWithoutSlug": "This category has no URL identifier",
+  "backToHome": "Return to home page",
+  "viewAll": "View all collections",
+  "loading": "Loading collections..."
+}

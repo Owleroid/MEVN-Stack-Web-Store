@@ -1,0 +1,11 @@
+{
+  "collections": "Коллекции",
+  "categories": "Категории",
+  "noProductsForCategory": "Нет доступных товаров для {category}",
+  "checkBackLater": "Загляните позже для новых товаров",
+  "noCategorySelected": "Категория не выбрана",
+  "categoryNotFound": "Категория не найдена",
+  "fetchDataError": "Ошибка при загрузке данных",
+  "fetchCategoriesError": "Не удалось загрузить категории",
+  "fetchProductsError": "Не удалось загрузить товары"
+}

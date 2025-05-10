@@ -66,7 +66,7 @@
         v-for="category in categories"
         :key="category._id"
         class="group bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-        @click="goToCategory(category._id ?? '')"
+        @click="goToCategory(category)"
       >
         <!-- Category Image -->
         <div class="aspect-w-16 aspect-h-9 w-full overflow-hidden bg-gray-200">
@@ -127,9 +127,24 @@ const fetchCategories = async (): Promise<void> => {
 };
 
 // Navigation Actions
-const goToCategory = (categoryId: string): void => {
-  if (!categoryId) return;
-  router.push(`/collections/${categoryId}`);
+const goToCategory = (category: Category): void => {
+  if (!category) return;
+
+  // Use slug for category navigation
+  if (category.slug) {
+    router.push(`/collections/${category.slug}`);
+  } else {
+    // Handle rare case where a category doesn't have a slug
+    console.error(`Category "${category.name}" doesn't have a slug.`);
+
+    // Show error to user or generate a temporary slug from the name
+    const tempSlug = category.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
+    router.push(`/collections/${tempSlug}`);
+  }
 };
 
 // Lifecycle Hooks

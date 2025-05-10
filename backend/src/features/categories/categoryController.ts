@@ -35,16 +35,43 @@ export const getCategoryById = asyncHandler(
   }
 );
 
+export const getCategoryBySlug = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { slug } = req.params;
+
+    const category = await Category.findOne({ slug });
+
+    if (!category) {
+      return next(new ApiError(404, "Category not found"));
+    }
+
+    res.status(200).json({
+      success: true,
+      category,
+    });
+  }
+);
+
 export const createCategory = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name, imageUrl } = req.body;
+    const { name, imageUrl, slug } = req.body;
 
     const existingCategory = await Category.findOne({ name });
     if (existingCategory) {
       return next(new ApiError(400, "Category with this name already exists"));
     }
 
-    const newCategory = new Category({ name, imageUrl });
+    // Check if slug already exists, if provided
+    if (slug) {
+      const slugExists = await Category.findOne({ slug });
+      if (slugExists) {
+        return next(
+          new ApiError(400, "Category with this slug already exists")
+        );
+      }
+    }
+
+    const newCategory = new Category({ name, imageUrl, slug });
     const savedCategory = await newCategory.save();
 
     res.status(201).json({
@@ -58,12 +85,22 @@ export const createCategory = asyncHandler(
 export const updateCategory = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
-    const { name, imageUrl } = req.body;
+    const { name, imageUrl, slug } = req.body;
+
+    // Check if slug already exists (if provided) and doesn't belong to current category
+    if (slug) {
+      const slugExists = await Category.findOne({ slug, _id: { $ne: id } });
+      if (slugExists) {
+        return next(
+          new ApiError(400, "Category with this slug already exists")
+        );
+      }
+    }
 
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
-      { name, imageUrl },
-      { new: true }
+      { name, imageUrl, slug },
+      { new: true, runValidators: true }
     );
 
     if (!updatedCategory) {

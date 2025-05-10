@@ -58,7 +58,7 @@
             <div
               v-for="cat in categories"
               :key="cat._id"
-              @click="changeCategory(cat._id ?? '')"
+              @click="changeCategory(cat)"
               class="p-3 rounded-md cursor-pointer transition-colors duration-200 flex items-center gap-3"
               :class="
                 cat._id === category?._id
@@ -171,6 +171,8 @@ import {
   getAllCategories,
 } from "@/services/storeService";
 
+import { getCategoryBySlug } from "@/services/categoryService";
+
 import AddToCartButton from "@/components/general/AddToCartButton.vue";
 
 import type { Product } from "@/types/products";
@@ -232,10 +234,18 @@ const fetchProducts = async (categoryId: string): Promise<void> => {
     const response = await getProductsByCategoryId(categoryId);
     products.value = response;
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : String(err);
-    error.value = t("fetchProductsError") + ": " + errorMessage;
-    console.error("Error fetching products:", err);
-    products.value = [];
+    // Check if this is a 404 error (no products found)
+    const axiosError = err as { response?: { status: number } };
+    if (axiosError.response?.status === 404) {
+      // Not an error, just empty results
+      products.value = [];
+    } else {
+      // Real error, display to user
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      error.value = t("fetchProductsError") + ": " + errorMessage;
+      console.error("Error fetching products:", err);
+      products.value = [];
+    }
   }
 };
 
@@ -243,23 +253,23 @@ const fetchCategoryData = async (): Promise<void> => {
   loading.value = true;
   error.value = "";
 
-  const categoryId = route.params.categoryId as string;
+  const slug = route.params.slug as string;
 
-  if (!categoryId) {
+  if (!slug) {
     error.value = t("noCategorySelected");
     loading.value = false;
     return;
   }
 
   try {
-    // Find the category in our loaded categories
-    category.value =
-      categories.value.find((cat) => cat._id === categoryId) || null;
+    // Get category by slug
+    const response = await getCategoryBySlug(slug);
+    category.value = response.category;
 
     if (!category.value) {
       error.value = t("categoryNotFound");
     } else {
-      await fetchProducts(categoryId);
+      await fetchProducts(category.value._id);
     }
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : String(err);
@@ -271,16 +281,16 @@ const fetchCategoryData = async (): Promise<void> => {
 };
 
 // Navigation
-const changeCategory = (categoryId: string): void => {
-  if (!categoryId) return;
-  router.push(`/collections/${categoryId}`);
+const changeCategory = (cat: Category): void => {
+  if (!cat || !cat.slug) return;
+  router.push(`/collections/${cat.slug}`);
 };
 
 // Watchers
 watch(
-  () => route.params.categoryId,
-  async (newCategoryId) => {
-    if (newCategoryId) {
+  () => route.params.slug,
+  async (newSlug) => {
+    if (newSlug) {
       await fetchCategoryData();
     }
   }
