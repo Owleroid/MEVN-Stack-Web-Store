@@ -132,7 +132,7 @@ const goToCategory = (category: Category): void => {
 
   // Use slug for category navigation
   if (category.slug) {
-    router.push(`/collections/${category.slug}`);
+    router.push(`/${category.slug}`);
   } else {
     // Handle rare case where a category doesn't have a slug
     console.error(`Category "${category.name}" doesn't have a slug.`);
@@ -143,7 +143,7 @@ const goToCategory = (category: Category): void => {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
 
-    router.push(`/collections/${tempSlug}`);
+    router.push(`/${tempSlug}`);
   }
 };
 

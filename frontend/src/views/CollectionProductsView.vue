@@ -283,7 +283,7 @@ const fetchCategoryData = async (): Promise<void> => {
 // Navigation
 const changeCategory = (cat: Category): void => {
   if (!cat || !cat.slug) return;
-  router.push(`/collections/${cat.slug}`);
+  router.push(`/${cat.slug}`);
 };
 
 // Watchers

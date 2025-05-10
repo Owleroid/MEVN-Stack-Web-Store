@@ -42,7 +42,7 @@ const routes = [
     component: CollectionsListView,
   },
   {
-    path: "/collections/:slug",
+    path: "/:slug",
     name: "Collection",
     component: CollectionProductsView,
     props: true,
