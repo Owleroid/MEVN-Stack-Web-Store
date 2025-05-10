@@ -9,8 +9,8 @@
           {{ $t("categories") }}
         </h2>
 
-        <!-- Loading State -->
-        <div v-if="loading" class="flex flex-col items-center py-6">
+        <!-- Loading State for Categories -->
+        <div v-if="loadingCategories" class="flex flex-col items-center py-6">
           <div
             class="w-8 h-8 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-2"
           ></div>
@@ -67,9 +67,56 @@
             </div>
           </div>
 
+          <!-- Loading State for Products (Full Overlay) -->
+          <div v-if="loadingProducts" class="relative min-h-[300px]">
+            <!-- Static Table for Visual Consistency -->
+            <div class="opacity-40">
+              <table class="w-full border-collapse">
+                <thead>
+                  <tr>
+                    <th
+                      class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                    >
+                      {{ $t("productImage") }}
+                    </th>
+                    <th
+                      class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                    >
+                      {{ $t("productName") }}
+                    </th>
+                    <th
+                      class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                    >
+                      {{ $t("actions") }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="p-4 border-b border-gray-200">&nbsp;</td>
+                    <td class="p-4 border-b border-gray-200">&nbsp;</td>
+                    <td class="p-4 border-b border-gray-200">&nbsp;</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Loading Overlay -->
+            <div
+              class="absolute inset-0 flex justify-center items-center bg-white bg-opacity-70"
+            >
+              <div class="flex flex-col items-center">
+                <div
+                  class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-2"
+                ></div>
+                <p class="text-gray-600 text-sm">{{ $t("loadingProducts") }}</p>
+              </div>
+            </div>
+          </div>
+
           <!-- No Products State -->
-          <div v-if="products.length === 0" class="text-center p-8">
-            <p class="text-gray-500 mb-4">{{ $t("noProductsFound") }}</p>
+          <div v-else-if="products.length === 0" class="text-center py-12">
+            <p class="text-gray-500">{{ $t("noProductsFound") }}</p>
           </div>
 
           <!-- Products Table -->
@@ -78,7 +125,7 @@
               <thead>
                 <tr>
                   <th
-                    class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200 w-24"
+                    class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
                   >
                     {{ $t("productImage") }}
                   </th>
@@ -184,6 +231,7 @@ import { ref, onMounted, watch } from "vue";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+
 import { useEventBus } from "@/utils/eventBus";
 
 import ChangeCategoryModal from "@/components/admin/products/ChangeCategoryModal.vue";
@@ -213,7 +261,9 @@ const { on, emit } = useEventBus();
 const categories = ref<Category[]>([]);
 const products = ref<Product[]>([]);
 const selectedCategory = ref<string>("");
-const loading = ref(true);
+// Split loading states for categories and products
+const loadingCategories = ref(true);
+const loadingProducts = ref(false);
 
 // UI state - modals
 const showChangeCategoryModal = ref(false);
@@ -279,7 +329,7 @@ const handleImageError = (event: Event) => {
 
 // Data Fetching
 const fetchCategories = async () => {
-  loading.value = true;
+  loadingCategories.value = true;
 
   try {
     const response = await getAllCategories();
@@ -293,12 +343,14 @@ const fetchCategories = async () => {
     console.error("Failed to fetch categories:", error);
     toast.error(t("failedToFetchCategories"));
   } finally {
-    loading.value = false;
+    loadingCategories.value = false;
   }
 };
 
 const fetchProducts = async () => {
   if (!selectedCategory.value) return;
+
+  loadingProducts.value = true;
 
   try {
     const response = await getProductsByCategory(selectedCategory.value);
@@ -306,6 +358,8 @@ const fetchProducts = async () => {
   } catch (error: unknown) {
     console.error("Failed to fetch products:", error);
     toast.error(t("failedToFetchProducts"));
+  } finally {
+    loadingProducts.value = false;
   }
 };
 
@@ -357,6 +411,8 @@ const closeAddProductModal = () => {
 };
 
 const openEditProductModal = async (product: Product) => {
+  loadingProducts.value = true;
+
   try {
     const response = await getProductById(product._id);
     const fetchedProduct = response.product;
@@ -380,6 +436,8 @@ const openEditProductModal = async (product: Product) => {
   } catch (error: unknown) {
     console.error("Failed to fetch product:", error);
     toast.error(t("failedToFetchProduct"));
+  } finally {
+    loadingProducts.value = false;
   }
 };
 
@@ -396,6 +454,8 @@ const changeCategory = async (newCategoryId: string) => {
     return;
   }
 
+  loadingProducts.value = true;
+
   try {
     await updateProductCategory(
       productToChangeCategory.value._id,
@@ -407,10 +467,13 @@ const changeCategory = async (newCategoryId: string) => {
   } catch (error: unknown) {
     console.error("Failed to update product category:", error);
     toast.error(t("failedToUpdateProductCategory"));
+    loadingProducts.value = false;
   }
 };
 
 const submitAddProductForm = async () => {
+  loadingProducts.value = true;
+
   try {
     const product: ProductInput = {
       name: newProduct.value.name,
@@ -444,10 +507,13 @@ const submitAddProductForm = async () => {
   } catch (error: unknown) {
     toast.error(t("failedToAddProduct"));
     console.error("Failed to add product:", error);
+    loadingProducts.value = false;
   }
 };
 
 const submitEditProductForm = async () => {
+  loadingProducts.value = true;
+
   try {
     const product: ProductInput = {
       name: editProduct.value.name,
@@ -481,10 +547,13 @@ const submitEditProductForm = async () => {
   } catch (error: unknown) {
     toast.error(t("failedToUpdateProduct"));
     console.error("Failed to update product:", error);
+    loadingProducts.value = false;
   }
 };
 
 const deleteProduct = async (id: string) => {
+  loadingProducts.value = true;
+
   try {
     await deleteProductService(id);
     fetchProducts(); // Refresh the list after deletion
@@ -492,6 +561,7 @@ const deleteProduct = async (id: string) => {
   } catch (error: unknown) {
     console.error("Failed to delete product:", error);
     toast.error(t("failedToDeleteProduct"));
+    loadingProducts.value = false;
   }
 };
 
