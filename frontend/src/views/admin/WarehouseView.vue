@@ -170,7 +170,7 @@ import type {
 import type { ProductIdsResponse } from "@/types/products";
 
 import { getAllCategories } from "@/services/categoryService";
-import { getProductIdsByCategory } from "@/services/productService";
+import { getProductIdsByCategoryId } from "@/services/productService";
 import {
   getWarehouses,
   updateWarehouseProductAmount,
@@ -246,7 +246,7 @@ const fetchCategories = async () => {
 const fetchProducts = async () => {
   try {
     loading.value = true;
-    const response: ProductIdsResponse = await getProductIdsByCategory(
+    const response: ProductIdsResponse = await getProductIdsByCategoryId(
       selectedCategoryId.value
     );
     productIds.value = response.productIds;

@@ -14,6 +14,7 @@ export interface CurrencyDetails {
 export interface Product {
   _id: string;
   name: string;
+  slug: string;
   category: string;
   price: {
     rubles: CurrencyDetails;
@@ -37,6 +38,7 @@ export interface Product {
 export interface ProductInput {
   name: string;
   category: string;
+  slug?: string;
   price: {
     rubles: CurrencyDetails;
     euros: CurrencyDetails;
@@ -58,7 +60,6 @@ export interface ProductInput {
  */
 export interface ProductListResponse {
   success: boolean;
-  message: string;
   products: Product[];
 }
 
@@ -67,7 +68,6 @@ export interface ProductListResponse {
  */
 export interface ProductResponse {
   success: boolean;
-  message: string;
   product: Product;
 }
 
@@ -76,7 +76,6 @@ export interface ProductResponse {
  */
 export interface ProductIdsResponse {
   success: boolean;
-  message: string;
   productIds: string[];
 }
 
@@ -85,7 +84,6 @@ export interface ProductIdsResponse {
  */
 export interface ProductActionResponse {
   success: boolean;
-  message: string;
   productId?: string;
   category?: string;
 }

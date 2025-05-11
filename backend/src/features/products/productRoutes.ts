@@ -5,6 +5,7 @@ import {
   getProductsByCategoryId,
   getProductIdsByCategoryId,
   getProductById,
+  getProductBySlug,
   addProduct,
   editProduct,
   updateProductCategory,
@@ -15,15 +16,14 @@ import { isAuthenticated, isAdmin } from "../authorization/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/search/:name", isAuthenticated, isAdmin, searchProductsByName);
-router.get(
-  "/category/:categoryId",
-  isAuthenticated,
-  isAdmin,
-  getProductsByCategoryId
-);
+// Public routes - specific routes first
 router.get("/category/:categoryId/ids", getProductIdsByCategoryId);
-router.get("/:id", isAuthenticated, isAdmin, getProductById);
+router.get("/category/:categoryId", getProductsByCategoryId);
+router.get("/search/:name", searchProductsByName);
+router.get("/slug/:slug", getProductBySlug);
+router.get("/:id", getProductById);
+
+// Admin routes
 router.post("/", isAuthenticated, isAdmin, addProduct);
 router.put("/:id", isAuthenticated, isAdmin, editProduct);
 router.put("/:id/category", isAuthenticated, isAdmin, updateProductCategory);

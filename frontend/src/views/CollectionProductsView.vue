@@ -128,7 +128,10 @@
             :key="product._id"
             class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
           >
-            <router-link :to="`/product/${product._id}`" class="block">
+            <router-link
+              :to="`/${category?.slug}/${product.slug}`"
+              class="block"
+            >
               <div class="aspect-w-1 aspect-h-1 w-full overflow-hidden">
                 <img
                   :src="product.imageUrls?.main"
@@ -166,7 +169,7 @@ import { useI18n } from "vue-i18n";
 
 import { useAuthStore } from "@/stores/authStore";
 
-import { getProductsByCategoryId } from "@/services/storeService";
+import { getProductsByCategoryId } from "@/services/productService";
 
 import {
   getAllCategories,
@@ -232,7 +235,7 @@ const fetchCategories = async (): Promise<void> => {
 const fetchProducts = async (categoryId: string): Promise<void> => {
   try {
     const response = await getProductsByCategoryId(categoryId);
-    products.value = response;
+    products.value = response.products;
   } catch (err: unknown) {
     // Check if this is a 404 error (no products found)
     const axiosError = err as { response?: { status: number } };

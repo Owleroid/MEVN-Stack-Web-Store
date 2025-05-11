@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 
 import Product from "./ProductModel.js";
 import Warehouse from "../warehouses/WarehouseModel.js";
+import Category from "../categories/CategoryModel.js";
 
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
@@ -20,34 +21,45 @@ export const searchProductsByName = asyncHandler(
 
     res.status(200).json({
       success: true,
-      message: "Products fetched successfully",
       products,
     });
   }
 );
 
 export const getProductsByCategoryId = asyncHandler(
-  async (req: Request, res: Response, _next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const { categoryId } = req.params;
+
+    // Validate that the category exists
+    const categoryExists = await Category.findById(categoryId);
+    if (!categoryExists) {
+      return next(new ApiError(404, "Category not found"));
+    }
+
     const products = await Product.find({ category: categoryId });
 
     res.status(200).json({
       success: true,
-      message: "Products fetched successfully",
       products,
     });
   }
 );
 
 export const getProductIdsByCategoryId = asyncHandler(
-  async (req: Request, res: Response, _next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const { categoryId } = req.params;
+
+    // Validate that the category exists
+    const categoryExists = await Category.findById(categoryId);
+    if (!categoryExists) {
+      return next(new ApiError(404, "Category not found"));
+    }
+
     const products = await Product.find({ category: categoryId }).select("_id");
     const productIds = products.map((product) => product._id.toString());
 
     res.status(200).json({
       success: true,
-      message: "Product IDs fetched successfully",
       productIds,
     });
   }
@@ -64,7 +76,25 @@ export const getProductById = asyncHandler(
 
     res.status(200).json({
       success: true,
-      message: "Product fetched successfully",
+      product,
+    });
+  }
+);
+
+export const getProductBySlug = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { slug } = req.params;
+
+    console.log("Slug:", slug);
+
+    const product = await Product.findOne({ slug });
+
+    if (!product) {
+      return next(new ApiError(404, "Product not found"));
+    }
+
+    res.status(200).json({
+      success: true,
       product,
     });
   }
@@ -84,6 +114,12 @@ export const addProduct = asyncHandler(
       description = "",
       imageUrls = { main: "", secondary: [] },
     } = req.body;
+
+    // Validate that the category exists
+    const categoryExists = await Category.findById(category);
+    if (!categoryExists) {
+      return next(new ApiError(404, "Category not found"));
+    }
 
     const existingProduct = await Product.findOne({ name });
     if (existingProduct) {
@@ -118,7 +154,6 @@ export const addProduct = asyncHandler(
 
     res.status(201).json({
       success: true,
-      message: "New product was successfully added",
       productId: savedProduct._id,
     });
   }
@@ -128,6 +163,14 @@ export const editProduct = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const updatedProduct = req.body;
+
+    // If category is being updated, validate it exists
+    if (updatedProduct.category) {
+      const categoryExists = await Category.findById(updatedProduct.category);
+      if (!categoryExists) {
+        return next(new ApiError(404, "Category not found"));
+      }
+    }
 
     const product = await Product.findByIdAndUpdate(id, updatedProduct, {
       new: true,
@@ -139,7 +182,6 @@ export const editProduct = asyncHandler(
 
     res.status(200).json({
       success: true,
-      message: "Product was successfully updated",
       productId: id,
     });
   }
@@ -149,6 +191,12 @@ export const updateProductCategory = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const { categoryId } = req.body;
+
+    // Validate that the category exists
+    const categoryExists = await Category.findById(categoryId);
+    if (!categoryExists) {
+      return next(new ApiError(404, "Category not found"));
+    }
 
     const product = await Product.findByIdAndUpdate(
       id,
@@ -162,7 +210,6 @@ export const updateProductCategory = asyncHandler(
 
     res.status(200).json({
       success: true,
-      message: "Product category was successfully updated",
       productId: id,
       category: categoryId,
     });
@@ -184,7 +231,6 @@ export const deleteProduct = asyncHandler(
 
     res.status(200).json({
       success: true,
-      message: "Product was successfully deleted",
     });
   }
 );

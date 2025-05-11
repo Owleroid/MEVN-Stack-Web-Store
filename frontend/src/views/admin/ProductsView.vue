@@ -137,6 +137,11 @@
                   <th
                     class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
                   >
+                    {{ $t("slug") }}
+                  </th>
+                  <th
+                    class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                  >
                     {{ $t("actions") }}
                   </th>
                 </tr>
@@ -168,6 +173,9 @@
                   </td>
                   <td class="p-4 border-b border-gray-200">
                     {{ product.name }}
+                  </td>
+                  <td class="p-4 border-b border-gray-200">
+                    {{ product.slug }}
                   </td>
                   <td class="p-4 border-b border-gray-200">
                     <div class="flex flex-wrap gap-2">
@@ -242,7 +250,7 @@ import type { Category } from "@/types/category";
 
 import { getAllCategories } from "@/services/categoryService";
 import {
-  getProductsByCategory,
+  getProductsByCategoryId,
   deleteProduct as deleteProductService,
   updateProductCategory,
   addProduct,
@@ -276,6 +284,7 @@ const productToChangeCategory = ref<Product | null>(null);
 // Define our form interfaces matching the expected structure
 interface ProductFormData {
   name: string;
+  slug: string;
   priceRubles: number;
   priceEuros: number;
   artist: string;
@@ -294,6 +303,7 @@ interface EditProductFormData extends ProductFormData {
 
 const newProduct = ref<ProductFormData>({
   name: "",
+  slug: "",
   priceRubles: 0,
   priceEuros: 0,
   artist: "",
@@ -309,6 +319,7 @@ const newProduct = ref<ProductFormData>({
 const editProduct = ref<EditProductFormData>({
   id: "",
   name: "",
+  slug: "",
   priceRubles: 0,
   priceEuros: 0,
   artist: "",
@@ -353,7 +364,7 @@ const fetchProducts = async () => {
   loadingProducts.value = true;
 
   try {
-    const response = await getProductsByCategory(selectedCategory.value);
+    const response = await getProductsByCategoryId(selectedCategory.value);
     products.value = response.products;
   } catch (error: unknown) {
     console.error("Failed to fetch products:", error);
@@ -388,6 +399,7 @@ const closeChangeCategoryModal = () => {
 const resetNewProductForm = () => {
   newProduct.value = {
     name: "",
+    slug: "",
     priceRubles: 0,
     priceEuros: 0,
     artist: "",
@@ -420,6 +432,7 @@ const openEditProductModal = async (product: Product) => {
     editProduct.value = {
       id: fetchedProduct._id,
       name: fetchedProduct.name,
+      slug: fetchedProduct.slug,
       priceRubles: fetchedProduct.price.rubles.amount,
       priceEuros: fetchedProduct.price.euros.amount,
       artist: fetchedProduct.artist || "",
@@ -477,6 +490,7 @@ const submitAddProductForm = async () => {
   try {
     const product: ProductInput = {
       name: newProduct.value.name,
+      slug: newProduct.value.slug,
       category: selectedCategory.value,
       price: {
         rubles: { amount: newProduct.value.priceRubles },
@@ -517,6 +531,7 @@ const submitEditProductForm = async () => {
   try {
     const product: ProductInput = {
       name: editProduct.value.name,
+      slug: editProduct.value.slug,
       category: selectedCategory.value,
       price: {
         rubles: { amount: editProduct.value.priceRubles },

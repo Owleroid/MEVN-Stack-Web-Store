@@ -16,12 +16,16 @@ const productService = axios.create({
   withCredentials: true,
 });
 
+// ------------------------------------------------
+// PUBLIC ENDPOINTS - No authentication required
+// ------------------------------------------------
+
 /**
- * Retrieves products by category ID
+ * Retrieves products by category ID (PUBLIC)
  * @param categoryId - The ID of the category to fetch products for
  * @returns Promise resolving to list of products in the category
  */
-export const getProductsByCategory = async (
+export const getProductsByCategoryId = async (
   categoryId: string
 ): Promise<ProductListResponse> => {
   const response: AxiosResponse<ProductListResponse> = await productService.get(
@@ -31,11 +35,11 @@ export const getProductsByCategory = async (
 };
 
 /**
- * Retrieves only product IDs for a specific category
+ * Retrieves only product IDs for a specific category (PUBLIC)
  * @param categoryId - The ID of the category to fetch product IDs for
  * @returns Promise resolving to list of product IDs in the category
  */
-export const getProductIdsByCategory = async (
+export const getProductIdsByCategoryId = async (
   categoryId: string
 ): Promise<ProductIdsResponse> => {
   const response: AxiosResponse<ProductIdsResponse> = await productService.get(
@@ -45,7 +49,7 @@ export const getProductIdsByCategory = async (
 };
 
 /**
- * Retrieves a specific product by ID
+ * Retrieves a specific product by ID (PUBLIC)
  * @param id - The ID of the product to fetch
  * @returns Promise resolving to the product data
  */
@@ -57,7 +61,21 @@ export const getProductById = async (id: string): Promise<ProductResponse> => {
 };
 
 /**
- * Searches for products by name (partial match)
+ * Retrieves a specific product by slug (PUBLIC)
+ * @param slug - The slug of the product to fetch
+ * @returns Promise resolving to the product data
+ */
+export const getProductBySlug = async (
+  slug: string
+): Promise<ProductResponse> => {
+  const response: AxiosResponse<ProductResponse> = await productService.get(
+    `/slug/${slug}`
+  );
+  return response.data;
+};
+
+/**
+ * Searches for products by name (partial match) (PUBLIC)
  * @param name - The search query for product names
  * @returns Promise resolving to list of matching products
  */
@@ -70,8 +88,12 @@ export const searchProductsByName = async (
   return response.data;
 };
 
+// ------------------------------------------------
+// ADMIN ENDPOINTS - Require admin authentication
+// ------------------------------------------------
+
 /**
- * Creates a new product
+ * Creates a new product (ADMIN)
  * @param product - The product data to create
  * @returns Promise resolving to creation result
  */
@@ -84,7 +106,7 @@ export const addProduct = async (
 };
 
 /**
- * Updates an existing product
+ * Updates an existing product (ADMIN)
  * @param id - The ID of the product to update
  * @param product - The updated product data
  * @returns Promise resolving to update result
@@ -99,7 +121,7 @@ export const updateProduct = async (
 };
 
 /**
- * Updates only the category of a product
+ * Updates only the category of a product (ADMIN)
  * @param id - The ID of the product to update
  * @param categoryId - The new category ID
  * @returns Promise resolving to category update result
@@ -114,7 +136,7 @@ export const updateProductCategory = async (
 };
 
 /**
- * Deletes a product
+ * Deletes a product (ADMIN)
  * @param id - The ID of the product to delete
  * @returns Promise resolving to deletion result
  */

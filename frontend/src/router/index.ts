@@ -48,9 +48,10 @@ const routes = [
     props: true,
   },
   {
-    path: "/product/:productId",
+    path: "/:categorySlug/:productSlug",
     name: "ProductDetail",
     component: ProductDetailView,
+    props: true,
     meta: {
       title: "Product Detail",
     },
