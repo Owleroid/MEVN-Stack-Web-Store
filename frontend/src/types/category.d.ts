@@ -29,6 +29,5 @@ export interface CategoryResponse {
  */
 export interface CategoryActionResponse {
   success: boolean;
-  message: string;
   categoryId?: string;
 }

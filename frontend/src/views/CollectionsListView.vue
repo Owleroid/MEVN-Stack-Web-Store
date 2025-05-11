@@ -98,7 +98,7 @@ import { useI18n } from "vue-i18n";
 
 import type { Category } from "@/types/category";
 
-import { getAllCategories } from "@/services/storeService";
+import { getAllCategories } from "@/services/categoryService";
 
 // Composables Setup
 const { t } = useI18n();
@@ -116,7 +116,7 @@ const fetchCategories = async (): Promise<void> => {
 
   try {
     const response = await getAllCategories();
-    categories.value = response;
+    categories.value = response.categories;
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : String(err);
     error.value = t("fetchCategoriesError") + ": " + errorMessage;

@@ -12,17 +12,6 @@ const storeService = axios.create({
 });
 
 /**
- * Retrieves all product categories
- * @returns Promise resolving to array of categories
- */
-export const getAllCategories = async (): Promise<Category[]> => {
-  const response: AxiosResponse<Category[]> = await storeService.get(
-    "/categories"
-  );
-  return response.data;
-};
-
-/**
  * Retrieves all products for a specific category
  * @param categoryId - ID of the category to fetch products for
  * @returns Promise resolving to array of products

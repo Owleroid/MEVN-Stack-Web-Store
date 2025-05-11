@@ -166,12 +166,12 @@ import { useI18n } from "vue-i18n";
 
 import { useAuthStore } from "@/stores/authStore";
 
-import {
-  getProductsByCategoryId,
-  getAllCategories,
-} from "@/services/storeService";
+import { getProductsByCategoryId } from "@/services/storeService";
 
-import { getCategoryBySlug } from "@/services/categoryService";
+import {
+  getAllCategories,
+  getCategoryBySlug,
+} from "@/services/categoryService";
 
 import AddToCartButton from "@/components/general/AddToCartButton.vue";
 
@@ -221,7 +221,7 @@ const handleProductImageError = (event: Event): void => {
 const fetchCategories = async (): Promise<void> => {
   try {
     const response = await getAllCategories();
-    categories.value = response;
+    categories.value = response.categories;
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : String(err);
     error.value = t("fetchCategoriesError") + ": " + errorMessage;

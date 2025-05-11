@@ -76,7 +76,6 @@ export const createCategory = asyncHandler(
 
     res.status(201).json({
       success: true,
-      message: "New category was successfully created",
       categoryId: savedCategory._id,
     });
   }
@@ -109,7 +108,6 @@ export const updateCategory = asyncHandler(
 
     res.status(200).json({
       success: true,
-      message: "Category was successfully updated",
       categoryId: updatedCategory._id,
     });
   }
@@ -141,7 +139,6 @@ export const deleteCategory = asyncHandler(
 
     res.status(200).json({
       success: true,
-      message: "Category and related products were successfully deleted",
     });
   }
 );
@@ -162,7 +159,6 @@ export const deleteCategoryAndReassignProducts = asyncHandler(
 
     res.status(200).json({
       success: true,
-      message: `Category was successfully deleted and products were reassigned to new category`,
     });
   }
 );

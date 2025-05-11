@@ -10,13 +10,18 @@ import type {
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
+// Base service configuration
 const categoryService = axios.create({
   baseURL: `${apiUrl}/api/categories`,
   withCredentials: true,
 });
 
+// ------------------------------------------------
+// PUBLIC ENDPOINTS - No authentication required
+// ------------------------------------------------
+
 /**
- * Retrieves all categories
+ * Retrieves all categories (PUBLIC ACCESS)
  * @returns Promise resolving to all categories
  */
 export const getAllCategories = async (): Promise<CategoryListResponse> => {
@@ -26,11 +31,13 @@ export const getAllCategories = async (): Promise<CategoryListResponse> => {
 };
 
 /**
- * Retrieves a specific category by ID
+ * Retrieves a specific category by ID (PUBLIC ACCESS)
  * @param id - The ID of the category to fetch
  * @returns Promise resolving to the category data
  */
-export const getCategory = async (id: string): Promise<CategoryResponse> => {
+export const getCategoryById = async (
+  id: string
+): Promise<CategoryResponse> => {
   const response: AxiosResponse<CategoryResponse> = await categoryService.get(
     `/${id}`
   );
@@ -38,7 +45,7 @@ export const getCategory = async (id: string): Promise<CategoryResponse> => {
 };
 
 /**
- * Retrieves a specific category by slug
+ * Retrieves a specific category by slug (PUBLIC ACCESS)
  * @param slug - The slug of the category to fetch
  * @returns Promise resolving to the category data
  */
@@ -51,8 +58,12 @@ export const getCategoryBySlug = async (
   return response.data;
 };
 
+// ------------------------------------------------
+// ADMIN ENDPOINTS - Require authentication and admin privileges
+// ------------------------------------------------
+
 /**
- * Deletes a category and its associated products
+ * Deletes a category and its associated products (ADMIN ONLY)
  * @param id - The ID of the category to delete
  * @returns Promise resolving to success status and message
  */
@@ -65,7 +76,7 @@ export const deleteCategory = async (
 };
 
 /**
- * Deletes a category and reassigns its products to another category
+ * Deletes a category and reassigns its products to another category (ADMIN ONLY)
  * @param id - The ID of the category to delete
  * @param newCategoryId - The ID of the category to reassign products to
  * @returns Promise resolving to success status and message
@@ -80,7 +91,7 @@ export const deleteCategoryAndReassignProducts = async (
 };
 
 /**
- * Creates a new category
+ * Creates a new category (ADMIN ONLY)
  * @param category - Object containing category data
  * @returns Promise resolving to success status and new category ID
  */
@@ -93,7 +104,7 @@ export const createCategory = async (
 };
 
 /**
- * Updates an existing category
+ * Updates an existing category (ADMIN ONLY)
  * @param id - The ID of the category to update
  * @param category - Object containing updated category data
  * @returns Promise resolving to success status and message
