@@ -14,5 +14,8 @@
   "failedToFetchCategories": "Не удалось загрузить категории.",
   "failedToFetchProducts": "Не удалось загрузить товары.",
   "productAmountUpdatedSuccessfully": "Количество товара успешно обновлено.",
-  "failedToUpdateProductAmount": "Не удалось обновить количество товара."
+  "failedToUpdateProductAmount": "Не удалось обновить количество товара.",
+  "loadingProducts": "Загрузка товаров...",
+  "criticalStockAlert": "Предупреждение о критическом запасе",
+  "noCriticalStock": "Нет товаров с критическим уровнем запаса"
 }

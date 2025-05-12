@@ -14,5 +14,8 @@
   "failedToFetchCategories": "Failed to fetch categories.",
   "failedToFetchProducts": "Failed to fetch products.",
   "productAmountUpdatedSuccessfully": "Product amount updated successfully.",
-  "failedToUpdateProductAmount": "Failed to update product amount."
+  "failedToUpdateProductAmount": "Failed to update product amount.",
+  "loadingProducts": "Loading products...",
+  "criticalStockAlert": "Critical Stock Alert",
+  "noCriticalStock": "No products with critical stock levels"
 }

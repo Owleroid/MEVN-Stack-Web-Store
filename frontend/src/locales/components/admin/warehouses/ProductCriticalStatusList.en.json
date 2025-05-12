@@ -1,7 +1,13 @@
 {
   "criticalStockAlert": "Critical Stock Alert",
-  "productsLowStock": "The following products are running low on stock:",
-  "product": "Product",
-  "currentAmount": "Current Amount",
-  "allProductsInStock": "All products have sufficient stock"
+  "criticalStockExplanation": "The following products are running low and need attention",
+  "outOfStock": "Out of Stock",
+  "lowStock": "Low Stock",
+  "productName": "Product Name",
+  "amount": "Amount",
+  "status": "Status",
+  "allGood": "All Good!",
+  "allProductsInStock": "All products have sufficient stock",
+  "noCriticalStock": "No products with critical stock levels",
+  "loadingProducts": "Loading products..."
 }
