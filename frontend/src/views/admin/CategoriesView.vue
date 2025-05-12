@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-5xl mx-auto p-6">
-    <!-- Header Section with Integrated Tab-Style Design -->
+    <!-- Header Section -->
     <div class="bg-white rounded-t-lg shadow-sm border-b border-gray-200">
       <div class="flex justify-between items-center px-6 py-4">
         <div class="text-lg font-semibold text-gray-800">
@@ -15,9 +15,9 @@
       </div>
     </div>
 
-    <!-- Table Container (always visible) -->
+    <!-- Table Container -->
     <div class="bg-white rounded-b-lg shadow-sm overflow-hidden">
-      <!-- Loading State (only for table) -->
+      <!-- Loading State -->
       <div
         v-if="loading"
         class="flex flex-col items-center justify-center py-12"
@@ -211,20 +211,32 @@ const fetchCategories = async () => {
   }
 };
 
-// Modal Management
-const openAddModal = () => {
-  isEdit.value = false;
+// Reset form fields helper function to avoid duplication
+const resetFormFields = () => {
+  selectedCategoryId.value = undefined;
   editCategoryName.value = "";
   editCategoryImageUrl.value = "";
+  editCategorySlug.value = "";
+  isEdit.value = false;
+};
+
+// Modal Management
+const openAddModal = () => {
+  resetFormFields();
+
   showAddEditModal.value = true;
 };
 
 const openEditModal = (category: Category) => {
   isEdit.value = true;
+
+  // Set form data
   selectedCategoryId.value = category._id;
   editCategoryName.value = category.name;
-  editCategoryImageUrl.value = category.imageUrl;
-  editCategorySlug.value = category.slug;
+  editCategoryImageUrl.value = category.imageUrl || "";
+  editCategorySlug.value = category.slug || "";
+
+  // Then open modal
   showAddEditModal.value = true;
 };
 
@@ -235,11 +247,10 @@ const confirmRemoveCategory = (id: string) => {
 
 const cancelAddEdit = () => {
   showAddEditModal.value = false;
-  isEdit.value = false;
-  editCategoryName.value = "";
-  editCategoryImageUrl.value = "";
-  editCategorySlug.value = "";
-  selectedCategoryId.value = undefined;
+
+  setTimeout(() => {
+    resetFormFields();
+  }, 100);
 };
 
 const cancelRemove = () => {
@@ -262,9 +273,13 @@ const submitForm = async (
       toast.success(t("addCategorySuccess"));
     }
 
-    fetchCategories();
     showAddEditModal.value = false;
-    selectedCategoryId.value = undefined;
+
+    fetchCategories();
+
+    setTimeout(() => {
+      resetFormFields();
+    }, 100);
   } catch (error) {
     const errorMessage = isEdit.value
       ? t("updateCategoryError")
@@ -284,6 +299,7 @@ const removeCategory = async (id: string) => {
     console.error("Failed to remove category:", error);
   } finally {
     showDeleteModal.value = false;
+    selectedCategoryId.value = undefined;
   }
 };
 
@@ -296,13 +312,15 @@ const reassignAndRemoveCategory = async (newCategoryId: string) => {
       );
       fetchCategories();
       toast.success(t("reassignAndRemoveCategorySuccess"));
-      showReassignModal.value = false;
     } else {
       toast.error(t("reassignAndRemoveCategoryError"));
     }
   } catch (error) {
     toast.error(t("reassignAndRemoveCategoryError"));
     console.error("Failed to reassign and remove category:", error);
+  } finally {
+    showReassignModal.value = false;
+    selectedCategoryId.value = undefined;
   }
 };
 

@@ -3,54 +3,65 @@
     <div class="flex flex-col md:flex-row gap-6">
       <!-- Categories Menu -->
       <div
-        class="w-full md:w-64 bg-white p-4 rounded-lg shadow border border-gray-200"
+        class="w-full md:w-64 bg-white p-4 rounded-lg shadow border border-gray-200 flex flex-col"
       >
         <h2 class="text-xl font-semibold text-gray-800 mb-4">
           {{ $t("categories") }}
         </h2>
 
-        <!-- Loading State for Categories -->
-        <div v-if="loadingCategories" class="flex flex-col items-center py-6">
+        <div class="flex-1 min-h-[200px]">
+          <!-- Loading State for Categories -->
           <div
-            class="w-8 h-8 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-2"
-          ></div>
-          <p class="text-gray-600 text-sm">{{ $t("loadingCategories") }}</p>
-        </div>
-
-        <!-- No Categories State -->
-        <div v-else-if="categories.length === 0" class="py-4">
-          <p class="text-gray-500 mb-4 text-center">
-            {{ $t("noCategoriesFound") }}
-          </p>
-          <button
-            @click="goToCategories"
-            class="w-full py-2 px-4 bg-blue-500 text-white rounded-md font-medium hover:bg-blue-600 transition-colors"
+            v-if="loadingCategories"
+            class="flex flex-col items-center justify-center h-full"
           >
-            {{ $t("goToCategories") }}
-          </button>
-        </div>
+            <div
+              class="w-8 h-8 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-2"
+            ></div>
+            <p class="text-gray-600 text-sm">{{ $t("loadingCategories") }}</p>
+          </div>
 
-        <!-- Categories List -->
-        <div v-else class="flex flex-col gap-2">
-          <button
-            v-for="category in categories"
-            :key="category._id"
-            :class="[
-              'py-2.5 px-4 text-sm font-medium rounded-md transition-colors w-full text-left',
-              category._id === selectedCategory
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-            ]"
-            @click="selectCategory(category._id ?? '')"
+          <!-- No Categories State -->
+          <div
+            v-else-if="categories.length === 0"
+            class="flex flex-col justify-center items-center h-full"
           >
-            {{ category.name }}
-          </button>
+            <p class="text-gray-500 mb-4 text-center">
+              {{ $t("noCategoriesFound") }}
+            </p>
+            <button
+              @click="goToCategories"
+              class="w-full py-2 px-4 bg-blue-500 text-white rounded-md font-medium hover:bg-blue-600 transition-colors"
+            >
+              {{ $t("goToCategories") }}
+            </button>
+          </div>
+
+          <!-- Categories List -->
+          <div v-else class="flex flex-col gap-2 h-full">
+            <button
+              v-for="category in categories"
+              :key="category._id"
+              :class="[
+                'py-2.5 px-4 text-sm font-medium rounded-md transition-colors w-full text-left',
+                category._id === selectedCategory
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+              ]"
+              @click="selectCategory(category._id ?? '')"
+            >
+              {{ category.name }}
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Products List -->
-      <div class="flex-1" v-if="categories.length > 0">
-        <div class="bg-white rounded-lg shadow border border-gray-200">
+      <div class="flex-1" v-if="categories.length > 0 || loadingCategories">
+        <div
+          class="bg-white rounded-lg shadow border border-gray-200 min-h-[400px] flex flex-col"
+        >
+          <!-- Header -->
           <div class="p-4 border-b border-gray-200">
             <div
               class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
@@ -61,16 +72,38 @@
               <button
                 @click="openAddProductModal"
                 class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm font-medium"
+                :disabled="loadingProducts || categories.length === 0"
               >
                 {{ $t("addNewProduct") }}
               </button>
             </div>
           </div>
 
-          <!-- Loading State for Products (Full Overlay) -->
-          <div v-if="loadingProducts" class="relative min-h-[300px]">
-            <!-- Static Table for Visual Consistency -->
-            <div class="opacity-40">
+          <!-- Content Area -->
+          <div class="flex-1 flex flex-col">
+            <!-- Loading State for Products -->
+            <div
+              v-if="loadingProducts"
+              class="flex-1 flex items-center justify-center"
+            >
+              <div class="flex flex-col items-center">
+                <div
+                  class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-2"
+                ></div>
+                <p class="text-gray-600 text-sm">{{ $t("loadingProducts") }}</p>
+              </div>
+            </div>
+
+            <!-- No Products State -->
+            <div
+              v-else-if="products.length === 0"
+              class="flex-1 flex items-center justify-center"
+            >
+              <p class="text-gray-500">{{ $t("noProductsFound") }}</p>
+            </div>
+
+            <!-- Products Table -->
+            <div v-else class="flex-1 overflow-x-auto">
               <table class="w-full border-collapse">
                 <thead>
                   <tr>
@@ -87,121 +120,72 @@
                     <th
                       class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
                     >
+                      {{ $t("slug") }}
+                    </th>
+                    <th
+                      class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                    >
                       {{ $t("actions") }}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td class="p-4 border-b border-gray-200">&nbsp;</td>
-                    <td class="p-4 border-b border-gray-200">&nbsp;</td>
-                    <td class="p-4 border-b border-gray-200">&nbsp;</td>
+                  <tr
+                    v-for="product in products"
+                    :key="product._id"
+                    class="hover:bg-gray-50 transition-colors"
+                  >
+                    <td class="p-4 border-b border-gray-200">
+                      <div
+                        class="w-16 h-16 rounded-md overflow-hidden bg-gray-100 border border-gray-200"
+                      >
+                        <img
+                          v-if="product.imageUrls?.main"
+                          :src="product.imageUrls.main"
+                          :alt="product.name"
+                          class="w-full h-full object-cover"
+                          @error="handleImageError"
+                        />
+                        <div
+                          v-else
+                          class="w-full h-full flex items-center justify-center text-gray-400 text-xs"
+                        >
+                          {{ $t("noImage") }}
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-4 border-b border-gray-200">
+                      {{ product.name }}
+                    </td>
+                    <td class="p-4 border-b border-gray-200">
+                      {{ product.slug }}
+                    </td>
+                    <td class="p-4 border-b border-gray-200">
+                      <div class="flex flex-wrap gap-2">
+                        <button
+                          @click="openChangeCategoryModal(product)"
+                          class="px-3 py-1 bg-blue-500 text-white rounded text-xs font-medium hover:bg-blue-600 transition-colors"
+                        >
+                          {{ $t("changeCategory") }}
+                        </button>
+                        <button
+                          @click="openEditProductModal(product)"
+                          class="px-3 py-1 bg-green-500 text-white rounded text-xs font-medium hover:bg-green-600 transition-colors"
+                        >
+                          {{ $t("edit") }}
+                        </button>
+                        <button
+                          @click="deleteProduct(product._id)"
+                          class="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600 transition-colors"
+                        >
+                          {{ $t("delete") }}
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-
-            <!-- Loading Overlay -->
-            <div
-              class="absolute inset-0 flex justify-center items-center bg-white bg-opacity-70"
-            >
-              <div class="flex flex-col items-center">
-                <div
-                  class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-2"
-                ></div>
-                <p class="text-gray-600 text-sm">{{ $t("loadingProducts") }}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- No Products State -->
-          <div v-else-if="products.length === 0" class="text-center py-12">
-            <p class="text-gray-500">{{ $t("noProductsFound") }}</p>
-          </div>
-
-          <!-- Products Table -->
-          <div v-else class="overflow-x-auto">
-            <table class="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th
-                    class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
-                  >
-                    {{ $t("productImage") }}
-                  </th>
-                  <th
-                    class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
-                  >
-                    {{ $t("productName") }}
-                  </th>
-                  <th
-                    class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
-                  >
-                    {{ $t("slug") }}
-                  </th>
-                  <th
-                    class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
-                  >
-                    {{ $t("actions") }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="product in products"
-                  :key="product._id"
-                  class="hover:bg-gray-50 transition-colors"
-                >
-                  <td class="p-4 border-b border-gray-200">
-                    <div
-                      class="w-16 h-16 rounded-md overflow-hidden bg-gray-100 border border-gray-200"
-                    >
-                      <img
-                        v-if="product.imageUrls?.main"
-                        :src="product.imageUrls.main"
-                        :alt="product.name"
-                        class="w-full h-full object-cover"
-                        @error="handleImageError"
-                      />
-                      <div
-                        v-else
-                        class="w-full h-full flex items-center justify-center text-gray-400 text-xs"
-                      >
-                        {{ $t("noImage") }}
-                      </div>
-                    </div>
-                  </td>
-                  <td class="p-4 border-b border-gray-200">
-                    {{ product.name }}
-                  </td>
-                  <td class="p-4 border-b border-gray-200">
-                    {{ product.slug }}
-                  </td>
-                  <td class="p-4 border-b border-gray-200">
-                    <div class="flex flex-wrap gap-2">
-                      <button
-                        @click="openChangeCategoryModal(product)"
-                        class="px-3 py-1 bg-blue-500 text-white rounded text-xs font-medium hover:bg-blue-600 transition-colors"
-                      >
-                        {{ $t("changeCategory") }}
-                      </button>
-                      <button
-                        @click="openEditProductModal(product)"
-                        class="px-3 py-1 bg-green-500 text-white rounded text-xs font-medium hover:bg-green-600 transition-colors"
-                      >
-                        {{ $t("edit") }}
-                      </button>
-                      <button
-                        @click="deleteProduct(product._id)"
-                        class="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600 transition-colors"
-                      >
-                        {{ $t("delete") }}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </div>
       </div>
