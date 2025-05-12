@@ -1,114 +1,117 @@
 <template>
   <div class="max-w-5xl mx-auto p-6">
-    <!-- Header Section -->
-    <div
-      class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"
-    >
-      <h1 class="text-2xl font-bold text-gray-800 m-0">
-        {{ $t("categories") }}
-      </h1>
-      <button
-        @click="openAddModal"
-        class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm font-medium"
-      >
-        {{ $t("addNewCategory") }}
-      </button>
+    <!-- Header Section with Integrated Tab-Style Design -->
+    <div class="bg-white rounded-t-lg shadow-sm border-b border-gray-200">
+      <div class="flex justify-between items-center px-6 py-4">
+        <div class="text-lg font-semibold text-gray-800">
+          {{ $t("categoriesList") }}
+        </div>
+        <button
+          @click="openAddModal"
+          class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm font-medium flex items-center"
+        >
+          <span class="mr-1">+</span> {{ $t("addNewCategory") }}
+        </button>
+      </div>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="loading" class="flex flex-col items-center justify-center py-12">
+    <!-- Table Container (always visible) -->
+    <div class="bg-white rounded-b-lg shadow-sm overflow-hidden">
+      <!-- Loading State (only for table) -->
       <div
-        class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-4"
-      ></div>
-      <p class="text-gray-600">{{ $t("loading") }}</p>
-    </div>
-
-    <!-- Error State -->
-    <div
-      v-else-if="error"
-      class="text-center p-8 bg-red-50 text-red-600 rounded-md my-4"
-    >
-      <p>{{ error }}</p>
-      <button
-        @click="fetchCategories"
-        class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+        v-if="loading"
+        class="flex flex-col items-center justify-center py-12"
       >
-        {{ $t("retry") }}
-      </button>
-    </div>
+        <div
+          class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-4"
+        ></div>
+        <p class="text-gray-600">{{ $t("loading") }}</p>
+      </div>
 
-    <!-- Categories Table -->
-    <div v-else class="bg-white rounded-lg shadow-sm overflow-hidden">
-      <table class="w-full border-collapse">
-        <thead>
-          <tr>
-            <th
-              class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200 w-16"
-            >
-              {{ $t("image") }}
-            </th>
-            <th
-              class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
-            >
-              {{ $t("categoryName") }}
-            </th>
-            <th
-              class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
-            >
-              {{ $t("actions") }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="category in categories"
-            :key="category._id"
-            class="hover:bg-gray-50 transition-colors"
-          >
-            <td class="p-4 border-b border-gray-200">
-              <div
-                class="w-12 h-12 rounded-md overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center"
+      <!-- Error State -->
+      <div v-else-if="error" class="text-center p-8 bg-red-50 text-red-600">
+        <p>{{ error }}</p>
+        <button
+          @click="fetchCategories"
+          class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+        >
+          {{ $t("retry") }}
+        </button>
+      </div>
+
+      <!-- Actual Table Content -->
+      <div v-else>
+        <table class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th
+                class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200 w-16"
               >
-                <img
-                  v-if="category.imageUrl"
-                  :src="category.imageUrl"
-                  :alt="category.name"
-                  class="w-full h-full object-cover"
-                  @error="handleImageError"
-                />
-                <span v-else class="text-gray-400 text-xs">
-                  {{ $t("noImage") }}
-                </span>
-              </div>
-            </td>
-            <td class="p-4 border-b border-gray-200">{{ category.name }}</td>
-            <td class="p-4 border-b border-gray-200">
-              <div class="flex gap-2">
-                <button
-                  @click="openEditModal(category)"
-                  class="px-3 py-1 bg-blue-500 text-white rounded text-xs font-medium hover:bg-blue-600 transition-colors"
+                {{ $t("image") }}
+              </th>
+              <th
+                class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+              >
+                {{ $t("categoryName") }}
+              </th>
+              <th
+                class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+              >
+                {{ $t("actions") }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="category in categories"
+              :key="category._id"
+              class="hover:bg-gray-50 transition-colors"
+            >
+              <td class="p-4 border-b border-gray-200">
+                <div
+                  class="w-12 h-12 rounded-md overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center"
                 >
-                  {{ $t("editCategory") }}
-                </button>
-                <button
-                  @click="confirmRemoveCategory(category._id ?? '')"
-                  class="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600 transition-colors"
-                >
-                  {{ $t("delete") }}
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                  <img
+                    v-if="category.imageUrl"
+                    :src="category.imageUrl"
+                    :alt="category.name"
+                    class="w-full h-full object-cover"
+                    @error="handleImageError"
+                  />
+                  <span v-else class="text-gray-400 text-xs">
+                    {{ $t("noImage") }}
+                  </span>
+                </div>
+              </td>
+              <td class="p-4 border-b border-gray-200">{{ category.name }}</td>
+              <td class="p-4 border-b border-gray-200">
+                <div class="flex gap-2">
+                  <button
+                    @click="openEditModal(category)"
+                    class="px-3 py-1 bg-blue-500 text-white rounded text-xs font-medium hover:bg-blue-600 transition-colors"
+                  >
+                    {{ $t("editCategory") }}
+                  </button>
+                  <button
+                    @click="confirmRemoveCategory(category._id ?? '')"
+                    class="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600 transition-colors"
+                  >
+                    {{ $t("delete") }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-      <!-- Empty State -->
-      <p
-        v-if="categories.length === 0"
-        class="text-center py-8 text-gray-500 italic"
-      >
-        {{ $t("noCategories") }}
-      </p>
+        <!-- Empty State -->
+        <p
+          v-if="categories.length === 0"
+          class="text-center py-8 text-gray-500 italic"
+        >
+          {{ $t("noCategories") }}
+        </p>
+      </div>
     </div>
 
     <!-- Modals -->
