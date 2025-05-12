@@ -306,12 +306,10 @@ import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/stores/authStore";
 
 import { getProductBySlug } from "@/services/productService";
-import { getCategoryBySlug } from "@/services/categoryService";
 
 import AddToCartButton from "@/components/general/AddToCartButton.vue";
 
 import type { Product } from "@/types/products";
-import type { Category } from "@/types/category";
 
 // Composables
 const route = useRoute();
@@ -321,7 +319,6 @@ const authStore = useAuthStore();
 
 // State
 const product = ref<Product | null>(null);
-const category = ref<Category | null>(null);
 const loading = ref<boolean>(true);
 const error = ref<string>("");
 const currentImage = ref<string>("");
@@ -425,29 +422,6 @@ const navigateImages = (direction: "next" | "prev"): void => {
   modalImage.value = images[newIndex];
 };
 
-// Validation
-const validateCategoryForProduct = async (): Promise<void> => {
-  if (!product.value || !product.value.category || !categorySlug.value) return;
-
-  try {
-    // Get the category to verify it matches the one in the URL
-    const categoryResponse = await getCategoryBySlug(categorySlug.value);
-    category.value = categoryResponse.category;
-
-    // If category from URL doesn't match product's actual category, redirect
-    if (category.value._id !== product.value.category) {
-      const correctCategoryResponse = await getCategoryBySlug(
-        category.value.slug
-      );
-      const correctCategory = correctCategoryResponse.category;
-
-      router.replace(`/${correctCategory.slug}/${product.value.slug}`);
-    }
-  } catch (err) {
-    console.error("Error validating category:", err);
-  }
-};
-
 // Fetch product data
 const fetchProductData = async (): Promise<void> => {
   loading.value = true;
@@ -455,7 +429,18 @@ const fetchProductData = async (): Promise<void> => {
   currentImage.value = ""; // Reset to avoid showing old images
 
   try {
-    const response = await getProductBySlug(productSlug.value);
+    // Pass the categorySlug to API for validation
+    const response = await getProductBySlug(
+      productSlug.value,
+      categorySlug.value
+    );
+
+    // Check if we need to redirect to the correct category path
+    if (response.redirectNeeded && response.correctCategorySlug) {
+      router.replace(`/${response.correctCategorySlug}/${productSlug.value}`);
+      return;
+    }
+
     product.value = response.product;
 
     if (
@@ -465,9 +450,6 @@ const fetchProductData = async (): Promise<void> => {
     ) {
       // Initialize with main image
       currentImage.value = product.value.imageUrls.main;
-
-      // Validate that the category in the URL matches the product's category
-      await validateCategoryForProduct();
     } else {
       // Set a default image if product has no main image
       currentImage.value = "/images/placeholder-product.png";

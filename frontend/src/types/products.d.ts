@@ -69,6 +69,8 @@ export interface ProductListResponse {
 export interface ProductResponse {
   success: boolean;
   product: Product;
+  correctCategorySlug?: string;
+  redirectNeeded?: boolean;
 }
 
 /**

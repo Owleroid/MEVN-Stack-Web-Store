@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
+import type { RouteLocationNormalized, NavigationGuardNext } from "vue-router";
 
 import { useAuthStore } from "@/stores/authStore";
 
 import { getUserLocation, getUserRegion } from "@/services/geolocationService";
+import { getCategoryBySlug } from "@/services/categoryService";
 
 import HomeView from "@/views/HomeView.vue";
 import CollectionsListView from "@/views/CollectionsListView.vue";
@@ -32,6 +34,23 @@ import AdminClientsView from "@/views/admin/ClientsView.vue";
 import AdminNewsView from "@/views/admin/NewsView.vue";
 import AdminSupportView from "@/views/admin/SupportView.vue";
 
+const protectedPaths = [
+  "about",
+  "contact",
+  "news",
+  "cart",
+  "orders",
+  "settings",
+  "checkout",
+  "login",
+  "signup",
+  "password-reset",
+  "admin",
+  "collections",
+];
+
+const validSlugPattern = "[a-z0-9-]+";
+
 const routes = [
   { path: "/", component: HomeView },
   { path: "/login", component: LoginView },
@@ -42,18 +61,74 @@ const routes = [
     component: CollectionsListView,
   },
   {
-    path: "/:slug",
+    path: "/not-found",
+    name: "NotFound",
+    component: NotFoundView,
+  },
+  {
+    path: `/:slug(${validSlugPattern})`,
     name: "Collection",
     component: CollectionProductsView,
     props: true,
+    beforeEnter: async (
+      to: RouteLocationNormalized,
+      _from: RouteLocationNormalized,
+      next: NavigationGuardNext
+    ) => {
+      const slug = to.params.slug as string;
+
+      if (protectedPaths.includes(slug)) {
+        next("/not-found");
+        return;
+      }
+
+      try {
+        const response = await getCategoryBySlug(slug);
+        if (response.success && response.category) {
+          next();
+        } else {
+          next("/not-found");
+        }
+      } catch (error) {
+        console.error("Error validating category:", error);
+        next("/not-found");
+      }
+    },
   },
   {
-    path: "/:categorySlug/:productSlug",
+    path: `/:categorySlug(${validSlugPattern})/:productSlug(${validSlugPattern})`,
     name: "ProductDetail",
     component: ProductDetailView,
     props: true,
     meta: {
       title: "Product Detail",
+    },
+    beforeEnter: async (
+      to: RouteLocationNormalized,
+      _from: RouteLocationNormalized,
+      next: NavigationGuardNext
+    ) => {
+      const categorySlug = to.params.categorySlug as string;
+      const productSlug = to.params.productSlug as string;
+
+      if (protectedPaths.includes(categorySlug)) {
+        next("/not-found");
+        return;
+      }
+
+      try {
+        const { getProductBySlug } = await import("@/services/productService");
+        const response = await getProductBySlug(productSlug, categorySlug);
+
+        if (response.success && !response.redirectNeeded) {
+          next();
+        } else {
+          next("/not-found");
+        }
+      } catch (error) {
+        console.error("Error validating product:", error);
+        next("/not-found");
+      }
     },
   },
   { path: "/about", component: AboutView },
@@ -116,7 +191,10 @@ const routes = [
       { path: "news", component: AdminNewsView },
     ],
   },
-  { path: "/:pathMatch(.*)*", component: NotFoundView },
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: "/not-found",
+  },
 ];
 
 const router = createRouter({
@@ -125,51 +203,58 @@ const router = createRouter({
 });
 
 // Navigation guard to check authentication, admin access, and user location
-router.beforeEach(async (to, from, next) => {
-  // Log warning for deprecated routes
-  if (to.meta.deprecated) {
-    console.warn(
-      `The route "${to.path}" is deprecated and may be removed in the future.`
-    );
-  }
-
-  const authStore = useAuthStore();
-
-  // Check if user region is already stored in session
-  let region = getUserRegion();
-  if (!region) {
-    // Fetch user location and store region in session
-    const location = await getUserLocation();
-    region = location ? location.country_code : "EU";
-    authStore.userRegion = region || "EU";
-  }
-
-  // Set currency and language based on user region if not already set
-  if (!authStore.currency || !authStore.language) {
-    if (region === "RU") {
-      authStore.currency = "rubles";
-      authStore.language = "ru";
-    } else {
-      authStore.currency = "euros";
-      authStore.language = "en";
+router.beforeEach(
+  async (
+    to: RouteLocationNormalized,
+    _from: RouteLocationNormalized,
+    next: NavigationGuardNext
+  ) => {
+    // Log warning for deprecated routes
+    if (to.meta.deprecated) {
+      console.warn(
+        `The route "${to.path}" is deprecated and may be removed in the future.`
+      );
     }
-    sessionStorage.setItem("currency", authStore.currency);
-    sessionStorage.setItem("language", authStore.language);
+
+    const authStore = useAuthStore();
+
+    // Check if user region is already stored in session
+    let region = getUserRegion();
+    if (!region) {
+      // Fetch user location and store region in session
+      const location = await getUserLocation();
+      region = location ? location.country_code : "EU";
+      authStore.userRegion = region || "EU";
+    }
+
+    // Set currency and language based on user region if not already set
+    if (!authStore.currency || !authStore.language) {
+      if (region === "RU") {
+        authStore.currency = "rubles";
+        authStore.language = "ru";
+      } else {
+        authStore.currency = "euros";
+        authStore.language = "en";
+      }
+      sessionStorage.setItem("currency", authStore.currency);
+      sessionStorage.setItem("language", authStore.language);
+    }
+
+    // Set the language for the application
+    document.documentElement.lang = authStore.language;
+
+    const isAuthenticated =
+      sessionStorage.getItem("isAuthenticated") === "true";
+    const isAdmin = sessionStorage.getItem("isAdmin") === "true";
+
+    if (to.meta.requiresAuth && !isAuthenticated) {
+      next("/login");
+    } else if (to.meta.requiresAdmin && !isAdmin) {
+      next("/");
+    } else {
+      next();
+    }
   }
-
-  // Set the language for the application
-  document.documentElement.lang = authStore.language;
-
-  const isAuthenticated = sessionStorage.getItem("isAuthenticated") === "true";
-  const isAdmin = sessionStorage.getItem("isAdmin") === "true";
-
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next("/login");
-  } else if (to.meta.requiresAdmin && !isAdmin) {
-    next("/");
-  } else {
-    next();
-  }
-});
+);
 
 export default router;

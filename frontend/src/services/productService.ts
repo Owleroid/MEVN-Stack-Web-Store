@@ -63,13 +63,15 @@ export const getProductById = async (id: string): Promise<ProductResponse> => {
 /**
  * Retrieves a specific product by slug (PUBLIC)
  * @param slug - The slug of the product to fetch
- * @returns Promise resolving to the product data
+ * @param categorySlug - Optional category slug to validate correct product-category relationship
+ * @returns Promise resolving to the product data with potential redirection info
  */
 export const getProductBySlug = async (
-  slug: string
+  slug: string,
+  categorySlug?: string
 ): Promise<ProductResponse> => {
   const response: AxiosResponse<ProductResponse> = await productService.get(
-    `/slug/${slug}`
+    `/slug/${slug}${categorySlug ? `?categorySlug=${categorySlug}` : ""}`
   );
   return response.data;
 };

@@ -84,13 +84,29 @@ export const getProductById = asyncHandler(
 export const getProductBySlug = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { slug } = req.params;
-
-    console.log("Slug:", slug);
+    const { categorySlug } = req.query;
 
     const product = await Product.findOne({ slug });
 
     if (!product) {
       return next(new ApiError(404, "Product not found"));
+    }
+
+    if (categorySlug) {
+      const productCategory = await Category.findById(product.category);
+
+      if (!productCategory) {
+        return next(new ApiError(500, "Product category not found"));
+      }
+
+      if (productCategory.slug !== categorySlug) {
+        return res.status(200).json({
+          success: true,
+          product,
+          correctCategorySlug: productCategory.slug,
+          redirectNeeded: true,
+        });
+      }
     }
 
     res.status(200).json({
