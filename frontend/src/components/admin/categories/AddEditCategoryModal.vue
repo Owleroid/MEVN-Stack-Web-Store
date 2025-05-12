@@ -161,23 +161,13 @@ const showImageManager = ref(false);
 
 // Watchers
 watch(
-  () => props.initialCategoryName,
+  () => props.show,
   (newValue) => {
-    categoryName.value = newValue;
-  }
-);
-
-watch(
-  () => props.initialCategoryImageUrl,
-  (newValue) => {
-    categoryImageUrl.value = newValue;
-  }
-);
-
-watch(
-  () => props.initialCategorySlug,
-  (newValue) => {
-    categorySlug.value = newValue;
+    if (newValue) {
+      categoryName.value = props.initialCategoryName;
+      categoryImageUrl.value = props.initialCategoryImageUrl;
+      categorySlug.value = props.initialCategorySlug;
+    }
   }
 );
 
