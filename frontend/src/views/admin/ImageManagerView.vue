@@ -26,9 +26,13 @@
 
         <button
           @click="handleUploadImages"
-          :disabled="selectedFiles.length === 0"
-          class="px-4 py-2 bg-blue-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          :disabled="selectedFiles.length === 0 || uploadingImages"
+          class="px-4 py-2 bg-blue-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center gap-2"
         >
+          <div
+            v-if="uploadingImages"
+            class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"
+          ></div>
           {{ $t("upload") }}
         </button>
 
@@ -85,41 +89,44 @@
         </div>
       </div>
 
-      <!-- Loading State -->
-      <div v-if="loading" class="text-center p-8">
-        <div
-          class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-blue-600"
-        ></div>
-        <p class="mt-4 text-gray-500">{{ $t("loadingImages") }}</p>
-      </div>
-
-      <!-- Empty State -->
-      <div v-else-if="images.length === 0" class="text-center p-8">
-        <p class="text-gray-500">{{ $t("noImages") }}</p>
-      </div>
-
-      <!-- Image Grid -->
-      <div v-else class="p-4">
-        <div
-          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
-        >
+      <!-- Image List Container -->
+      <div>
+        <!-- Loading State --->
+        <div v-if="loadingImages" class="text-center p-8">
           <div
-            v-for="image in sortedImages"
-            :key="image.url"
-            @click="toggleImageSelection(image)"
-            class="relative rounded-lg overflow-hidden bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 cursor-pointer"
-            :class="{ 'ring-2 ring-blue-500 bg-blue-50': isSelected(image) }"
+            class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-blue-600"
+          ></div>
+          <p class="mt-4 text-gray-500">{{ $t("loadingImages") }}</p>
+        </div>
+
+        <!-- Empty State -->
+        <div v-else-if="images.length === 0" class="text-center p-8">
+          <p class="text-gray-500">{{ $t("noImages") }}</p>
+        </div>
+
+        <!-- Image Grid -->
+        <div v-else class="p-4">
+          <div
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
           >
-            <img
-              :src="image.url"
-              :alt="image.name"
-              class="w-full h-32 object-cover"
-            />
-            <div class="p-2">
-              <p class="text-sm text-gray-700 truncate">{{ image.name }}</p>
-              <p class="text-xs text-gray-500 mt-1">
-                {{ formatDate(image.createdAt) }}
-              </p>
+            <div
+              v-for="image in sortedImages"
+              :key="image.url"
+              @click="toggleImageSelection(image)"
+              class="relative rounded-lg overflow-hidden bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 cursor-pointer"
+              :class="{ 'ring-2 ring-blue-500 bg-blue-50': isSelected(image) }"
+            >
+              <img
+                :src="image.url"
+                :alt="image.name"
+                class="w-full h-32 object-cover"
+              />
+              <div class="p-2">
+                <p class="text-sm text-gray-700 truncate">{{ image.name }}</p>
+                <p class="text-xs text-gray-500 mt-1">
+                  {{ formatDate(image.createdAt) }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -139,8 +146,13 @@
 
         <button
           @click="deleteSelectedImages"
-          class="px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          :disabled="deletingImages"
+          class="px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
+          <div
+            v-if="deletingImages"
+            class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"
+          ></div>
           {{ $t("deleteSelected") }}
         </button>
 
@@ -181,13 +193,17 @@ const { t } = useI18n();
 const images = ref<ImageInfo[]>([]);
 const selectedImages = ref<ImageInfo[]>([]);
 
+// Load state management
+const loadingImages = ref(false);
+const uploadingImages = ref(false);
+const deletingImages = ref(false);
+
 // Upload state
 const selectedFiles = ref<File[]>([]);
-const loading = ref(false);
 
 // Sorting state
 const sortBy = ref<"createdAt" | "name">("createdAt");
-const sortDirection = ref<"asc" | "desc">("desc"); // Default newest first
+const sortDirection = ref<"asc" | "desc">("desc");
 
 // Configuration constants
 const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
@@ -203,7 +219,6 @@ const sortedImages = computed(() => {
       const dateB = new Date(b.createdAt).getTime();
       return sortDirection.value === "asc" ? dateA - dateB : dateB - dateA;
     } else {
-      // Sort by name
       const nameA = a.name.toLowerCase();
       const nameB = b.name.toLowerCase();
       return sortDirection.value === "asc"
@@ -228,7 +243,7 @@ const formatDate = (dateString: string): string => {
 
 // Data Fetching
 const fetchImagesFromBackend = async (): Promise<void> => {
-  loading.value = true;
+  loadingImages.value = true;
 
   try {
     const { images: fetchedImages } = await fetchImages();
@@ -237,7 +252,7 @@ const fetchImagesFromBackend = async (): Promise<void> => {
     console.error("Error fetching images:", error);
     toast.error(t("fetchImagesError"));
   } finally {
-    loading.value = false;
+    loadingImages.value = false;
   }
 };
 
@@ -251,13 +266,11 @@ const handleFileUpload = (event: Event): void => {
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      // Validate file type
       if (!allowedMimeTypes.includes(file.type)) {
         toast.error(t("invalidFileType", { fileName: file.name }));
         continue;
       }
 
-      // Validate file size
       if (file.size > maxFileSize) {
         toast.error(t("fileTooLarge", { fileName: file.name }));
         continue;
@@ -277,7 +290,7 @@ const handleFileUpload = (event: Event): void => {
 const handleUploadImages = async (): Promise<void> => {
   if (selectedFiles.value.length === 0) return;
 
-  loading.value = true;
+  uploadingImages.value = true;
 
   try {
     await uploadImagesService(selectedFiles.value);
@@ -288,7 +301,7 @@ const handleUploadImages = async (): Promise<void> => {
     console.error("Upload Error:", error);
     toast.error(t("uploadError"));
   } finally {
-    loading.value = false;
+    uploadingImages.value = false;
   }
 };
 
@@ -329,13 +342,12 @@ const copySelectedUrls = (): void => {
 const deleteSelectedImages = async (): Promise<void> => {
   if (selectedImages.value.length === 0) return;
 
-  loading.value = true;
+  deletingImages.value = true;
 
   try {
     const imageNames = selectedImages.value.map((image) => image.name);
     await deleteImages(imageNames);
 
-    // Remove deleted images from the local state
     images.value = images.value.filter((img) => !imageNames.includes(img.name));
 
     selectedImages.value = [];
@@ -344,7 +356,7 @@ const deleteSelectedImages = async (): Promise<void> => {
     console.error("Delete error:", error);
     toast.error(t("deleteError"));
   } finally {
-    loading.value = false;
+    deletingImages.value = false;
   }
 };
 
