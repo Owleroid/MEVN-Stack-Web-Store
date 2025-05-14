@@ -1,0 +1,10 @@
+{
+  "changeAnnouncementImage": "Изменить изображение объявления",
+  "productImages": "Изображения товара",
+  "customImage": "Пользовательское изображение",
+  "selected": "Выбрано",
+  "removeCustomImage": "Удалить пользовательское изображение",
+  "chooseFromImageManager": "Выбрать из менеджера изображений",
+  "cancel": "Отмена",
+  "saveImage": "Сохранить изображение"
+}

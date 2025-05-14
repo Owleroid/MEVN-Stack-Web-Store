@@ -16,6 +16,7 @@ import geoRoutes from "./features/geolocation-manager/geoRoutes.js";
 import categoryRoutes from "./features/categories/categoryRoutes.js";
 import warehouseRoutes from "./features/warehouses/warehouseRoutes.js";
 import imageManagerRoutes from "./features/image-manager/imageManagerRoutes.js";
+import announcementRoutes from "./features/announcements/announcementRoutes.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
 
@@ -36,6 +37,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/warehouses", warehouseRoutes);
 app.use("/api/image-manager", imageManagerRoutes);
+app.use("/api/announcements", announcementRoutes);
 
 app.use(errorHandler);
 

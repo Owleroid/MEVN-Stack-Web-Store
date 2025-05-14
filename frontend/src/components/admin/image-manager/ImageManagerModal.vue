@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="show"
-    class="fixed inset-0 z-10 flex items-center justify-center overflow-auto bg-black/40"
+    class="fixed inset-0 z-[60] flex items-center justify-center overflow-auto bg-black/40"
   >
     <div
       class="relative w-11/12 max-w-3xl p-6 mx-auto bg-white rounded-lg shadow-lg max-h-[90vh] overflow-y-auto"

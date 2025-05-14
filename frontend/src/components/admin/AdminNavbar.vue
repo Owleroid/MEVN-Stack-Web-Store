@@ -73,6 +73,15 @@
         </li>
         <li>
           <router-link
+            to="/admin/announcements"
+            class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 hover:text-white transition-colors"
+            active-class="bg-gray-900 text-white"
+          >
+            {{ $t("announcements") }}
+          </router-link>
+        </li>
+        <li>
+          <router-link
             to="/admin/news"
             class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 hover:text-white transition-colors"
             active-class="bg-gray-900 text-white"
