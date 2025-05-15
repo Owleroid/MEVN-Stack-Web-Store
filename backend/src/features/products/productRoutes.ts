@@ -1,7 +1,7 @@
 import express from "express";
 
 import {
-  searchProductsByName,
+  searchProducts,
   getProductsByCategoryId,
   getProductIdsByCategoryId,
   getProductById,
@@ -19,7 +19,7 @@ const router = express.Router();
 // Public routes - specific routes first
 router.get("/category/:categoryId/ids", getProductIdsByCategoryId);
 router.get("/category/:categoryId", getProductsByCategoryId);
-router.get("/search/:name", searchProductsByName);
+router.get("/search/:query", searchProducts);
 router.get("/slug/:slug", getProductBySlug);
 router.get("/:id", getProductById);
 

@@ -16,7 +16,7 @@
         type="text"
         v-model="newProductName"
         id="newProductName"
-        @input="searchProducts"
+        @input="searchProductsHandler"
         class="mt-1 block w-full py-2.5 px-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         :placeholder="$t('searchProductPlaceholder')"
         :aria-invalid="!!errors.product"
@@ -90,34 +90,41 @@
       </div>
     </div>
 
-    <button
-      type="button"
-      @click="addProduct"
-      class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mt-6"
-      :disabled="!selectedProduct || newProductAmount < 1"
-    >
-      {{ $t("addToOrder") }}
-    </button>
+    <div class="flex justify-end gap-3 mt-6">
+      <button
+        type="button"
+        @click="close"
+        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors font-medium shadow-sm"
+      >
+        {{ $t("cancel") }}
+      </button>
+      <button
+        type="button"
+        @click="addProduct"
+        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 font-medium shadow-sm"
+        :disabled="!selectedProduct || newProductAmount < 1"
+      >
+        {{ $t("addToOrder") }}
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
+import debounce from "lodash/debounce";
 
 import type { Product } from "@/types/products";
-import type { OrderProduct } from "@/types/orders";
 
-import { searchProductsByName } from "@/services/productService";
+import { searchProducts } from "@/services/productService";
 
 // Props & Emits
 const props = defineProps<{
   existingProductIds: string[];
 }>();
 
-const emit = defineEmits<{
-  (e: "addProduct", product: OrderProduct): void;
-}>();
+const emits = defineEmits(["addProduct", "close"]);
 
 // Composables
 const { t } = useI18n();
@@ -144,37 +151,35 @@ const errors = ref<ValidationErrors>({
 });
 
 // Search & Selection Logic
-const searchProducts = async (): Promise<void> => {
-  // Reset state
-  errors.value.product = "";
-
-  // Clear results when input is empty
+const searchProductsHandler = debounce(async () => {
   if (!newProductName.value.trim()) {
     searchResults.value = [];
     selectedProduct.value = null;
     return;
   }
 
-  // Don't search until user types at least 2 characters
   if (newProductName.value.trim().length < 2) {
+    searchResults.value = [];
     return;
   }
 
   try {
     isSearching.value = true;
-    const response = await searchProductsByName(newProductName.value);
-
-    // Filter out products already in order
-    searchResults.value = response.products.filter(
-      (product) => !props.existingProductIds.includes(product._id)
-    );
-  } catch (error: unknown) {
+    const { success, products } = await searchProducts(newProductName.value);
+    if (success) {
+      searchResults.value = products.filter(
+        (product) => !props.existingProductIds.includes(product._id)
+      );
+    } else {
+      searchResults.value = [];
+    }
+  } catch (error) {
     console.error("Error searching products:", error);
     errors.value.product = t("errorSearchingProducts");
   } finally {
     isSearching.value = false;
   }
-};
+}, 300);
 
 const selectProduct = (product: Product): void => {
   selectedProduct.value = product;
@@ -187,13 +192,11 @@ const validateForm = (): boolean => {
   let isValid = true;
   errors.value = { product: "", amount: "" };
 
-  // Validate product selection
   if (!selectedProduct.value) {
     errors.value.product = t("selectProductError");
     isValid = false;
   }
 
-  // Validate quantity
   if (!newProductAmount.value || newProductAmount.value < 1) {
     errors.value.amount = t("invalidQuantityError");
     isValid = false;
@@ -206,15 +209,13 @@ const addProduct = (): void => {
   if (!validateForm()) return;
 
   if (selectedProduct.value) {
-    // Emit product data to parent component
-    emit("addProduct", {
+    emits("addProduct", {
       productId: selectedProduct.value._id,
       name: selectedProduct.value.name,
       amount: newProductAmount.value,
       productPrice: selectedProduct.value.price.euros.amount,
     });
 
-    // Reset form after successful add
     resetForm();
   }
 };
@@ -226,6 +227,10 @@ const resetForm = (): void => {
   errors.value = { product: "", amount: "" };
 };
 
+const close = () => {
+  emits("close");
+};
+
 // Helper Functions
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat("en-US", {
@@ -233,14 +238,4 @@ const formatPrice = (price: number): string => {
     currency: "EUR",
   }).format(price);
 };
-
-// Computed values for selected product display
-const totalPrice = computed((): string => {
-  if (selectedProduct.value && newProductAmount.value > 0) {
-    return formatPrice(
-      selectedProduct.value.price.euros.amount * newProductAmount.value
-    );
-  }
-  return formatPrice(0);
-});
 </script>

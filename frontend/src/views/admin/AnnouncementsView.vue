@@ -12,7 +12,7 @@
         <div class="mb-4">
           <input
             v-model="searchQuery"
-            @input="searchProducts"
+            @input="searchProductsHandler"
             class="w-full p-2 border border-gray-300 rounded-md"
             :placeholder="$t('searchProducts')"
             type="text"
@@ -287,7 +287,7 @@ import type { Product } from "@/types/products";
 import type { Announcement } from "@/types/announcement";
 import type { ImageInfo } from "@/types/image";
 
-import { searchProductsByName } from "@/services/productService";
+import { searchProducts } from "@/services/productService";
 import {
   getAllAnnouncements,
   createAnnouncement as createAnnouncementService,
@@ -328,14 +328,14 @@ const showDeleteModal = ref(false);
 const announcementToDelete = ref<string | null>(null);
 
 // Search for products
-const searchProducts = debounce(async () => {
+const searchProductsHandler = debounce(async () => {
   if (!searchQuery.value.trim()) {
     searchResults.value = [];
     return;
   }
 
   try {
-    const { success, products } = await searchProductsByName(searchQuery.value);
+    const { success, products } = await searchProducts(searchQuery.value);
     if (success) {
       searchResults.value = products;
     }

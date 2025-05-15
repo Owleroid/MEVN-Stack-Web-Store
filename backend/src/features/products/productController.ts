@@ -6,17 +6,22 @@ import Warehouse from "../warehouses/WarehouseModel.js";
 import Category from "../categories/CategoryModel.js";
 
 import ApiError from "../../utils/apiError.js";
-import { asyncHandler } from "../../utils/asyncHandler.js";
+import { asyncHandler, transactionHandler } from "../../utils/asyncHandler.js";
 
-export const searchProductsByName = asyncHandler(
+export const searchProducts = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name } = req.params;
-    if (!name) {
-      return next(new ApiError(400, "Product name is required"));
+    const { query } = req.params;
+
+    if (!query) {
+      return next(new ApiError(400, "Search query is required"));
     }
 
     const products = await Product.find({
-      name: { $regex: name, $options: "i" },
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { slug: { $regex: query, $options: "i" } },
+        { productNumber: { $regex: query, $options: "i" } },
+      ],
     });
 
     res.status(200).json({
@@ -30,7 +35,6 @@ export const getProductsByCategoryId = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { categoryId } = req.params;
 
-    // Validate that the category exists
     const categoryExists = await Category.findById(categoryId);
     if (!categoryExists) {
       return next(new ApiError(404, "Category not found"));
@@ -49,7 +53,6 @@ export const getProductIdsByCategoryId = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { categoryId } = req.params;
 
-    // Validate that the category exists
     const categoryExists = await Category.findById(categoryId);
     if (!categoryExists) {
       return next(new ApiError(404, "Category not found"));
@@ -116,10 +119,17 @@ export const getProductBySlug = asyncHandler(
   }
 );
 
-export const addProduct = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+export const addProduct = transactionHandler(
+  async (
+    req: Request,
+    res: Response,
+    _next: NextFunction,
+    session: mongoose.ClientSession
+  ) => {
     const {
       name,
+      slug,
+      productNumber,
       category,
       price,
       artist,
@@ -131,19 +141,37 @@ export const addProduct = asyncHandler(
       imageUrls = { main: "", secondary: [] },
     } = req.body;
 
-    // Validate that the category exists
-    const categoryExists = await Category.findById(category);
+    const categoryExists = await Category.findById(category).session(session);
     if (!categoryExists) {
-      return next(new ApiError(404, "Category not found"));
+      throw new ApiError(404, "Category not found");
     }
 
-    const existingProduct = await Product.findOne({ name });
+    const existingProduct = await Product.findOne({ name }).session(session);
     if (existingProduct) {
-      return next(new ApiError(400, "Product with this name already exists"));
+      throw new ApiError(400, "Product with this name already exists");
+    }
+
+    if (slug) {
+      const existingSlug = await Product.findOne({ slug }).session(session);
+      if (existingSlug) {
+        throw new ApiError(400, "Product with this slug already exists");
+      }
+    }
+
+    const existingProductNumber = await Product.findOne({
+      productNumber,
+    }).session(session);
+    if (existingProductNumber) {
+      throw new ApiError(
+        400,
+        "Product with this product number already exists"
+      );
     }
 
     const newProduct = new Product({
       name,
+      slug,
+      productNumber,
       category,
       price,
       artist,
@@ -155,22 +183,22 @@ export const addProduct = asyncHandler(
       imageUrls,
     });
 
-    const savedProduct = await newProduct.save();
+    const savedProduct = await newProduct.save({ session });
 
-    // Fetch all warehouses and update each with the new product and amount 0
-    const warehouses = await Warehouse.find();
+    const warehouses = await Warehouse.find().session(session);
     for (const warehouse of warehouses) {
       warehouse.products.push({
         product: new mongoose.Types.ObjectId(savedProduct._id),
         name: savedProduct.name,
         amount: 0,
       });
-      await warehouse.save();
+      await warehouse.save({ session });
     }
 
     res.status(201).json({
       success: true,
       productId: savedProduct._id,
+      slug: savedProduct.slug,
     });
   }
 );
@@ -180,11 +208,21 @@ export const editProduct = asyncHandler(
     const { id } = req.params;
     const updatedProduct = req.body;
 
-    // If category is being updated, validate it exists
     if (updatedProduct.category) {
       const categoryExists = await Category.findById(updatedProduct.category);
       if (!categoryExists) {
         return next(new ApiError(404, "Category not found"));
+      }
+    }
+
+    if (updatedProduct.slug) {
+      const existingSlug = await Product.findOne({
+        slug: updatedProduct.slug,
+        _id: { $ne: id },
+      });
+
+      if (existingSlug) {
+        return next(new ApiError(400, "Product with this slug already exists"));
       }
     }
 
@@ -199,6 +237,7 @@ export const editProduct = asyncHandler(
     res.status(200).json({
       success: true,
       productId: id,
+      slug: product.slug,
     });
   }
 );
@@ -208,7 +247,6 @@ export const updateProductCategory = asyncHandler(
     const { id } = req.params;
     const { categoryId } = req.body;
 
-    // Validate that the category exists
     const categoryExists = await Category.findById(categoryId);
     if (!categoryExists) {
       return next(new ApiError(404, "Category not found"));
@@ -242,7 +280,6 @@ export const deleteProduct = asyncHandler(
       return next(new ApiError(404, "Product not found"));
     }
 
-    // Remove the product from all warehouses
     await Warehouse.updateMany({}, { $pull: { products: { product: id } } });
 
     res.status(200).json({

@@ -120,11 +120,6 @@
                     <th
                       class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
                     >
-                      {{ $t("slug") }}
-                    </th>
-                    <th
-                      class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
-                    >
                       {{ $t("actions") }}
                     </th>
                   </tr>
@@ -156,9 +151,6 @@
                     </td>
                     <td class="p-4 border-b border-gray-200">
                       {{ product.name }}
-                    </td>
-                    <td class="p-4 border-b border-gray-200">
-                      {{ product.slug }}
                     </td>
                     <td class="p-4 border-b border-gray-200">
                       <div class="flex flex-wrap gap-2">
@@ -249,11 +241,10 @@ const toast = useToast();
 const { on, emit } = useEventBus();
 
 // State Management
-// Data state
 const categories = ref<Category[]>([]);
 const products = ref<Product[]>([]);
 const selectedCategory = ref<string>("");
-// Split loading states for categories and products
+
 const loadingCategories = ref(true);
 const loadingProducts = ref(false);
 
@@ -265,10 +256,10 @@ const showEditProductModal = ref(false);
 // Form state
 const productToChangeCategory = ref<Product | null>(null);
 
-// Define our form interfaces matching the expected structure
 interface ProductFormData {
   name: string;
   slug: string;
+  productNumber: string;
   priceRubles: number;
   priceEuros: number;
   artist: string;
@@ -288,6 +279,7 @@ interface EditProductFormData extends ProductFormData {
 const newProduct = ref<ProductFormData>({
   name: "",
   slug: "",
+  productNumber: "",
   priceRubles: 0,
   priceEuros: 0,
   artist: "",
@@ -304,6 +296,7 @@ const editProduct = ref<EditProductFormData>({
   id: "",
   name: "",
   slug: "",
+  productNumber: "",
   priceRubles: 0,
   priceEuros: 0,
   artist: "",
@@ -384,6 +377,7 @@ const resetNewProductForm = () => {
   newProduct.value = {
     name: "",
     slug: "",
+    productNumber: "",
     priceRubles: 0,
     priceEuros: 0,
     artist: "",
@@ -417,6 +411,7 @@ const openEditProductModal = async (product: Product) => {
       id: fetchedProduct._id,
       name: fetchedProduct.name,
       slug: fetchedProduct.slug,
+      productNumber: fetchedProduct.productNumber,
       priceRubles: fetchedProduct.price.rubles.amount,
       priceEuros: fetchedProduct.price.euros.amount,
       artist: fetchedProduct.artist || "",
@@ -475,6 +470,7 @@ const submitAddProductForm = async () => {
     const product: ProductInput = {
       name: newProduct.value.name,
       slug: newProduct.value.slug,
+      productNumber: newProduct.value.productNumber,
       category: selectedCategory.value,
       price: {
         rubles: { amount: newProduct.value.priceRubles },
@@ -516,6 +512,7 @@ const submitEditProductForm = async () => {
     const product: ProductInput = {
       name: editProduct.value.name,
       slug: editProduct.value.slug,
+      productNumber: editProduct.value.productNumber,
       category: selectedCategory.value,
       price: {
         rubles: { amount: editProduct.value.priceRubles },
@@ -555,7 +552,7 @@ const deleteProduct = async (id: string) => {
 
   try {
     await deleteProductService(id);
-    fetchProducts(); // Refresh the list after deletion
+    fetchProducts();
     toast.success(t("productDeletedSuccessfully"));
   } catch (error: unknown) {
     console.error("Failed to delete product:", error);

@@ -76,7 +76,7 @@
                 v-if="order.status === 'waiting confirmation'"
                 value="waiting confirmation"
               >
-                {{ $t("waitingConfirmation") }}
+                {{ $t("waiting confirmation") }}
               </option>
               <option value="packing">{{ $t("packing") }}</option>
               <option value="sended">{{ $t("sended") }}</option>
@@ -156,24 +156,20 @@ const viewOrder = (order: OrderData): void => {
 
 const editOrder = (order: OrderData): void => {
   if (order.status === "canceled") {
-    return; // Prevent editing canceled orders
+    return;
   }
   emit("editOrder", order);
 };
 
-// Modified updateStatus function to show modal instead of confirmation dialog
 const updateStatus = (order: OrderData): void => {
   if (!order._id) return;
 
   const newStatus = order.status;
   const oldStatus = originalStatuses.value[order._id];
 
-  // Special handling for cancellation - use modal instead of direct confirmation
   if (oldStatus !== "canceled" && newStatus === "canceled") {
-    // Revert the status change temporarily until confirmation
     order.status = oldStatus;
 
-    // Show cancel confirmation modal
     orderToCancel.value = order;
     showCancelModal.value = true;
     return;
@@ -192,7 +188,6 @@ const closeCancelModal = (): void => {
 const confirmCancelOrder = (orderId: string): void => {
   emit("updateOrderStatus", orderId, "canceled");
 
-  // Update the original status in our tracking
   if (orderId) {
     originalStatuses.value[orderId] = "canceled";
   }
@@ -202,40 +197,6 @@ const confirmCancelOrder = (orderId: string): void => {
 const formatDate = (date?: Date | string): string => {
   if (!date) return t("dateNotAvailable");
   return new Date(date).toLocaleString();
-};
-
-const statusKey = (status: OrderStatus): string => {
-  switch (status) {
-    case "waiting confirmation":
-      return "waitingConfirmation";
-    case "packing":
-      return "packing";
-    case "sended":
-      return "sended";
-    case "delivered":
-      return "delivered";
-    case "canceled":
-      return "canceled";
-    default:
-      return "unknown";
-  }
-};
-
-const getStatusClass = (status: OrderStatus): string => {
-  switch (status) {
-    case "waiting confirmation":
-      return "bg-yellow-100 text-yellow-800";
-    case "packing":
-      return "bg-blue-100 text-blue-800";
-    case "sended":
-      return "bg-purple-100 text-purple-800";
-    case "delivered":
-      return "bg-green-100 text-green-800";
-    case "canceled":
-      return "bg-red-100 text-red-800";
-    default:
-      return "bg-gray-100 text-gray-800";
-  }
 };
 
 // Function for select styling

@@ -77,15 +77,15 @@ export const getProductBySlug = async (
 };
 
 /**
- * Searches for products by name (partial match) (PUBLIC)
- * @param name - The search query for product names
+ * Searches for products by name, slug, or product number (partial match) (PUBLIC)
+ * @param query - The search query for product names, slugs, or product numbers
  * @returns Promise resolving to list of matching products
  */
-export const searchProductsByName = async (
-  name: string
+export const searchProducts = async (
+  query: string
 ): Promise<ProductListResponse> => {
   const response: AxiosResponse<ProductListResponse> = await productService.get(
-    `/search/${name}`
+    `/search/${query}`
   );
   return response.data;
 };

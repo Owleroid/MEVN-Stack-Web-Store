@@ -1,6 +1,3 @@
-/**
- * Currency details including base price and discount information
- */
 export interface CurrencyDetails {
   amount: number;
   discount?: number;
@@ -8,13 +5,11 @@ export interface CurrencyDetails {
   discountEndDate?: Date;
 }
 
-/**
- * Complete product data structure from the database
- */
 export interface Product {
   _id: string;
   name: string;
   slug: string;
+  productNumber: string;
   category: string;
   price: {
     rubles: CurrencyDetails;
@@ -32,13 +27,11 @@ export interface Product {
   };
 }
 
-/**
- * Input data structure for creating or updating products
- */
 export interface ProductInput {
   name: string;
   category: string;
   slug?: string;
+  productNumber: string;
   price: {
     rubles: CurrencyDetails;
     euros: CurrencyDetails;
@@ -55,17 +48,11 @@ export interface ProductInput {
   };
 }
 
-/**
- * Response for product list operations
- */
 export interface ProductListResponse {
   success: boolean;
   products: Product[];
 }
 
-/**
- * Response for single product operations
- */
 export interface ProductResponse {
   success: boolean;
   product: Product;
@@ -73,17 +60,11 @@ export interface ProductResponse {
   redirectNeeded?: boolean;
 }
 
-/**
- * Response for product ID list operations
- */
 export interface ProductIdsResponse {
   success: boolean;
   productIds: string[];
 }
 
-/**
- * Response for product action operations (create, update, delete)
- */
 export interface ProductActionResponse {
   success: boolean;
   productId?: string;

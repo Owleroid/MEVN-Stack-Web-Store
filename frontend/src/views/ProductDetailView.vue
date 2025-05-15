@@ -147,6 +147,12 @@
         <!-- Product Info -->
         <div class="space-y-6">
           <h1 class="text-3xl font-bold text-gray-900">{{ product.name }}</h1>
+          <div v-if="product.productNumber" class="mt-1">
+            <span
+              class="inline-block bg-blue-50 text-blue-700 text-xs font-semibold rounded px-2 py-1"
+              >#{{ product.productNumber }}</span
+            >
+          </div>
 
           <div class="flex items-center space-x-4">
             <p class="text-2xl font-bold text-gray-900">
@@ -426,16 +432,14 @@ const navigateImages = (direction: "next" | "prev"): void => {
 const fetchProductData = async (): Promise<void> => {
   loading.value = true;
   error.value = "";
-  currentImage.value = ""; // Reset to avoid showing old images
+  currentImage.value = "";
 
   try {
-    // Pass the categorySlug to API for validation
     const response = await getProductBySlug(
       productSlug.value,
       categorySlug.value
     );
 
-    // Check if we need to redirect to the correct category path
     if (response.redirectNeeded && response.correctCategorySlug) {
       router.replace(`/${response.correctCategorySlug}/${productSlug.value}`);
       return;
@@ -448,10 +452,8 @@ const fetchProductData = async (): Promise<void> => {
       product.value.imageUrls &&
       product.value.imageUrls.main
     ) {
-      // Initialize with main image
       currentImage.value = product.value.imageUrls.main;
     } else {
-      // Set a default image if product has no main image
       currentImage.value = "/images/placeholder-product.png";
       if (product.value && !product.value.imageUrls) {
         product.value.imageUrls = { main: currentImage.value, secondary: [] };
@@ -476,7 +478,6 @@ const fetchProductData = async (): Promise<void> => {
 
 // Cleanup function
 const cleanup = (): void => {
-  // Remove event listeners when component is unmounted
   document.removeEventListener("keydown", handleEscapeKey);
 };
 

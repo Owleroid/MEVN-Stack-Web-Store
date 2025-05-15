@@ -5,25 +5,35 @@
       <li
         v-for="(product, index) in products"
         :key="product.productId"
-        class="flex items-center justify-between py-2 border-b border-gray-200 last:border-0"
+        class="flex items-center justify-between py-3 px-4 bg-white rounded-lg shadow-sm border border-gray-100"
       >
         <span class="font-medium text-gray-800">{{ product.name }}</span>
-        <div class="flex items-center">
-          <input
-            type="number"
-            v-model.number="product.amount"
-            min="1"
-            @input="updateProductAmount(index, product.amount)"
-            :disabled="!isEditing"
-            class="w-16 px-2 py-1 mx-2 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            aria-label="Product amount"
-          />
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2">
+            <input
+              type="number"
+              v-model.number="product.amount"
+              min="1"
+              @input="updateProductAmount(index, product.amount)"
+              :disabled="!isEditing"
+              class="w-20 px-3 py-2 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 text-base font-semibold transition disabled:bg-gray-100 disabled:text-gray-400"
+              :aria-label="$t('quantity')"
+            />
+            <span class="text-gray-600">×</span>
+            <span class="text-gray-700 font-medium">{{
+              formatPrice(product.productPrice)
+            }}</span>
+            <span class="text-gray-600">=</span>
+            <span class="text-gray-800 font-bold">{{
+              formatPrice(product.productPrice * product.amount)
+            }}</span>
+          </div>
           <button
             v-if="isEditing"
             type="button"
             @click="removeProduct(index)"
-            class="px-3 py-1 text-sm text-white bg-red-600 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
-            aria-label="Remove product"
+            class="px-3 py-2 text-sm font-semibold text-white bg-red-500 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 shadow-sm transition"
+            :aria-label="$t('remove')"
           >
             {{ $t("remove") }}
           </button>
@@ -39,12 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
-
 import type { OrderProduct } from "@/types/orders";
-
-// Composables
-const { t } = useI18n();
 
 // Props Definition
 const props = defineProps<{
@@ -65,5 +70,13 @@ const updateProductAmount = (index: number, amount: number): void => {
 
 const removeProduct = (index: number): void => {
   emit("removeProduct", index);
+};
+
+// Helper Functions
+const formatPrice = (price: number): string => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "EUR",
+  }).format(price);
 };
 </script>

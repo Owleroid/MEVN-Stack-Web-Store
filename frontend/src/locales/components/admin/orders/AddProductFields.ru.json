@@ -9,5 +9,6 @@
   "noProductsFound": "Товары не найдены",
   "errorSearchingProducts": "Ошибка при поиске товаров",
   "selectProductError": "Пожалуйста, выберите продукт из списка",
-  "invalidQuantityError": "Пожалуйста, введите действительное количество (минимум 1)"
+  "invalidQuantityError": "Пожалуйста, введите действительное количество (минимум 1)",
+  "cancel": "Отмена"
 }

@@ -9,5 +9,6 @@
   "noProductsFound": "No products found",
   "errorSearchingProducts": "Error searching products",
   "selectProductError": "Please select a product from the list",
-  "invalidQuantityError": "Please enter a valid quantity (minimum 1)"
+  "invalidQuantityError": "Please enter a valid quantity (minimum 1)",
+  "cancel": "Cancel"
 }

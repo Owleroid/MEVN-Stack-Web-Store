@@ -1,4 +1,4 @@
-import mongoose, { Document, Model } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export interface CurrencyDetails {
   amount: number;
@@ -10,7 +10,8 @@ export interface CurrencyDetails {
 export interface ProductDocument extends Document {
   _id: string;
   name: string;
-  slug: string; // Added slug field
+  slug: string;
+  productNumber: string;
   category: mongoose.Types.ObjectId;
   price: {
     rubles: CurrencyDetails;
@@ -38,6 +39,7 @@ const currencyDetailsSchema = new mongoose.Schema({
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
   slug: { type: String, required: true, unique: true, lowercase: true },
+  productNumber: { type: String, required: true, unique: true },
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
