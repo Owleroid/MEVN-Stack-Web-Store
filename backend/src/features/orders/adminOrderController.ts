@@ -25,6 +25,7 @@ interface OrderUpdateData {
   paymentMethod?: string;
   orderNotes?: string;
   trackingNumber?: string;
+  warehouse?: mongoose.Types.ObjectId;
 }
 
 interface FilterQuery {
@@ -32,12 +33,11 @@ interface FilterQuery {
   checked?: boolean;
 }
 
-// Fetch a specific order by ID
 export const getOrderById = asyncHandler(
   async (req: Request, res: Response) => {
     const { orderId } = req.params;
 
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).populate("warehouse", "name");
 
     if (!order) {
       throw new ApiError(404, "Order not found", ErrorType.RESOURCE_NOT_FOUND);
@@ -50,7 +50,6 @@ export const getOrderById = asyncHandler(
   }
 );
 
-// Edit an order and update warehouse stock accordingly
 export const editOrderById = transactionHandler(
   async (
     req: Request,
@@ -64,6 +63,7 @@ export const editOrderById = transactionHandler(
       currency,
       products: updatedProducts,
       status: newStatus,
+      warehouse: newWarehouseId,
     } = updateData;
 
     const existingOrder = await Order.findById(orderId).session(session);
@@ -72,8 +72,8 @@ export const editOrderById = transactionHandler(
     }
 
     const oldStatus = existingOrder.status;
+    const oldWarehouseId = existingOrder.warehouse;
 
-    // Mark order as checked when status changes from waiting confirmation
     if (
       existingOrder.status === "waiting confirmation" &&
       newStatus !== "waiting confirmation"
@@ -81,43 +81,91 @@ export const editOrderById = transactionHandler(
       updateData.checked = true;
     }
 
-    const warehouse = await Warehouse.findById(existingOrder.warehouse).session(
-      session
-    );
-    if (!warehouse) {
-      throw new ApiError(
-        404,
-        "Warehouse not found for this order",
-        ErrorType.RESOURCE_NOT_FOUND
-      );
-    }
-
     try {
-      // 1. Handle status change from active to canceled
-      if (oldStatus !== "canceled" && newStatus === "canceled") {
-        // Return ALL original products to warehouse
-        await returnProductsToWarehouse(
-          existingOrder.products,
-          warehouse,
-          session
-        );
+      if (
+        newWarehouseId &&
+        newWarehouseId.toString() !== oldWarehouseId?.toString()
+      ) {
+        // Case 1: Order is moving between warehouses
+        if (oldWarehouseId) {
+          const oldWarehouse = await Warehouse.findById(oldWarehouseId).session(
+            session
+          );
+          if (!oldWarehouse) {
+            throw new ApiError(
+              404,
+              "Old warehouse not found",
+              ErrorType.RESOURCE_NOT_FOUND
+            );
+          }
 
-        // No need to handle product changes since order is now canceled
-      }
-      // 2. Handle status change from canceled to active
-      else if (oldStatus === "canceled" && newStatus !== "canceled") {
-        // Remove ALL new products from warehouse
-        await removeProductsFromWarehouse(updatedProducts, warehouse, session);
-      }
-      // 3. Handle normal product changes (no status change or between active statuses)
-      else {
-        // Calculate differences between original and updated products
-        await updateWarehouseStock(
-          existingOrder,
-          updatedProducts,
-          warehouse,
+          if (oldStatus !== "canceled") {
+            await returnProductsToWarehouse(
+              existingOrder.products,
+              oldWarehouse,
+              session
+            );
+          }
+        }
+
+        // Case 2: Order is assigning to new warehouse
+        const newWarehouse = await Warehouse.findById(newWarehouseId).session(
           session
         );
+        if (!newWarehouse) {
+          throw new ApiError(
+            404,
+            "New warehouse not found",
+            ErrorType.RESOURCE_NOT_FOUND
+          );
+        }
+
+        if (newStatus !== "canceled") {
+          await removeProductsFromWarehouse(
+            updatedProducts,
+            newWarehouse,
+            session
+          );
+        }
+      } else {
+        const warehouse = await Warehouse.findById(
+          existingOrder.warehouse
+        ).session(session);
+
+        if (!warehouse) {
+          throw new ApiError(
+            404,
+            "Warehouse not found for this order",
+            ErrorType.RESOURCE_NOT_FOUND
+          );
+        }
+
+        // 1. Handle status change from active to canceled
+        if (oldStatus !== "canceled" && newStatus === "canceled") {
+          await returnProductsToWarehouse(
+            existingOrder.products,
+            warehouse,
+            session
+          );
+        }
+        // 2. Handle status change from canceled to active
+        else if (oldStatus === "canceled" && newStatus !== "canceled") {
+          // Remove ALL new products from warehouse
+          await removeProductsFromWarehouse(
+            updatedProducts,
+            warehouse,
+            session
+          );
+        }
+        // 3. Handle normal product changes (no status change or between active statuses)
+        else if (oldStatus !== "canceled" && newStatus !== "canceled") {
+          await updateWarehouseStock(
+            existingOrder,
+            updatedProducts,
+            warehouse,
+            session
+          );
+        }
       }
     } catch (error: unknown) {
       if (error instanceof ApiError) {
@@ -153,10 +201,9 @@ export const editOrderById = transactionHandler(
   }
 );
 
-// Fetch all orders
 export const getAllOrders = asyncHandler(
-  async (req: Request, res: Response) => {
-    const orders = await Order.find();
+  async (_req: Request, res: Response) => {
+    const orders = await Order.find().populate("warehouse", "name");
 
     res.status(200).json({
       success: true,
@@ -165,7 +212,6 @@ export const getAllOrders = asyncHandler(
   }
 );
 
-// Filter orders based on query parameters
 export const filterOrders = asyncHandler(
   async (req: Request, res: Response) => {
     const { status, checked, sortOrder } = req.query;
@@ -180,7 +226,7 @@ export const filterOrders = asyncHandler(
       query.checked = checked === "true";
     }
 
-    let orders = await Order.find(query);
+    let orders = await Order.find(query).populate("warehouse", "name");
 
     if (sortOrder === "newest") {
       orders = orders.sort(

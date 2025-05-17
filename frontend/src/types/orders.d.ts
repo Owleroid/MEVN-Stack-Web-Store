@@ -1,6 +1,3 @@
-/**
- * Interface for order product items
- */
 export interface OrderProduct {
   productId: string;
   name: string;
@@ -8,9 +5,6 @@ export interface OrderProduct {
   productPrice: number;
 }
 
-/**
- * Interface for shipping/delivery address
- */
 export interface Address {
   street: string;
   buildingNumber: string;
@@ -20,9 +14,6 @@ export interface Address {
   country: string;
 }
 
-/**
- * Interface for order recipient information
- */
 export interface Recipient {
   name: string;
   surname: string;
@@ -30,24 +21,14 @@ export interface Recipient {
   email: string;
 }
 
-/**
- * Available order status options
- */
 export type OrderStatus =
   | "waiting confirmation"
   | "packing"
   | "sended"
   | "delivered"
   | "canceled";
-
-/**
- * Available currency options
- */
 export type Currency = "rubles" | "euros";
 
-/**
- * Interface for order data
- */
 export interface OrderData {
   _id?: string;
   orderNumber?: string;
@@ -55,7 +36,12 @@ export interface OrderData {
   products: OrderProduct[];
   totalPrice: number;
   currency: Currency;
-  warehouse?: string;
+  warehouse?:
+    | string
+    | {
+        _id: string;
+        name: string;
+      };
   dateOfCreation?: Date;
   status: OrderStatus;
   checked: boolean;
@@ -66,26 +52,17 @@ export interface OrderData {
   trackingNumber?: string;
 }
 
-/**
- * Response for retrieving a single order
- */
 export interface OrderResponse {
   success: boolean;
   order: OrderData;
   message?: string;
 }
 
-/**
- * Response for retrieving multiple orders
- */
 export interface OrdersListResponse {
   success: boolean;
   orders: OrderData[];
 }
 
-/**
- * Filter parameters for orders
- */
 export interface OrderFilters {
   status?: OrderStatus;
   checked?: boolean;

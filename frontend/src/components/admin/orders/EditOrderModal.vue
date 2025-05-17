@@ -53,6 +53,77 @@
                 </span>
               </p>
             </div>
+
+            <!-- Warehouse Selection -->
+            <div class="col-span-1 md:col-span-2">
+              <p class="text-sm text-gray-600 mb-1">{{ $t("warehouse") }}:</p>
+              <div
+                v-if="isEditing"
+                class="relative warehouse-dropdown-container"
+              >
+                <div class="w-full">
+                  <button
+                    type="button"
+                    @click="isWarehouseDropdownOpen = !isWarehouseDropdownOpen"
+                    class="w-full flex items-center justify-between p-2.5 border border-gray-300 rounded-lg bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    :disabled="!isWarehousesLoaded"
+                  >
+                    <span>{{ currentWarehouseDisplayName }}</span>
+                    <svg
+                      class="w-4 h-4 ml-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  <!-- Dropdown options -->
+                  <div
+                    v-if="isWarehouseDropdownOpen"
+                    class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto"
+                  >
+                    <!-- "No warehouse" option -->
+                    <div
+                      @click="
+                        selectWarehouse('');
+                        isWarehouseDropdownOpen = false;
+                      "
+                      class="p-2.5 hover:bg-gray-100 cursor-pointer"
+                      :class="
+                        selectedWarehouseId === ''
+                          ? 'bg-blue-50 text-blue-700'
+                          : ''
+                      "
+                    >
+                      {{ $t("noWarehouse") }}
+                    </div>
+
+                    <div
+                      v-for="wh in otherWarehouses"
+                      :key="wh._id"
+                      @click="
+                        selectWarehouse(String(wh._id));
+                        isWarehouseDropdownOpen = false;
+                      "
+                      class="p-2.5 hover:bg-gray-100 cursor-pointer"
+                    >
+                      {{ wh.name }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p v-else class="font-medium text-gray-800">
+                {{ warehouseName }}
+              </p>
+            </div>
+
             <div class="col-span-1 md:col-span-2 pt-4 border-t border-gray-100">
               <p class="text-sm text-gray-600 mb-1">{{ $t("totalPrice") }}:</p>
               <p class="text-xl font-bold text-gray-800">
@@ -319,8 +390,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useToast } from "vue-toastification";
 
 import ProductList from "@/components/admin/orders/ProductList.vue";
 import AddProductFields from "@/components/admin/orders/AddProductFields.vue";
@@ -331,10 +403,13 @@ import type {
   OrderStatus,
   Address,
 } from "@/types/orders";
+import type { Warehouse } from "@/types/warehouse";
 import { getStatusClass } from "@/utils/orderUtils";
+import { getWarehouses } from "@/services/warehouseService";
 
 // Composables
 const { t } = useI18n();
+const toast = useToast();
 
 // Props Definition
 const props = defineProps<{
@@ -351,6 +426,79 @@ const emit = defineEmits<{
 
 // State Management
 const showAddProductFields = ref<boolean>(false);
+const warehouses = ref<Warehouse[]>([]);
+const selectedWarehouseId = ref<string>("");
+const isWarehousesLoaded = ref<boolean>(false);
+const isWarehouseDropdownOpen = ref<boolean>(false);
+
+const extractWarehouseId = (warehouse: any): string => {
+  if (!warehouse) return "";
+
+  if (typeof warehouse === "object" && warehouse._id) {
+    return typeof warehouse._id === "object" && warehouse._id.$oid
+      ? warehouse._id.$oid
+      : String(warehouse._id);
+  }
+
+  if (typeof warehouse === "string") {
+    return warehouse;
+  }
+
+  if (typeof warehouse === "object" && warehouse.$oid) {
+    return warehouse.$oid;
+  }
+
+  return String(warehouse);
+};
+
+onMounted(async () => {
+  try {
+    warehouses.value = await getWarehouses();
+    isWarehousesLoaded.value = true;
+
+    if (props.order?.warehouse) {
+      const warehouseId = extractWarehouseId(props.order.warehouse);
+      selectedWarehouseId.value = warehouseId;
+    }
+  } catch (error) {
+    console.error("Failed to fetch warehouses:", error);
+    toast.error(t("failedToFetchWarehouses"));
+  }
+});
+
+watch(
+  () => props.order,
+  (newOrder) => {
+    if (newOrder?.warehouse) {
+      const warehouseId = extractWarehouseId(newOrder.warehouse);
+      selectedWarehouseId.value = warehouseId;
+    } else {
+      selectedWarehouseId.value = "";
+    }
+  },
+  { immediate: true }
+);
+
+watch(
+  () => props.show,
+  async (isShown) => {
+    if (isShown && !isWarehousesLoaded.value) {
+      try {
+        warehouses.value = await getWarehouses();
+        isWarehousesLoaded.value = true;
+
+        if (props.order?.warehouse) {
+          const warehouseId = extractWarehouseId(props.order.warehouse);
+          selectedWarehouseId.value = warehouseId;
+        }
+      } catch (error) {
+        console.error("Failed to fetch warehouses:", error);
+        toast.error(t("failedToFetchWarehouses"));
+      }
+    }
+  },
+  { immediate: true }
+);
 
 // Computed Properties
 const shippingAddress = computed<Address>(() => {
@@ -377,10 +525,59 @@ const shippingAddress = computed<Address>(() => {
   };
 });
 
+// Computed Properties to filter out current warehouse from options
+const otherWarehouses = computed(() => {
+  const currentId = extractWarehouseId(props.order?.warehouse);
+  return warehouses.value.filter((wh) => String(wh._id) !== currentId);
+});
+
+const warehouseName = computed<string>(() => {
+  if (props.order?.warehouse) {
+    if (
+      typeof props.order.warehouse === "object" &&
+      props.order.warehouse.name
+    ) {
+      return props.order.warehouse.name;
+    }
+
+    const warehouseId = extractWarehouseId(props.order.warehouse);
+    const warehouse = warehouses.value.find(
+      (wh) => String(wh._id) === warehouseId
+    );
+
+    return warehouse ? warehouse.name : t("warehouseNotFound");
+  }
+  return t("noWarehouse");
+});
+
+const currentWarehouseDisplayName = computed<string>(() => {
+  if (!selectedWarehouseId.value) {
+    return t("noWarehouse");
+  }
+
+  const selectedWarehouse = warehouses.value.find(
+    (wh) => String(wh._id) === selectedWarehouseId.value
+  );
+
+  if (selectedWarehouse) {
+    return selectedWarehouse.name;
+  }
+
+  if (
+    props.order?.warehouse &&
+    typeof props.order.warehouse === "object" &&
+    props.order.warehouse.name &&
+    extractWarehouseId(props.order.warehouse) === selectedWarehouseId.value
+  ) {
+    return props.order.warehouse.name;
+  }
+
+  return t("warehouseNotFound");
+});
+
 // Utility Functions
 const formatDate = (date?: Date | string): string => {
   if (!date) return t("dateNotAvailable");
-
   return new Date(date).toLocaleString();
 };
 
@@ -403,10 +600,15 @@ const cancelEdit = (): void => {
 
 // Form Submission
 const submitForm = (): void => {
-  emit("submitForm", props.order);
+  if (props.order) {
+    const updatedOrder = { ...props.order };
+    updatedOrder.warehouse = selectedWarehouseId.value || undefined;
+    emit("submitForm", updatedOrder);
+  } else {
+    emit("submitForm", null);
+  }
 };
 
-// Product Management
 const updateProductAmount = (index: number, amount: number): void => {
   if (props.order) {
     props.order.products[index].amount = amount;
@@ -423,4 +625,19 @@ const addProduct = (product: OrderProduct): void => {
   }
   showAddProductFields.value = false;
 };
+
+const selectWarehouse = (warehouseId: string): void => {
+  selectedWarehouseId.value = warehouseId;
+};
+
+onMounted(() => {
+  document.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement;
+    const isClickInside = target.closest(".warehouse-dropdown-container");
+
+    if (!isClickInside && isWarehouseDropdownOpen.value) {
+      isWarehouseDropdownOpen.value = false;
+    }
+  });
+});
 </script>

@@ -6,9 +6,6 @@ import { WarehouseDocument } from "./../warehouses/WarehouseModel.js";
 
 import ApiError, { ErrorType } from "../../utils/apiError.js";
 
-/**
- * Updates warehouse stock based on changes to order products
- */
 export const updateWarehouseStock = async (
   existingOrder: OrderDocument,
   updatedProducts: OrderProduct[],
@@ -25,7 +22,6 @@ export const updateWarehouseStock = async (
     updatedProductMap.set(product.productId.toString(), product.amount);
   });
 
-  // Handle removed products
   for (const [productId, amount] of existingProductMap.entries()) {
     if (!updatedProductMap.has(productId)) {
       const warehouseProduct = warehouse.products.find(
@@ -45,7 +41,6 @@ export const updateWarehouseStock = async (
     }
   }
 
-  // Handle added or updated products
   for (const [productId, newAmount] of updatedProductMap.entries()) {
     const oldAmount = existingProductMap.get(productId) || 0;
     const difference = newAmount - oldAmount;
@@ -86,9 +81,6 @@ export const updateWarehouseStock = async (
   }
 };
 
-/**
- * Recalculates the total price of an order based on updated products
- */
 export const recalculateTotalPrice = async (
   updatedProducts: OrderProduct[],
   currency: "rubles" | "euros"
@@ -97,7 +89,6 @@ export const recalculateTotalPrice = async (
     const productIds = updatedProducts.map((product) => product.productId);
     const products = await Product.find({ _id: { $in: productIds } });
 
-    // Check if all products were found (ensure calculation integrity)
     if (products.length !== productIds.length) {
       const foundIds = products.map((p) => p._id.toString());
       const missingIds = productIds.filter(
@@ -158,28 +149,23 @@ export const recalculateTotalPrice = async (
   }
 };
 
-/**
- * Return products to warehouse when order is canceled
- */
 export const returnProductsToWarehouse = async (
   products: OrderProduct[],
   warehouse: WarehouseDocument,
   session: mongoose.ClientSession
 ): Promise<void> => {
   for (const product of products) {
-    const { productId, amount } = product; // Changed from quantity to amount
+    const { productId, amount } = product;
 
-    // Find the product in warehouse stock
     const warehouseProduct = warehouse.products.find(
       (p) => p.product.toString() === productId.toString()
     );
 
     if (!warehouseProduct) {
-      continue; // Skip if product not found in warehouse
+      continue;
     }
 
-    // Increase available quantity in warehouse
-    warehouseProduct.amount += amount; // Changed from quantity to amount
+    warehouseProduct.amount += amount;
 
     if (isNaN(warehouseProduct.amount)) {
       throw new ApiError(
@@ -193,16 +179,13 @@ export const returnProductsToWarehouse = async (
   await warehouse.save({ session });
 };
 
-/**
- * Remove products from warehouse when order is changed from canceled to active
- */
 export const removeProductsFromWarehouse = async (
   products: OrderProduct[],
   warehouse: WarehouseDocument,
   session: mongoose.ClientSession
 ): Promise<void> => {
   for (const product of products) {
-    const { productId, amount } = product; // Changed from quantity to amount
+    const { productId, amount } = product;
 
     const warehouseProduct = warehouse.products.find(
       (p) => p.product.toString() === productId.toString()
@@ -216,17 +199,7 @@ export const removeProductsFromWarehouse = async (
       );
     }
 
-    // Check if there's enough stock
-    if (warehouseProduct.amount < amount) {
-      throw new ApiError(
-        400,
-        `Insufficient stock for product ${productId}. Available: ${warehouseProduct.amount}, Required: ${amount}`,
-        ErrorType.BAD_REQUEST
-      );
-    }
-
-    // Decrease available quantity in warehouse
-    warehouseProduct.amount -= amount; // Changed from quantity to amount
+    warehouseProduct.amount -= amount;
 
     if (isNaN(warehouseProduct.amount)) {
       throw new ApiError(
