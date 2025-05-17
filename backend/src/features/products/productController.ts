@@ -8,6 +8,13 @@ import Category from "../categories/CategoryModel.js";
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler, transactionHandler } from "../../utils/asyncHandler.js";
 
+async function getDiscountedPrices(product: any) {
+  return {
+    RUB: await product.getDiscountedPrice("RUB"),
+    EUR: await product.getDiscountedPrice("EUR"),
+  };
+}
+
 export const searchProducts = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { query } = req.params;
@@ -24,9 +31,16 @@ export const searchProducts = asyncHandler(
       ],
     });
 
+    const productsWithDiscounts = await Promise.all(
+      products.map(async (product) => ({
+        ...product.toObject(),
+        discountedPrices: await getDiscountedPrices(product),
+      }))
+    );
+
     res.status(200).json({
       success: true,
-      products,
+      products: productsWithDiscounts,
     });
   }
 );
@@ -42,9 +56,17 @@ export const getProductsByCategoryId = asyncHandler(
 
     const products = await Product.find({ category: categoryId });
 
+    // Calculate discounted prices for all products
+    const productsWithDiscounts = await Promise.all(
+      products.map(async (product) => ({
+        ...product.toObject(),
+        discountedPrices: await getDiscountedPrices(product),
+      }))
+    );
+
     res.status(200).json({
       success: true,
-      products,
+      products: productsWithDiscounts,
     });
   }
 );
@@ -77,9 +99,14 @@ export const getProductById = asyncHandler(
       return next(new ApiError(404, "Product not found"));
     }
 
+    const discountedPrices = await getDiscountedPrices(product);
+
     res.status(200).json({
       success: true,
-      product,
+      product: {
+        ...product.toObject(),
+        discountedPrices,
+      },
     });
   }
 );
@@ -95,6 +122,8 @@ export const getProductBySlug = asyncHandler(
       return next(new ApiError(404, "Product not found"));
     }
 
+    const discountedPrices = await getDiscountedPrices(product);
+
     if (categorySlug) {
       const productCategory = await Category.findById(product.category);
 
@@ -105,7 +134,10 @@ export const getProductBySlug = asyncHandler(
       if (productCategory.slug !== categorySlug) {
         return res.status(200).json({
           success: true,
-          product,
+          product: {
+            ...product.toObject(),
+            discountedPrices,
+          },
           correctCategorySlug: productCategory.slug,
           redirectNeeded: true,
         });
@@ -114,7 +146,10 @@ export const getProductBySlug = asyncHandler(
 
     res.status(200).json({
       success: true,
-      product,
+      product: {
+        ...product.toObject(),
+        discountedPrices,
+      },
     });
   }
 );

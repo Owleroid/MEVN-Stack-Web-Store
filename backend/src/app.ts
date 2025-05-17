@@ -15,6 +15,7 @@ import productRoutes from "./features/products/productRoutes.js";
 import geoRoutes from "./features/geolocation-manager/geoRoutes.js";
 import categoryRoutes from "./features/categories/categoryRoutes.js";
 import warehouseRoutes from "./features/warehouses/warehouseRoutes.js";
+import discountRoutes from "./features/discount-manager/discountRoutes.js";
 import imageManagerRoutes from "./features/image-manager/imageManagerRoutes.js";
 import announcementRoutes from "./features/announcements/announcementRoutes.js";
 
@@ -34,6 +35,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/support", supportRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/discounts", discountRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/warehouses", warehouseRoutes);
 app.use("/api/image-manager", imageManagerRoutes);

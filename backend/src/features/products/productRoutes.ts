@@ -16,7 +16,7 @@ import { isAuthenticated, isAdmin } from "../authorization/authMiddleware.js";
 
 const router = express.Router();
 
-// Public routes - specific routes first
+// Public routes
 router.get("/category/:categoryId/ids", getProductIdsByCategoryId);
 router.get("/category/:categoryId", getProductsByCategoryId);
 router.get("/search/:query", searchProducts);

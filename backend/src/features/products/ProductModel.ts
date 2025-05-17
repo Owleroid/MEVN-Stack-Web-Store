@@ -1,10 +1,9 @@
 import mongoose, { Document } from "mongoose";
+import { IDiscountPrice } from "../discount-manager/DiscountModel.js";
 
 export interface CurrencyDetails {
   amount: number;
-  discount?: number;
-  discountStartDate?: Date;
-  discountEndDate?: Date;
+  currency: "RUB" | "EUR";
 }
 
 export interface ProductDocument extends Document {
@@ -27,14 +26,53 @@ export interface ProductDocument extends Document {
     main: string;
     secondary?: string[];
   };
+  getDiscountedPrice(currency: "RUB" | "EUR"): Promise<number>;
 }
 
-const currencyDetailsSchema = new mongoose.Schema({
-  amount: { type: Number, required: true },
-  discount: { type: Number, required: false },
-  discountStartDate: { type: Date, required: false },
-  discountEndDate: { type: Date, required: false },
+const currencyDetailsSchema = new mongoose.Schema(
+  {
+    amount: { type: Number, required: true },
+    currency: { type: String, required: true, enum: ["RUB", "EUR"] },
+  },
+  { toJSON: { virtuals: true }, toObject: { virtuals: true } }
+);
+
+currencyDetailsSchema.virtual("activeDiscount", {
+  ref: "Discount",
+  localField: "_id",
+  foreignField: "products",
+  justOne: true,
+  match: {
+    isActive: true,
+    startDate: { $lte: new Date() },
+    endDate: { $gte: new Date() },
+  },
+  options: {
+    select: "discountPrices startDate endDate",
+  },
 });
+
+currencyDetailsSchema.methods.getDiscountedAmount = async function () {
+  const parent = this.parent();
+  if (!parent) return this.amount;
+
+  const product = parent.ownerDocument();
+  if (!product) return this.amount;
+
+  await product.populate(
+    `price.${this.currency === "RUB" ? "rubles" : "euros"}.activeDiscount`
+  );
+  const activeDiscount = this.activeDiscount;
+  if (!activeDiscount) return this.amount;
+
+  const discount = activeDiscount.discountPrices.find(
+    (dp: IDiscountPrice) => dp.currency === this.currency
+  );
+
+  if (!discount) return this.amount;
+
+  return this.amount * (1 - discount.percentage / 100);
+};
 
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
@@ -46,8 +84,16 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   price: {
-    rubles: { type: currencyDetailsSchema, required: true },
-    euros: { type: currencyDetailsSchema, required: true },
+    rubles: {
+      type: currencyDetailsSchema,
+      required: true,
+      default: { currency: "RUB" },
+    },
+    euros: {
+      type: currencyDetailsSchema,
+      required: true,
+      default: { currency: "EUR" },
+    },
   },
   artist: { type: String, required: false },
   size: { type: String, required: true },
@@ -61,7 +107,14 @@ const productSchema = new mongoose.Schema({
   },
 });
 
-// Pre-save middleware to generate slug from name if not provided
+productSchema.methods.getDiscountedPrice = async function (
+  currency: "RUB" | "EUR"
+) {
+  const priceField = currency === "RUB" ? "rubles" : "euros";
+  await this.populate(`price.${priceField}.activeDiscount`);
+  return this.price[priceField].getDiscountedAmount();
+};
+
 productSchema.pre("save", function (next) {
   if (!this.slug) {
     this.slug = this.name
@@ -72,11 +125,9 @@ productSchema.pre("save", function (next) {
   next();
 });
 
-// Pre-update middleware to generate slug if name is changed but no slug is provided
 productSchema.pre("findOneAndUpdate", function (next) {
   const update = this.getUpdate() as any;
 
-  // Only generate a slug if name is being updated AND no slug is provided
   if (update && update.name && update.slug === undefined) {
     update.slug = update.name
       .toLowerCase()
