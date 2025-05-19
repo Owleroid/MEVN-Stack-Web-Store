@@ -57,7 +57,7 @@
               {{ item.product.name }}
             </h3>
             <p class="mt-1 text-sm text-gray-500">
-              {{ formatPrice(item.product.price[currency].amount) }}
+              {{ formatPrice(item.product.price[currency]) }}
             </p>
           </div>
 
@@ -169,8 +169,7 @@ const currency = computed<Currency>(
 // Computed Properties
 const totalPrice = computed<number>(() => {
   return cart.value.reduce(
-    (total, item) =>
-      total + item.product.price[currency.value].amount * item.quantity,
+    (total, item) => total + item.product.price[currency.value] * item.quantity,
     0
   );
 });

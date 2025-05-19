@@ -105,9 +105,7 @@ export const recalculateTotalPrice = async (
     const productPriceMap = new Map<string, number>();
     products.forEach((product) => {
       const price =
-        currency === "rubles"
-          ? product.price.rubles.amount
-          : product.price.euros.amount;
+        currency === "rubles" ? product.price.rubles : product.price.euros;
       productPriceMap.set(product._id.toString(), price);
     });
 

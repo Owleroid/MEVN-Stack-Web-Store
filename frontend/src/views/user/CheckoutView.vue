@@ -27,7 +27,7 @@
                     <p class="font-medium">
                       {{
                         formatPrice(
-                          item.product.price[currency].amount * item.quantity
+                          item.product.price[currency] * item.quantity
                         )
                       }}
                     </p>
@@ -315,8 +315,7 @@ const shippingAddress = ref<Address>({
 // Computed Properties
 const totalPrice = computed<number>(() => {
   return cart.value.reduce(
-    (total, item) =>
-      total + item.product.price[currency.value].amount * item.quantity,
+    (total, item) => total + item.product.price[currency.value] * item.quantity,
     0
   );
 });
@@ -368,7 +367,7 @@ const handleCheckout = async (): Promise<void> => {
       productId: item.product._id,
       name: item.product.name,
       amount: item.quantity,
-      productPrice: item.product.price[currency.value].amount,
+      productPrice: item.product.price[currency.value],
     })),
     totalPrice: totalPrice.value,
     currency: currency.value,

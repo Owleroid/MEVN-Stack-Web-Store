@@ -1,12 +1,5 @@
 import mongoose, { Document } from "mongoose";
 
-export interface CurrencyDetails {
-  amount: number;
-  discount?: number;
-  discountStartDate?: Date;
-  discountEndDate?: Date;
-}
-
 export interface ProductDocument extends Document {
   _id: string;
   name: string;
@@ -14,8 +7,8 @@ export interface ProductDocument extends Document {
   productNumber: string;
   category: mongoose.Types.ObjectId;
   price: {
-    rubles: CurrencyDetails;
-    euros: CurrencyDetails;
+    rubles: number;
+    euros: number;
   };
   artist?: string;
   size: string;
@@ -29,13 +22,6 @@ export interface ProductDocument extends Document {
   };
 }
 
-const currencyDetailsSchema = new mongoose.Schema({
-  amount: { type: Number, required: true },
-  discount: { type: Number, required: false },
-  discountStartDate: { type: Date, required: false },
-  discountEndDate: { type: Date, required: false },
-});
-
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
   slug: { type: String, required: true, unique: true, lowercase: true },
@@ -46,8 +32,8 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   price: {
-    rubles: { type: currencyDetailsSchema, required: true },
-    euros: { type: currencyDetailsSchema, required: true },
+    rubles: { type: Number, required: true },
+    euros: { type: Number, required: true },
   },
   artist: { type: String, required: false },
   size: { type: String, required: true },

@@ -156,14 +156,8 @@
 
           <div class="flex items-center space-x-4">
             <p class="text-2xl font-bold text-gray-900">
-              {{ formatPrice(product.price[currency].amount) }}
+              {{ formatPrice(product.price[currency]) }}
             </p>
-            <span
-              v-if="product.price[currency].discount"
-              class="text-sm px-2 py-1 bg-red-100 text-red-800 rounded"
-            >
-              {{ $t("discount") }}: {{ product.price[currency].discount }}%
-            </span>
           </div>
 
           <div class="space-y-4 border-t border-b border-gray-200 py-6">

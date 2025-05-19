@@ -145,7 +145,7 @@
                   {{ product.name }}
                 </h3>
                 <p class="text-lg font-bold text-gray-800 mb-3">
-                  {{ formatPrice(product.price[currency]?.amount) }}
+                  {{ formatPrice(product.price?.[currency] ?? 0) }}
                 </p>
               </div>
             </router-link>

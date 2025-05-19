@@ -1,10 +1,3 @@
-export interface CurrencyDetails {
-  amount: number;
-  discount?: number;
-  discountStartDate?: Date;
-  discountEndDate?: Date;
-}
-
 export interface Product {
   _id: string;
   name: string;
@@ -12,8 +5,8 @@ export interface Product {
   productNumber: string;
   category: string;
   price: {
-    rubles: CurrencyDetails;
-    euros: CurrencyDetails;
+    rubles: number;
+    euros: number;
   };
   artist?: string;
   size: string;
@@ -33,8 +26,8 @@ export interface ProductInput {
   slug?: string;
   productNumber: string;
   price: {
-    rubles: CurrencyDetails;
-    euros: CurrencyDetails;
+    rubles: number;
+    euros: number;
   };
   artist?: string;
   size: string;
