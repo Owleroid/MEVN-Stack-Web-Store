@@ -3,5 +3,7 @@
   "emptyCart": "Ваша корзина пуста.",
   "quantity": "Количество",
   "viewFullCart": "Посмотреть полную корзину",
-  "total": "Итого"
+  "total": "Итого",
+  "totalSavings": "Ваша экономия",
+  "discount": "Скидка"
 }

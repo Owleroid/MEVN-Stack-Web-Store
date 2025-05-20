@@ -18,6 +18,19 @@ export interface Product {
     main: string;
     secondary?: string[];
   };
+  discount?: {
+    originalPrice: {
+      rubles: number;
+      euros: number;
+    };
+    discountAmount: {
+      rubles: number;
+      euros: number;
+    };
+    discountName: string;
+    discountId: string;
+    endsAt: Date;
+  };
 }
 
 export interface ProductInput {

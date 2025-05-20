@@ -3,6 +3,8 @@
   "orderSummary": "Order Summary",
   "quantity": "Quantity",
   "total": "Total",
+  "totalSavings": "Your savings",
+  "discount": "Discount",
   "deliveryInfo": "Delivery Information",
   "pleaseEnterDeliveryDetails": "Please enter your delivery details",
   "shippingAddress": "Shipping Address",

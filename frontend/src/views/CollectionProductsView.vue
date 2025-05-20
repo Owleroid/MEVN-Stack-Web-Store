@@ -11,11 +11,14 @@
       {{ $t("collections") }}
     </h1>
 
-    <!-- Loading State -->
+    <!-- Initial Page Loading State -->
     <div v-if="loading" class="flex justify-center items-center py-12">
       <div
         class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
       ></div>
+      <span class="ml-3 text-sm text-gray-600">{{
+        $t("loadingCategories")
+      }}</span>
     </div>
 
     <!-- Error State -->
@@ -92,71 +95,104 @@
       <!-- Products Section -->
       <div class="flex-1">
         <!-- Empty State -->
-        <div
-          v-if="products.length === 0"
-          class="bg-white rounded-lg shadow-md p-8 text-center"
-        >
-          <svg
-            class="mx-auto h-12 w-12 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-            />
-          </svg>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">
-            {{ $t("noProductsForCategory", { category: category?.name }) }}
-          </h3>
-          <p class="mt-1 text-sm text-gray-500">
-            {{ $t("checkBackLater") }}
-          </p>
-        </div>
-
-        <!-- Products Grid -->
-        <div
-          v-else
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        <transition
+          enter-active-class="transition ease-out duration-200"
+          enter-from-class="opacity-0 transform scale-95"
+          enter-to-class="opacity-100 transform scale-100"
+          leave-active-class="transition ease-in duration-100"
+          leave-from-class="opacity-100 transform scale-100"
+          leave-to-class="opacity-0 transform scale-95"
         >
           <div
-            v-for="product in products"
-            :key="product._id"
-            class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+            v-if="!loadingProducts && products.length === 0"
+            class="bg-white rounded-lg shadow-md p-8 text-center"
           >
-            <router-link
-              :to="`/${category?.slug}/${product.slug}`"
-              class="block"
+            <svg
+              class="mx-auto h-12 w-12 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
             >
-              <div class="aspect-w-1 aspect-h-1 w-full overflow-hidden">
-                <img
-                  :src="product.imageUrls?.main"
-                  :alt="product.name"
-                  class="w-full h-full object-cover"
-                  @error="handleProductImageError"
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+              />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">
+              {{ $t("noProductsForCategory", { category: category?.name }) }}
+            </h3>
+            <p class="mt-1 text-sm text-gray-500">
+              {{ $t("checkBackLater") }}
+            </p>
+          </div>
+        </transition>
+
+        <transition
+          enter-active-class="transition-opacity ease-out duration-300"
+          enter-from-class="opacity-0"
+          enter-to-class="opacity-100"
+          leave-active-class="transition-opacity ease-in duration-200"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0"
+          mode="out-in"
+        >
+          <div
+            v-if="products.length > 0"
+            :key="category?._id"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          >
+            <div
+              v-for="product in products"
+              :key="product._id"
+              class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+            >
+              <router-link
+                :to="`/${category?.slug}/${product.slug}`"
+                class="block"
+              >
+                <div class="aspect-w-1 aspect-h-1 w-full overflow-hidden">
+                  <img
+                    :src="product.imageUrls?.main"
+                    :alt="product.name"
+                    class="w-full h-full object-cover"
+                    @error="handleProductImageError"
+                  />
+                </div>
+                <div class="p-4">
+                  <h3
+                    class="text-lg font-medium text-gray-900 mb-1 line-clamp-2"
+                  >
+                    {{ product.name }}
+                  </h3>
+                  <div v-if="product.discount" class="text-lg mb-3">
+                    <p class="font-bold text-gray-800">
+                      {{ formatPrice(product.price?.[currency] ?? 0) }}
+                    </p>
+                    <p class="text-sm line-through text-gray-500">
+                      {{
+                        formatPrice(
+                          product.discount.originalPrice?.[currency] ?? 0
+                        )
+                      }}
+                    </p>
+                  </div>
+                  <p v-else class="text-lg font-bold text-gray-800 mb-3">
+                    {{ formatPrice(product.price?.[currency] ?? 0) }}
+                  </p>
+                </div>
+              </router-link>
+              <div class="px-4 pb-4">
+                <AddToCartButton
+                  :product="product"
+                  class="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors text-sm font-medium"
                 />
               </div>
-              <div class="p-4">
-                <h3 class="text-lg font-medium text-gray-900 mb-1 line-clamp-2">
-                  {{ product.name }}
-                </h3>
-                <p class="text-lg font-bold text-gray-800 mb-3">
-                  {{ formatPrice(product.price?.[currency] ?? 0) }}
-                </p>
-              </div>
-            </router-link>
-            <div class="px-4 pb-4">
-              <AddToCartButton
-                :product="product"
-                class="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors text-sm font-medium"
-              />
             </div>
           </div>
-        </div>
+        </transition>
       </div>
     </div>
   </div>
@@ -192,6 +228,7 @@ const category = ref<Category | null>(null);
 const products = ref<Product[]>([]);
 const categories = ref<Category[]>([]);
 const loading = ref<boolean>(true);
+const loadingProducts = ref<boolean>(false);
 const error = ref<string>("");
 
 // Get user's preferred currency
@@ -233,6 +270,7 @@ const fetchCategories = async (): Promise<void> => {
 };
 
 const fetchProducts = async (categoryId: string): Promise<void> => {
+  loadingProducts.value = true;
   try {
     const response = await getProductsByCategoryId(categoryId);
     products.value = response.products;
@@ -246,11 +284,15 @@ const fetchProducts = async (categoryId: string): Promise<void> => {
       console.error("Error fetching products:", err);
       products.value = [];
     }
+  } finally {
+    loadingProducts.value = false;
   }
 };
 
 const fetchCategoryData = async (): Promise<void> => {
-  loading.value = true;
+  if (categories.value.length === 0) {
+    loading.value = true;
+  }
   error.value = "";
 
   const slug = route.params.slug as string;

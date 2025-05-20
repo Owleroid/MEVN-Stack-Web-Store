@@ -3,5 +3,7 @@
   "emptyCart": "Your cart is empty.",
   "quantity": "Quantity",
   "viewFullCart": "View Full Cart",
-  "total": "Total"
+  "total": "Total",
+  "totalSavings": "Your savings",
+  "discount": "Discount"
 }

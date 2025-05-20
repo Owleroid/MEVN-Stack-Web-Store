@@ -7,5 +7,8 @@
   "categoryNotFound": "Category not found",
   "fetchDataError": "Error loading data",
   "fetchCategoriesError": "Failed to fetch categories",
-  "fetchProductsError": "Failed to fetch products"
+  "fetchProductsError": "Failed to fetch products",
+  "discount": "Discount",
+  "loadingProducts": "Loading products...",
+  "loadingCategories": "Loading categories..."
 }

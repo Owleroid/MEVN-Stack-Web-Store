@@ -35,8 +35,16 @@
             <p class="text-sm font-medium text-gray-800 truncate">
               {{ item.product.name }}
             </p>
-            <p class="text-xs text-gray-500">
-              {{ formatPrice(item.product.price[currency].amount) }}
+            <div v-if="item.product.discount">
+              <p class="text-xs font-medium text-gray-700">
+                {{ formatPrice(item.product.price[currency]) }}
+              </p>
+              <p class="text-xs line-through text-gray-500">
+                {{ formatPrice(item.product.discount.originalPrice[currency]) }}
+              </p>
+            </div>
+            <p v-else class="text-xs text-gray-500">
+              {{ formatPrice(item.product.price[currency]) }}
             </p>
             <p class="text-xs text-gray-500">
               {{ $t("quantity") }}: {{ item.quantity }}
@@ -54,6 +62,17 @@
         >
         <span class="font-bold text-sm text-gray-900">{{
           formatPrice(totalPrice)
+        }}</span>
+      </div>
+      <div
+        v-if="totalSavings > 0"
+        class="p-2 border-t border-gray-200 bg-gray-50 flex justify-between items-center"
+      >
+        <span class="text-xs font-medium text-green-600"
+          >{{ $t("totalSavings") }}:</span
+        >
+        <span class="text-xs font-medium text-green-600">{{
+          formatPrice(totalSavings)
         }}</span>
       </div>
     </div>
@@ -85,10 +104,22 @@ const currency = computed<Currency>(
 // Computed Properties
 const totalPrice = computed<number>(() => {
   return cart.value.reduce(
-    (total, item) =>
-      total + item.product.price[currency.value].amount * item.quantity,
+    (total, item) => total + item.product.price[currency.value] * item.quantity,
     0
   );
+});
+
+const totalSavings = computed<number>(() => {
+  return cart.value.reduce((total, item) => {
+    if (item.product.discount) {
+      const originalItemPrice =
+        item.product.discount.originalPrice[currency.value] * item.quantity;
+      const discountedItemPrice =
+        item.product.price[currency.value] * item.quantity;
+      return total + (originalItemPrice - discountedItemPrice);
+    }
+    return total;
+  }, 0);
 });
 
 // Utility Functions

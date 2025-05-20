@@ -155,7 +155,17 @@
           </div>
 
           <div class="flex items-center space-x-4">
-            <p class="text-2xl font-bold text-gray-900">
+            <div v-if="product.discount" class="flex flex-col">
+              <p class="text-2xl font-bold text-gray-900">
+                {{ formatPrice(product.price[currency]) }}
+              </p>
+              <div class="flex items-center space-x-2">
+                <p class="text-lg line-through text-gray-500">
+                  {{ formatPrice(product.discount.originalPrice[currency]) }}
+                </p>
+              </div>
+            </div>
+            <p v-else class="text-2xl font-bold text-gray-900">
               {{ formatPrice(product.price[currency]) }}
             </p>
           </div>
@@ -333,6 +343,16 @@ const modalImage = ref<string>("");
 
 // Get user's preferred currency
 const currency = authStore.currency as "rubles" | "euros";
+
+// Utilities
+const formatDate = (dateString: string | Date): string => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat(currency === "rubles" ? "ru-RU" : "en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date);
+};
 
 // Computed
 const hasSecondaryImages = computed(

@@ -56,7 +56,19 @@
             <h3 class="text-lg font-medium text-gray-900">
               {{ item.product.name }}
             </h3>
-            <p class="mt-1 text-sm text-gray-500">
+            <div v-if="item.product.discount" class="mt-1">
+              <p class="text-sm font-medium text-gray-700">
+                {{ formatPrice(item.product.price[currency]) }}
+              </p>
+              <div class="flex items-center space-x-2">
+                <p class="text-sm line-through text-gray-500">
+                  {{
+                    formatPrice(item.product.discount.originalPrice[currency])
+                  }}
+                </p>
+              </div>
+            </div>
+            <p v-else class="mt-1 text-sm text-gray-500">
               {{ formatPrice(item.product.price[currency]) }}
             </p>
           </div>
@@ -108,6 +120,15 @@
           <p>{{ $t("total") }}</p>
           <p>{{ formatPrice(totalPrice) }}</p>
         </div>
+
+        <div
+          v-if="totalSavings > 0"
+          class="flex justify-between text-sm text-green-600 mt-2"
+        >
+          <p>{{ $t("totalSavings") }}</p>
+          <p>{{ formatPrice(totalSavings) }}</p>
+        </div>
+
         <p class="mt-0.5 text-sm text-gray-500">
           {{ $t("shippingCalculatedAtCheckout") }}
         </p>
@@ -172,6 +193,19 @@ const totalPrice = computed<number>(() => {
     (total, item) => total + item.product.price[currency.value] * item.quantity,
     0
   );
+});
+
+const totalSavings = computed<number>(() => {
+  return cart.value.reduce((total, item) => {
+    if (item.product.discount) {
+      const originalItemPrice =
+        item.product.discount.originalPrice[currency.value] * item.quantity;
+      const discountedItemPrice =
+        item.product.price[currency.value] * item.quantity;
+      return total + (originalItemPrice - discountedItemPrice);
+    }
+    return total;
+  }, 0);
 });
 
 // Utility Functions

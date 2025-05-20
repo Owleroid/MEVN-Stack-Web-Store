@@ -31,6 +31,17 @@
                         )
                       }}
                     </p>
+                    <p
+                      v-if="item.product.discount"
+                      class="text-sm line-through text-gray-500"
+                    >
+                      {{
+                        formatPrice(
+                          item.product.discount.originalPrice[currency] *
+                            item.quantity
+                        )
+                      }}
+                    </p>
                   </div>
                 </div>
               </li>
@@ -39,6 +50,17 @@
               <p class="font-semibold text-gray-900">{{ $t("total") }}</p>
               <p class="font-semibold text-gray-900">
                 {{ formatPrice(totalPrice) }}
+              </p>
+            </div>
+            <div
+              v-if="totalSavings > 0"
+              class="bg-gray-50 px-4 py-2 sm:px-6 flex justify-between border-t"
+            >
+              <p class="text-sm font-medium text-green-600">
+                {{ $t("totalSavings") }}
+              </p>
+              <p class="text-sm font-medium text-green-600">
+                {{ formatPrice(totalSavings) }}
               </p>
             </div>
           </div>
@@ -316,6 +338,19 @@ const shippingAddress = ref<Address>({
 const totalPrice = computed<number>(() => {
   return cart.value.reduce(
     (total, item) => total + item.product.price[currency.value] * item.quantity,
+    0
+  );
+});
+
+const totalSavings = computed<number>(() => {
+  return cart.value.reduce(
+    (total, item) =>
+      total +
+      (item.product.discount
+        ? item.product.discount.originalPrice[currency.value] -
+          item.product.price[currency.value]
+        : 0) *
+        item.quantity,
     0
   );
 });
