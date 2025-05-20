@@ -10,6 +10,7 @@ import {
   editProduct,
   updateProductCategory,
   deleteProduct,
+  getProductsByIds,
 } from "./productController.js";
 
 import { isAuthenticated, isAdmin } from "../authorization/authMiddleware.js";
@@ -25,6 +26,7 @@ router.get("/:id", getProductById);
 
 // Admin routes
 router.post("/", isAuthenticated, isAdmin, addProduct);
+router.post("/byIds", isAuthenticated, isAdmin, getProductsByIds);
 router.put("/:id", isAuthenticated, isAdmin, editProduct);
 router.put("/:id/category", isAuthenticated, isAdmin, updateProductCategory);
 router.delete("/:id", isAuthenticated, isAdmin, deleteProduct);

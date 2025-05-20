@@ -8,14 +8,16 @@ import {
   updateCategory,
   deleteCategory,
   deleteCategoryAndReassignProducts,
+  searchCategories,
 } from "./categoryController.js";
 
 import { isAuthenticated, isAdmin } from "../authorization/authMiddleware.js";
 
 const router = express.Router();
 
-// Public route
+// Public routes
 router.get("/", getAllCategories);
+router.get("/search/:query", searchCategories);
 router.get("/:id", getCategoryById);
 router.get("/slug/:slug", getCategoryBySlug);
 

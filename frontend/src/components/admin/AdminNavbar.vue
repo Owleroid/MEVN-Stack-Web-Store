@@ -28,6 +28,15 @@
         </li>
         <li>
           <router-link
+            to="/admin/discounts"
+            class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 hover:text-white transition-colors"
+            active-class="bg-gray-900 text-white"
+          >
+            {{ $t("discounts") }}
+          </router-link>
+        </li>
+        <li>
+          <router-link
             to="/admin/warehouse"
             class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 hover:text-white transition-colors"
             active-class="bg-gray-900 text-white"
@@ -113,12 +122,5 @@
 import { computed } from "vue";
 import { translationsLoaded } from "@/i18n";
 
-// ==============================
-// State Management
-// ==============================
-
-/**
- * Computed property to check if translations are still loading
- */
 const translationsLoading = computed(() => !translationsLoaded.value);
 </script>

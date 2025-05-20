@@ -1,6 +1,3 @@
-/**
- * Category interface from backend model
- */
 export interface Category {
   _id: string;
   name: string;
@@ -8,25 +5,26 @@ export interface Category {
   slug: string;
 }
 
-/**
- * Response for category list operations
- */
+export interface CategorySearchResult {
+  _id: string;
+  name: string;
+}
+
 export interface CategoryListResponse {
   success: boolean;
   categories: Category[];
 }
 
-/**
- * Response for single category operations
- */
+export interface CategorySearchResponse {
+  success: boolean;
+  categories: CategorySearchResult[];
+}
+
 export interface CategoryResponse {
   success: boolean;
   category: Category;
 }
 
-/**
- * Response for category operations that return success/message pattern
- */
 export interface CategoryActionResponse {
   success: boolean;
   categoryId?: string;

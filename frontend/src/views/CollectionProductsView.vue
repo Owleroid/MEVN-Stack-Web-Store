@@ -237,13 +237,10 @@ const fetchProducts = async (categoryId: string): Promise<void> => {
     const response = await getProductsByCategoryId(categoryId);
     products.value = response.products;
   } catch (err: unknown) {
-    // Check if this is a 404 error (no products found)
     const axiosError = err as { response?: { status: number } };
     if (axiosError.response?.status === 404) {
-      // Not an error, just empty results
       products.value = [];
     } else {
-      // Real error, display to user
       const errorMessage = err instanceof Error ? err.message : String(err);
       error.value = t("fetchProductsError") + ": " + errorMessage;
       console.error("Error fetching products:", err);
@@ -265,7 +262,6 @@ const fetchCategoryData = async (): Promise<void> => {
   }
 
   try {
-    // Get category by slug
     const response = await getCategoryBySlug(slug);
     category.value = response.category;
 

@@ -150,4 +150,17 @@ export const deleteProduct = async (
   return response.data;
 };
 
+/**
+ * Retrieves products by an array of IDs (ADMIN)
+ * @param ids - Array of product IDs to fetch
+ * @returns Promise resolving to list of products with their IDs and names
+ */
+export const getProductsByIds = async (
+  ids: string[]
+): Promise<ProductListResponse> => {
+  const response: AxiosResponse<ProductListResponse> =
+    await productService.post("/byIds", { ids });
+  return response.data;
+};
+
 export default productService;

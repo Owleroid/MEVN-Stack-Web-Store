@@ -6,11 +6,11 @@ import type {
   CategoryResponse,
   CategoryActionResponse,
   Category,
+  CategorySearchResponse,
 } from "@/types/category";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-// Base service configuration
 const categoryService = axios.create({
   baseURL: `${apiUrl}/api/categories`,
   withCredentials: true,
@@ -55,6 +55,19 @@ export const getCategoryBySlug = async (
   const response: AxiosResponse<CategoryResponse> = await categoryService.get(
     `/slug/${slug}`
   );
+  return response.data;
+};
+
+/**
+ * Searches for categories by name or slug (partial match)
+ * @param query - The search query for category names or slugs
+ * @returns Promise resolving to list of matching categories with only id and name
+ */
+export const searchCategories = async (
+  query: string
+): Promise<CategorySearchResponse> => {
+  const response: AxiosResponse<CategorySearchResponse> =
+    await categoryService.get(`/search/${encodeURIComponent(query)}`);
   return response.data;
 };
 

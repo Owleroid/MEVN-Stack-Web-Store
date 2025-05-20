@@ -13,6 +13,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.5",
     "axios": "^1.7.9",
+    "date-fns": "^4.1.0",
     "lodash": "^4.17.21",
     "pinia": "^3.0.1",
     "tailwindcss": "^4.1.5",

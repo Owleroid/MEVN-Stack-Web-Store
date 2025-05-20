@@ -119,6 +119,31 @@ export const getProductBySlug = asyncHandler(
   }
 );
 
+export const getProductsByIds = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { ids } = req.body;
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return next(new ApiError(400, "Valid product IDs array is required"));
+    }
+
+    const validIds = ids.filter((id) => mongoose.Types.ObjectId.isValid(id));
+
+    if (validIds.length === 0) {
+      return next(new ApiError(400, "No valid product IDs provided"));
+    }
+
+    const products = await Product.find({
+      _id: { $in: validIds },
+    }).select("_id name");
+
+    res.status(200).json({
+      success: true,
+      products,
+    });
+  }
+);
+
 export const addProduct = transactionHandler(
   async (
     req: Request,

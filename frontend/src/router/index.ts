@@ -34,6 +34,7 @@ import AdminClientsView from "@/views/admin/ClientsView.vue";
 import AdminAnnouncementsView from "@/views/admin/AnnouncementsView.vue";
 import AdminNewsView from "@/views/admin/NewsView.vue";
 import AdminSupportView from "@/views/admin/SupportView.vue";
+import AdminDiscountsView from "@/views/admin/DiscountsView.vue";
 
 const protectedPaths = [
   "about",
@@ -174,6 +175,12 @@ const routes = [
         path: "orders",
         name: "AdminOrders",
         component: AdminOrdersView,
+        meta: { requiresAuth: true, requiresAdmin: true },
+      },
+      {
+        path: "discounts",
+        name: "AdminDiscounts",
+        component: AdminDiscountsView,
         meta: { requiresAuth: true, requiresAdmin: true },
       },
       {

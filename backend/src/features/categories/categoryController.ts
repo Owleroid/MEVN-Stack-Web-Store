@@ -18,6 +18,28 @@ export const getAllCategories = asyncHandler(
   }
 );
 
+export const searchCategories = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { query } = req.params;
+
+    if (!query) {
+      return next(new ApiError(400, "Search query is required"));
+    }
+
+    const categories = await Category.find({
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { slug: { $regex: query, $options: "i" } },
+      ],
+    }).select("_id name");
+
+    res.status(200).json({
+      success: true,
+      categories,
+    });
+  }
+);
+
 export const getCategoryById = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
@@ -61,7 +83,6 @@ export const createCategory = asyncHandler(
       return next(new ApiError(400, "Category with this name already exists"));
     }
 
-    // Check if slug already exists, if provided
     if (slug) {
       const slugExists = await Category.findOne({ slug });
       if (slugExists) {
@@ -86,7 +107,6 @@ export const updateCategory = asyncHandler(
     const { id } = req.params;
     const { name, imageUrl, slug } = req.body;
 
-    // Check if slug already exists (if provided) and doesn't belong to current category
     if (slug) {
       const slugExists = await Category.findOne({ slug, _id: { $ne: id } });
       if (slugExists) {
@@ -123,10 +143,8 @@ export const deleteCategory = asyncHandler(
       return next(new ApiError(404, "Category not found"));
     }
 
-    // Find all products related to the category
     const products = await Product.find({ category: id });
 
-    // Remove each product from all warehouses
     for (const product of products) {
       await Warehouse.updateMany(
         {},
@@ -134,7 +152,6 @@ export const deleteCategory = asyncHandler(
       );
     }
 
-    // Delete all products related to the category
     await Product.deleteMany({ category: id });
 
     res.status(200).json({
@@ -154,7 +171,6 @@ export const deleteCategoryAndReassignProducts = asyncHandler(
       return next(new ApiError(404, "Category not found"));
     }
 
-    // Reassign products to new category
     await Product.updateMany({ category: id }, { category: newCategoryId });
 
     res.status(200).json({
