@@ -8,6 +8,13 @@ export interface OrderProduct {
   name: string;
   amount: number;
   productPrice: number;
+  discount?: {
+    originalPrice: number;
+    discountAmount: number;
+    discountName: string;
+    discountId: mongoose.Types.ObjectId;
+    discountPercentage: number;
+  };
 }
 
 export interface Address {
@@ -54,6 +61,20 @@ const ProductSchema: Schema = new Schema({
   name: { type: String, required: true },
   amount: { type: Number, required: true },
   productPrice: { type: Number, required: true },
+  discount: {
+    type: {
+      originalPrice: { type: Number, required: true },
+      discountAmount: { type: Number, required: true },
+      discountName: { type: String, required: true },
+      discountId: {
+        type: mongoose.Types.ObjectId,
+        required: true,
+        ref: "Discount",
+      },
+      discountPercentage: { type: Number, required: true },
+    },
+    required: false,
+  },
 });
 
 const AddressSchema: Schema = new Schema({

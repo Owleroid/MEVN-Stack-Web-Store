@@ -9,6 +9,7 @@ import {
 import { createOrder, getOrdersByUserId } from "./userOrderController.js";
 
 import { isAuthenticated, isAdmin } from "../authorization/authMiddleware.js";
+import { applyDiscountsToOrders } from "../discounts/discountMiddleware.js";
 
 const router = express.Router();
 
@@ -25,6 +26,6 @@ router.put(
 
 //User
 router.get("/user/:userId", isAuthenticated, getOrdersByUserId);
-router.post("/", createOrder);
+router.post("/", applyDiscountsToOrders, createOrder);
 
 export default router;

@@ -2,8 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 
 import Discount from "./DiscountModel.js";
+import { OrderProduct } from "../orders/OrderModel.js";
+import Product, { ProductDocument } from "../products/ProductModel.js";
+
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { ProductDocument } from "../products/ProductModel.js";
 
 export interface ProductWithDiscount extends ProductDocument {
   discount?: {
@@ -21,7 +23,6 @@ export interface ProductWithDiscount extends ProductDocument {
   };
 }
 
-// Define a type for the response body
 interface ProductResponseBody {
   success: boolean;
   products?: ProductDocument[];
@@ -29,67 +30,42 @@ interface ProductResponseBody {
   [key: string]: any;
 }
 
-/**
- * Middleware that applies discounts to products in the response
- * This should be applied BEFORE the controller that handles the request
- */
 export const applyDiscountsToProducts = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  console.log("🔍 Discount middleware initialized");
-
-  // Store the original send method
   const originalSend = res.send;
 
-  // Override the send method
   res.send = function (this: Response, body: any): Response {
-    console.log("🔄 Intercepted response in discount middleware");
-
     try {
-      // If the body is a string (likely JSON), parse it
       let parsedBody: ProductResponseBody | any = body;
       if (typeof body === "string") {
         try {
           parsedBody = JSON.parse(body);
-          console.log("📄 Parsed JSON response body");
         } catch (e) {
-          // Not JSON, continue with original response
-          console.log("⚠️ Non-JSON response, bypassing discount processing");
           return originalSend.call(this, body);
         }
       }
 
-      // Check if this is a product response
       if (
         parsedBody &&
         parsedBody.success &&
         (parsedBody.products || parsedBody.product)
       ) {
-        console.log("✅ Found product data in response");
-
-        // Process through a normal middleware function without blocking
         processDiscounts(parsedBody)
           .then((processedBody) => {
-            console.log(
-              "💰 Successfully applied discounts, sending modified response"
-            );
             originalSend.call(this, JSON.stringify(processedBody));
           })
           .catch((error) => {
-            console.error("❌ Error processing discounts:", error);
             originalSend.call(this, body);
           });
 
-        return this; // Return this to maintain chainability
-      } else {
-        console.log("⏩ No product data found, sending original response");
+        return this;
       }
 
       return originalSend.call(this, body);
     } catch (error) {
-      console.error("❌ Error in discount middleware:", error);
       return originalSend.call(this, body);
     }
   };
@@ -97,13 +73,9 @@ export const applyDiscountsToProducts = (
   next();
 };
 
-/**
- * Helper function to process discounts asynchronously
- */
 const processDiscounts = async (
   body: ProductResponseBody
 ): Promise<ProductResponseBody> => {
-  // Find all active discounts that are currently valid
   const currentDate = new Date();
   const activeDiscounts = await Discount.find({
     isActive: true,
@@ -111,23 +83,17 @@ const processDiscounts = async (
     endDate: { $gte: currentDate },
   });
 
-  console.log(`📊 Found ${activeDiscounts.length} active discounts`);
-
   if (activeDiscounts.length === 0) {
-    console.log("ℹ️ No active discounts found, returning original data");
     return body;
   }
 
-  // Helper function to apply discounts to a single product
   const applyDiscountToProduct = (
     product: ProductDocument
   ): ProductWithDiscount => {
-    // Clone the product to avoid modifying the original
     const productWithDiscount = product.toObject
       ? product.toObject()
       : { ...product };
 
-    // Check for discounts that apply to this product directly
     const directProductDiscounts = activeDiscounts.filter(
       (discount) =>
         discount.scope === "products" &&
@@ -137,7 +103,6 @@ const processDiscounts = async (
         )
     );
 
-    // Check for discounts that apply to this product's category
     const categoryDiscounts = activeDiscounts.filter(
       (discount) =>
         discount.scope === "categories" &&
@@ -147,12 +112,10 @@ const processDiscounts = async (
         )
     );
 
-    // Check for global discounts that apply to all products
     const globalDiscounts = activeDiscounts.filter(
       (discount) => discount.scope === "all"
     );
 
-    // Combine all applicable discounts and select the one with the highest discount
     const applicableDiscounts = [
       ...directProductDiscounts,
       ...categoryDiscounts,
@@ -160,10 +123,6 @@ const processDiscounts = async (
     ];
 
     if (applicableDiscounts.length > 0) {
-      console.log(
-        `🏷️ Found ${applicableDiscounts.length} applicable discounts for product ${productWithDiscount.name}`
-      );
-      // Find the discount with the highest discount percentage
       let bestDiscount = applicableDiscounts[0];
 
       for (const discount of applicableDiscounts) {
@@ -172,18 +131,12 @@ const processDiscounts = async (
         }
       }
 
-      // Apply the best discount
       const originalPrice = { ...productWithDiscount.price };
       const discountRubles =
         (originalPrice.rubles * bestDiscount.discounts.rubles) / 100;
       const discountEuros =
         (originalPrice.euros * bestDiscount.discounts.euros) / 100;
 
-      console.log(
-        `💲 Applying discount: ${bestDiscount.name} (${bestDiscount.discounts.rubles}% off)`
-      );
-
-      // Add discount information to the product
       productWithDiscount.discount = {
         originalPrice,
         discountAmount: {
@@ -195,28 +148,132 @@ const processDiscounts = async (
         endsAt: bestDiscount.endDate,
       };
 
-      // Update the price with the discount applied
       productWithDiscount.price = {
         rubles: originalPrice.rubles - discountRubles,
         euros: originalPrice.euros - discountEuros,
       };
-    } else {
-      console.log(
-        `ℹ️ No applicable discounts for product ${productWithDiscount.name}`
-      );
     }
 
     return productWithDiscount;
   };
 
-  // Apply discounts based on what's in the response
   if (body.products && Array.isArray(body.products)) {
     body.products = body.products.map(applyDiscountToProduct);
-    console.log(`✅ Applied discounts to ${body.products.length} products`);
   } else if (body.product) {
     body.product = applyDiscountToProduct(body.product);
-    console.log(`✅ Applied discount to product ${body.product.name}`);
   }
 
   return body;
 };
+
+export const applyDiscountsToOrders = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    if (
+      req.method === "POST" &&
+      req.body &&
+      req.body.products &&
+      Array.isArray(req.body.products)
+    ) {
+      try {
+        const productIds = req.body.products.map(
+          (product: OrderProduct) => product.productId
+        );
+
+        const productDocuments = await Product.find({
+          _id: { $in: productIds },
+        });
+
+        const productMap = new Map<string, ProductDocument>();
+        productDocuments.forEach((product) => {
+          productMap.set(product._id.toString(), product);
+        });
+
+        const currentDate = new Date();
+        const activeDiscounts = await Discount.find({
+          isActive: true,
+          startDate: { $lte: currentDate },
+          endDate: { $gte: currentDate },
+        });
+
+        if (activeDiscounts.length === 0) {
+          return next();
+        }
+
+        for (let i = 0; i < req.body.products.length; i++) {
+          const orderProduct = req.body.products[i];
+          const product = productMap.get(orderProduct.productId.toString());
+
+          if (!product) {
+            continue;
+          }
+
+          const directProductDiscounts = activeDiscounts.filter(
+            (discount) =>
+              discount.scope === "products" &&
+              discount.targetModel === "Product" &&
+              discount.targetIds.some(
+                (id) => id.toString() === orderProduct.productId.toString()
+              )
+          );
+
+          const categoryDiscounts = activeDiscounts.filter(
+            (discount) =>
+              discount.scope === "categories" &&
+              discount.targetModel === "Category" &&
+              discount.targetIds.some(
+                (id) => id.toString() === product.category.toString()
+              )
+          );
+
+          const globalDiscounts = activeDiscounts.filter(
+            (discount) => discount.scope === "all"
+          );
+
+          const applicableDiscounts = [
+            ...directProductDiscounts,
+            ...categoryDiscounts,
+            ...globalDiscounts,
+          ];
+
+          if (applicableDiscounts.length > 0) {
+            let bestDiscount = applicableDiscounts[0];
+
+            for (const discount of applicableDiscounts) {
+              if (discount.discounts.rubles > bestDiscount.discounts.rubles) {
+                bestDiscount = discount;
+              }
+            }
+
+            const originalPrice = orderProduct.productPrice;
+            const discountAmount =
+              (originalPrice * bestDiscount.discounts.rubles) / 100;
+
+            req.body.products[i] = {
+              ...orderProduct,
+              productPrice: originalPrice - discountAmount,
+              discount: {
+                originalPrice: originalPrice,
+                discountAmount: discountAmount,
+                discountName: bestDiscount.name,
+                discountId: bestDiscount._id,
+                discountPercentage: bestDiscount.discounts.rubles,
+              },
+            };
+          }
+        }
+
+        if (req.body.totalPrice !== undefined) {
+          let newTotalPrice = 0;
+
+          req.body.products.forEach((product: OrderProduct) => {
+            newTotalPrice += product.productPrice * product.amount;
+          });
+
+          req.body.totalPrice = newTotalPrice;
+        }
+      } catch (error) {}
+    }
+
+    next();
+  }
+);

@@ -64,17 +64,6 @@
           formatPrice(totalPrice)
         }}</span>
       </div>
-      <div
-        v-if="totalSavings > 0"
-        class="p-2 border-t border-gray-200 bg-gray-50 flex justify-between items-center"
-      >
-        <span class="text-xs font-medium text-green-600"
-          >{{ $t("totalSavings") }}:</span
-        >
-        <span class="text-xs font-medium text-green-600">{{
-          formatPrice(totalSavings)
-        }}</span>
-      </div>
     </div>
   </div>
 </template>
