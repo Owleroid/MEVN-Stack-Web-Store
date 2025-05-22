@@ -1,13 +1,8 @@
 import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 
-import Product from "./ProductModel.js";
-
+import * as productService from "./productService.js";
 import { getCategoryById } from "../categories/categoryService.js";
-import {
-  updateWarehousesWithNewProduct,
-  removeProductFromWarehouses,
-} from "../warehouses/warehouseService.js";
 
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler, transactionHandler } from "../../utils/asyncHandlers.js";
@@ -20,13 +15,7 @@ export const searchProducts = asyncHandler(
       return next(new ApiError(400, "Search query is required"));
     }
 
-    const products = await Product.find({
-      $or: [
-        { name: { $regex: query, $options: "i" } },
-        { slug: { $regex: query, $options: "i" } },
-        { productNumber: { $regex: query, $options: "i" } },
-      ],
-    });
+    const products = await productService.searchProducts(query);
 
     res.status(200).json({
       success: true,
@@ -44,7 +33,7 @@ export const getProductsByCategoryId = asyncHandler(
       return next(new ApiError(404, "Category not found"));
     }
 
-    const products = await Product.find({ category: categoryId });
+    const products = await productService.getProductsByCategoryId(categoryId);
 
     res.status(200).json({
       success: true,
@@ -62,8 +51,9 @@ export const getProductIdsByCategoryId = asyncHandler(
       return next(new ApiError(404, "Category not found"));
     }
 
-    const products = await Product.find({ category: categoryId }).select("_id");
-    const productIds = products.map((product) => product._id.toString());
+    const productIds = await productService.getProductIdsByCategoryId(
+      categoryId
+    );
 
     res.status(200).json({
       success: true,
@@ -75,7 +65,7 @@ export const getProductIdsByCategoryId = asyncHandler(
 export const getProductById = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
-    const product = await Product.findById(id);
+    const product = await productService.getProductById(id);
 
     if (!product) {
       return next(new ApiError(404, "Product not found"));
@@ -93,7 +83,7 @@ export const getProductBySlug = asyncHandler(
     const { slug } = req.params;
     const { categorySlug } = req.query;
 
-    const product = await Product.findOne({ slug });
+    const product = await productService.getProductBySlug(slug);
 
     if (!product) {
       return next(new ApiError(404, "Product not found"));
@@ -137,9 +127,7 @@ export const getProductsByIds = asyncHandler(
       return next(new ApiError(400, "No valid product IDs provided"));
     }
 
-    const products = await Product.find({
-      _id: { $in: validIds },
-    }).select("_id name");
+    const products = await productService.getProductsByIds(validIds);
 
     res.status(200).json({
       success: true,
@@ -175,48 +163,46 @@ export const addProduct = transactionHandler(
       throw new ApiError(404, "Category not found");
     }
 
-    const existingProduct = await Product.findOne({ name }).session(session);
-    if (existingProduct) {
+    const existingProductWithName = await productService.checkProductNameExists(
+      name,
+      session
+    );
+    if (existingProductWithName) {
       throw new ApiError(400, "Product with this name already exists");
     }
 
     if (slug) {
-      const existingSlug = await Product.findOne({ slug }).session(session);
-      if (existingSlug) {
+      const existingProductWithSlug =
+        await productService.checkProductSlugExists(slug, undefined, session);
+      if (existingProductWithSlug) {
         throw new ApiError(400, "Product with this slug already exists");
       }
     }
 
-    const existingProductNumber = await Product.findOne({
-      productNumber,
-    }).session(session);
-    if (existingProductNumber) {
+    const existingProductWithNumber =
+      await productService.checkProductNumberExists(productNumber, session);
+    if (existingProductWithNumber) {
       throw new ApiError(
         400,
         "Product with this product number already exists"
       );
     }
 
-    const newProduct = new Product({
-      name,
-      slug,
-      productNumber,
-      category,
-      price,
-      artist,
-      size,
-      material,
-      parts,
-      boxArt,
-      description,
-      imageUrls,
-    });
-
-    const savedProduct = await newProduct.save({ session });
-
-    await updateWarehousesWithNewProduct(
-      savedProduct._id,
-      savedProduct.name,
+    const savedProduct = await productService.createProduct(
+      {
+        name,
+        slug,
+        productNumber,
+        category,
+        price,
+        artist,
+        size,
+        material,
+        parts,
+        boxArt,
+        description,
+        imageUrls,
+      },
       session
     );
 
@@ -241,19 +227,15 @@ export const editProduct = asyncHandler(
     }
 
     if (updatedProduct.slug) {
-      const existingSlug = await Product.findOne({
-        slug: updatedProduct.slug,
-        _id: { $ne: id },
-      });
+      const existingProductWithSlug =
+        await productService.checkProductSlugExists(updatedProduct.slug, id);
 
-      if (existingSlug) {
+      if (existingProductWithSlug) {
         return next(new ApiError(400, "Product with this slug already exists"));
       }
     }
 
-    const product = await Product.findByIdAndUpdate(id, updatedProduct, {
-      new: true,
-    });
+    const product = await productService.updateProduct(id, updatedProduct);
 
     if (!product) {
       return next(new ApiError(404, "Product not found"));
@@ -277,11 +259,7 @@ export const updateProductCategory = asyncHandler(
       return next(new ApiError(404, "Category not found"));
     }
 
-    const product = await Product.findByIdAndUpdate(
-      id,
-      { category: categoryId },
-      { new: true }
-    );
+    const product = await productService.updateProductCategory(id, categoryId);
 
     if (!product) {
       return next(new ApiError(404, "Product not found"));
@@ -299,13 +277,11 @@ export const deleteProduct = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
-    const product = await Product.findByIdAndDelete(id);
+    const product = await productService.deleteProduct(id);
 
     if (!product) {
       return next(new ApiError(404, "Product not found"));
     }
-
-    await removeProductFromWarehouses(id);
 
     res.status(200).json({
       success: true,

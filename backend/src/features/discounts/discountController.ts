@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 
 import Discount from "./DiscountModel.js";
-import Product from "../products/ProductModel.js";
 
+import { getProductsByIds } from "../products/productService.js";
 import { getCategoryById } from "../categories/categoryService.js";
 
 import ApiError from "../../utils/apiError.js";
@@ -74,10 +74,8 @@ export const createDiscount = asyncHandler(
           return next(new ApiError(400, "One or more categories don't exist"));
         }
       } else if (targetModel === "Product") {
-        const productCount = await Product.countDocuments({
-          _id: { $in: targetIds },
-        });
-        if (productCount !== targetIds.length) {
+        const products = await getProductsByIds(targetIds);
+        if (products.length !== targetIds.length) {
           return next(new ApiError(400, "One or more products don't exist"));
         }
       }
@@ -143,10 +141,8 @@ export const updateDiscount = asyncHandler(
           return next(new ApiError(400, "One or more categories don't exist"));
         }
       } else if (targetModel === "Product") {
-        const productCount = await Product.countDocuments({
-          _id: { $in: targetIds },
-        });
-        if (productCount !== targetIds.length) {
+        const products = await getProductsByIds(targetIds);
+        if (products.length !== targetIds.length) {
           return next(new ApiError(400, "One or more products don't exist"));
         }
       }

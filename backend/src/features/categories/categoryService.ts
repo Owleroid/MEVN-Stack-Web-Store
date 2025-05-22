@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 import Category from "./CategoryModel.js";
-import Product from "../products/ProductModel.js";
 
 import { removeProductFromWarehouses } from "../warehouses/warehouseService.js";
 
@@ -129,6 +128,9 @@ export const deleteCategory = async (
     return null;
   }
 
+  // Import a local copy of Product for the operation
+  const Product = (await import("../products/ProductModel.js")).default;
+
   const products = await Product.find({ category: id }, null, options);
 
   for (const product of products) {
@@ -159,6 +161,9 @@ export const deleteCategoryAndReassignProducts = async (
   if (!deletedCategory) {
     return null;
   }
+
+  // Import a local copy of Product for the operation
+  const Product = (await import("../products/ProductModel.js")).default;
 
   await Product.updateMany(
     { category: id },

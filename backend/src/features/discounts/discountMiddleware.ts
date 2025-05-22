@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 
+import { getProductsByIds } from "../products/productService.js";
+
 import Discount from "./DiscountModel.js";
 import { OrderProduct } from "../orders/OrderModel.js";
-import Product, { ProductDocument } from "../products/ProductModel.js";
+import type { ProductDocument } from "../products/ProductModel.js";
 
 import { asyncHandler } from "../../utils/asyncHandlers.js";
 
@@ -179,9 +181,7 @@ export const applyDiscountsToOrders = asyncHandler(
           (product: OrderProduct) => product.productId
         );
 
-        const productDocuments = await Product.find({
-          _id: { $in: productIds },
-        });
+        const productDocuments = await getProductsByIds(productIds);
 
         const productMap = new Map<string, ProductDocument>();
         productDocuments.forEach((product) => {

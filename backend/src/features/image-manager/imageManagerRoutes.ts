@@ -6,8 +6,9 @@ import {
   deleteImages,
 } from "./imageManagerController.js";
 
-import { isAuthenticated, isAdmin } from "../authorization/authMiddleware.js";
 import { upload } from "../../middleware/multer.js";
+
+import { isAuthenticated, isAdmin } from "../authorization/authMiddleware.js";
 
 const router = express.Router();
 

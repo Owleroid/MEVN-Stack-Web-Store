@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 
 import Announcement from "./AnnouncementModel.js";
-import Product from "../products/ProductModel.js";
+
+import { getProductById } from "../products/productService.js";
 
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler } from "../../utils/asyncHandlers.js";
@@ -78,8 +79,8 @@ export const createAnnouncement = asyncHandler(
       return next(new ApiError(400, "Product ID and image URL are required"));
     }
 
-    const productExists = await Product.exists({ _id: productId });
-    if (!productExists) {
+    const product = await getProductById(productId);
+    if (!product) {
       return next(new ApiError(404, "Product not found"));
     }
 

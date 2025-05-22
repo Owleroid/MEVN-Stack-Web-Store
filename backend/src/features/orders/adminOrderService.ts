@@ -1,5 +1,6 @@
-import Product from "./../products/ProductModel.js";
 import { OrderProduct } from "./OrderModel.js";
+
+import { getProductsByIds } from "../products/productService.js";
 
 import ApiError, { ErrorType } from "../../utils/apiError.js";
 
@@ -9,7 +10,7 @@ export const recalculateTotalPrice = async (
 ): Promise<number> => {
   try {
     const productIds = updatedProducts.map((product) => product.productId);
-    const products = await Product.find({ _id: { $in: productIds } });
+    const products = await getProductsByIds(productIds);
 
     if (products.length !== productIds.length) {
       const foundIds = products.map((p) => p._id.toString());

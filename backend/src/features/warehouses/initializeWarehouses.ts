@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
 
-import Product from "../products/ProductModel.js";
 import Warehouse from "./WarehouseModel.js";
+
+import { searchProducts } from "../products/productService.js";
 
 const warehousesConfigPath = path.resolve(
   "src/config/secrets/warehouses-init.json"
@@ -42,7 +43,7 @@ export const initializeWarehouses = async () => {
     return;
   }
 
-  const products = await Product.find().select("_id name");
+  const products = await searchProducts("");
 
   if (products.length === 0) {
     console.warn(
