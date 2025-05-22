@@ -12,10 +12,10 @@ import { isAuthenticated, isAdmin } from "../authorization/authMiddleware.js";
 
 const router = express.Router();
 
-// Public route for users to submit messages
+// Public routes
 router.post("/", submitSupportMessage);
 
-// Admin-only routes
+// Admin routes
 router.get("/", isAuthenticated, isAdmin, getAllSupportMessages);
 router.get("/:id", isAuthenticated, isAdmin, getSupportMessageById);
 router.put("/:id", isAuthenticated, isAdmin, updateSupportMessage);

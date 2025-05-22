@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-import User from "./UserModel.js";
+import { getUserById } from "./authService.js";
 
 import ApiError from "../../utils/apiError.js";
 
@@ -26,7 +26,7 @@ export const isAdmin = async (
       return next(new ApiError(401, "Unauthorized"));
     }
 
-    const user = await User.findById(userId);
+    const user = await getUserById(userId, true);
     if (!user) {
       return next(new ApiError(404, "User not found"));
     }

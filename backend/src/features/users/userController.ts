@@ -1,14 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 
-import User from "../authorization/UserModel.js";
+import { getAllUsers } from "../authorization/authService.js";
 
 import { asyncHandler } from "../../utils/asyncHandlers.js";
 
-export const getAllUsers = asyncHandler(
+export const getAllUsersController = asyncHandler(
   async (_req: Request, res: Response, _next: NextFunction) => {
-    const users = await User.find().select(
-      "-password -resetPasswordToken -resetPasswordExpires"
-    );
+    const users = await getAllUsers();
 
     res.status(200).json({
       success: true,
