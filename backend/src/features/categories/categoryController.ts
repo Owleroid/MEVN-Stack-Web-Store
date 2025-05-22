@@ -1,15 +1,14 @@
+import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 
-import Product from "../../features/products/ProductModel.js";
-import Category from "./CategoryModel.js";
-import { removeProductFromWarehouses } from "../warehouses/warehouseService.js";
+import * as categoryService from "./categoryService.js";
 
 import ApiError from "../../utils/apiError.js";
-import { asyncHandler } from "../../utils/asyncHandler.js";
+import { asyncHandler, transactionHandler } from "../../utils/asyncHandlers.js";
 
 export const getAllCategories = asyncHandler(
   async (_req: Request, res: Response, _next: NextFunction) => {
-    const categories = await Category.find();
+    const categories = await categoryService.getAllCategories();
 
     res.status(200).json({
       success: true,
@@ -26,12 +25,7 @@ export const searchCategories = asyncHandler(
       return next(new ApiError(400, "Search query is required"));
     }
 
-    const categories = await Category.find({
-      $or: [
-        { name: { $regex: query, $options: "i" } },
-        { slug: { $regex: query, $options: "i" } },
-      ],
-    }).select("_id name");
+    const categories = await categoryService.searchCategories(query);
 
     res.status(200).json({
       success: true,
@@ -44,7 +38,7 @@ export const getCategoryById = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
-    const category = await Category.findById(id);
+    const category = await categoryService.getCategoryById(id);
 
     if (!category) {
       return next(new ApiError(404, "Category not found"));
@@ -61,7 +55,7 @@ export const getCategoryBySlug = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { slug } = req.params;
 
-    const category = await Category.findOne({ slug });
+    const category = await categoryService.getCategoryBySlug(slug);
 
     if (!category) {
       return next(new ApiError(404, "Category not found"));
@@ -78,13 +72,15 @@ export const createCategory = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { name, imageUrl, slug } = req.body;
 
-    const existingCategory = await Category.findOne({ name });
-    if (existingCategory) {
+    // Check if a category with the same name already exists
+    const nameExists = await categoryService.checkCategoryNameExists(name);
+    if (nameExists) {
       return next(new ApiError(400, "Category with this name already exists"));
     }
 
+    // Check if a category with the same slug already exists if a slug is provided
     if (slug) {
-      const slugExists = await Category.findOne({ slug });
+      const slugExists = await categoryService.checkCategorySlugExists(slug);
       if (slugExists) {
         return next(
           new ApiError(400, "Category with this slug already exists")
@@ -92,8 +88,11 @@ export const createCategory = asyncHandler(
       }
     }
 
-    const newCategory = new Category({ name, imageUrl, slug });
-    const savedCategory = await newCategory.save();
+    const savedCategory = await categoryService.createCategory({
+      name,
+      imageUrl,
+      slug,
+    });
 
     res.status(201).json({
       success: true,
@@ -107,8 +106,12 @@ export const updateCategory = asyncHandler(
     const { id } = req.params;
     const { name, imageUrl, slug } = req.body;
 
+    // Check if a category with the same slug already exists if a slug is provided
     if (slug) {
-      const slugExists = await Category.findOne({ slug, _id: { $ne: id } });
+      const slugExists = await categoryService.checkCategorySlugExists(
+        slug,
+        id
+      );
       if (slugExists) {
         return next(
           new ApiError(400, "Category with this slug already exists")
@@ -116,11 +119,11 @@ export const updateCategory = asyncHandler(
       }
     }
 
-    const updatedCategory = await Category.findByIdAndUpdate(
-      id,
-      { name, imageUrl, slug },
-      { new: true, runValidators: true }
-    );
+    const updatedCategory = await categoryService.updateCategory(id, {
+      name,
+      imageUrl,
+      slug,
+    });
 
     if (!updatedCategory) {
       return next(new ApiError(404, "Category not found"));
@@ -133,23 +136,20 @@ export const updateCategory = asyncHandler(
   }
 );
 
-export const deleteCategory = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+export const deleteCategory = transactionHandler(
+  async (
+    req: Request,
+    res: Response,
+    _next: NextFunction,
+    session: mongoose.ClientSession
+  ) => {
     const { id } = req.params;
 
-    const deletedCategory = await Category.findByIdAndDelete(id);
+    const deletedCategory = await categoryService.deleteCategory(id, session);
 
     if (!deletedCategory) {
-      return next(new ApiError(404, "Category not found"));
+      throw new ApiError(404, "Category not found");
     }
-
-    const products = await Product.find({ category: id });
-
-    for (const product of products) {
-      await removeProductFromWarehouses(product._id);
-    }
-
-    await Product.deleteMany({ category: id });
 
     res.status(200).json({
       success: true,
@@ -157,18 +157,26 @@ export const deleteCategory = asyncHandler(
   }
 );
 
-export const deleteCategoryAndReassignProducts = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+export const deleteCategoryAndReassignProducts = transactionHandler(
+  async (
+    req: Request,
+    res: Response,
+    _next: NextFunction,
+    session: mongoose.ClientSession
+  ) => {
     const { id } = req.params;
     const { newCategoryId } = req.body;
 
-    const deletedCategory = await Category.findByIdAndDelete(id);
+    const deletedCategory =
+      await categoryService.deleteCategoryAndReassignProducts(
+        id,
+        newCategoryId,
+        session
+      );
 
     if (!deletedCategory) {
-      return next(new ApiError(404, "Category not found"));
+      throw new ApiError(404, "Category not found");
     }
-
-    await Product.updateMany({ category: id }, { category: newCategoryId });
 
     res.status(200).json({
       success: true,

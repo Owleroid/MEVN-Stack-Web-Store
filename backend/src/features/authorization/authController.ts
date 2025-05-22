@@ -6,7 +6,7 @@ import { Request, Response, NextFunction } from "express";
 import User from "./UserModel.js";
 
 import ApiError from "../../utils/apiError.js";
-import { asyncHandler } from "../../utils/asyncHandler.js";
+import { asyncHandler } from "../../utils/asyncHandlers.js";
 
 export const getUserData = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {

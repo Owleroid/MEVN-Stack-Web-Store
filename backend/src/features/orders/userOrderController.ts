@@ -5,7 +5,7 @@ import Order from "./OrderModel.js";
 import { OrderProduct, Address, Recipient } from "./OrderModel.js";
 
 import ApiError, { ErrorType } from "../../utils/apiError.js";
-import { asyncHandler, transactionHandler } from "../../utils/asyncHandler.js";
+import { asyncHandler, transactionHandler } from "../../utils/asyncHandlers.js";
 
 import { handleUser, createNewOrder } from "./userOrderService.js";
 

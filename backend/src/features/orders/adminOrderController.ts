@@ -12,7 +12,7 @@ import {
 import { recalculateTotalPrice } from "./adminOrderService.js";
 
 import ApiError, { ErrorType } from "../../utils/apiError.js";
-import { asyncHandler, transactionHandler } from "../../utils/asyncHandler.js";
+import { asyncHandler, transactionHandler } from "../../utils/asyncHandlers.js";
 
 interface OrderUpdateData {
   currency: "rubles" | "euros";
