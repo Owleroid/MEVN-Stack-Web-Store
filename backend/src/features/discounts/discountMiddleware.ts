@@ -5,7 +5,7 @@ import Discount from "./DiscountModel.js";
 import { OrderProduct } from "../orders/OrderModel.js";
 import Product, { ProductDocument } from "../products/ProductModel.js";
 
-import { asyncHandler } from "../../utils/asyncHandler.js";
+import { asyncHandler } from "../../utils/asyncHandlers.js";
 
 export interface ProductWithDiscount extends ProductDocument {
   discount?: {

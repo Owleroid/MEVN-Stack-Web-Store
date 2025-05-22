@@ -7,7 +7,7 @@ import {
 } from "./warehouseService.js";
 
 import ApiError from "../../utils/apiError.js";
-import { asyncHandler } from "../../utils/asyncHandler.js";
+import { asyncHandler } from "../../utils/asyncHandlers.js";
 
 export const getAllWarehouses = asyncHandler(
   async (_req: Request, res: Response, _next: NextFunction) => {

@@ -2,7 +2,7 @@ import axios from "axios";
 import { Request, Response, NextFunction } from "express";
 
 import ApiError from "../../utils/apiError.js";
-import { asyncHandler } from "../../utils/asyncHandler.js";
+import { asyncHandler } from "../../utils/asyncHandlers.js";
 
 export const getUserLocation = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {

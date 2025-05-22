@@ -4,7 +4,7 @@ import Announcement from "./AnnouncementModel.js";
 import Product from "../products/ProductModel.js";
 
 import ApiError from "../../utils/apiError.js";
-import { asyncHandler } from "../../utils/asyncHandler.js";
+import { asyncHandler } from "../../utils/asyncHandlers.js";
 
 export const getActiveAnnouncements = asyncHandler(
   async (_req: Request, res: Response, _next: NextFunction) => {

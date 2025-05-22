@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 
 import Discount from "./DiscountModel.js";
-import Category from "../categories/CategoryModel.js";
 import Product from "../products/ProductModel.js";
 
+import { getCategoryById } from "../categories/categoryService.js";
+
 import ApiError from "../../utils/apiError.js";
-import { asyncHandler } from "../../utils/asyncHandler.js";
+import { asyncHandler } from "../../utils/asyncHandlers.js";
 
 export const getAllDiscounts = asyncHandler(
   async (_req: Request, res: Response, _next: NextFunction) => {
@@ -63,10 +64,13 @@ export const createDiscount = asyncHandler(
       }
 
       if (targetModel === "Category") {
-        const categoryCount = await Category.countDocuments({
-          _id: { $in: targetIds },
-        });
-        if (categoryCount !== targetIds.length) {
+        let existingCategories = await Promise.all(
+          targetIds.map((id) => getCategoryById(id))
+        );
+
+        existingCategories = existingCategories.filter(Boolean);
+
+        if (existingCategories.length !== targetIds.length) {
           return next(new ApiError(400, "One or more categories don't exist"));
         }
       } else if (targetModel === "Product") {
@@ -129,10 +133,13 @@ export const updateDiscount = asyncHandler(
       }
 
       if (targetModel === "Category") {
-        const categoryCount = await Category.countDocuments({
-          _id: { $in: targetIds },
-        });
-        if (categoryCount !== targetIds.length) {
+        let existingCategories = await Promise.all(
+          targetIds.map((id) => getCategoryById(id))
+        );
+
+        existingCategories = existingCategories.filter(Boolean);
+
+        if (existingCategories.length !== targetIds.length) {
           return next(new ApiError(400, "One or more categories don't exist"));
         }
       } else if (targetModel === "Product") {

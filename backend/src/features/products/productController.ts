@@ -2,14 +2,15 @@ import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 
 import Product from "./ProductModel.js";
-import Category from "../categories/CategoryModel.js";
+
+import { getCategoryById } from "../categories/categoryService.js";
 import {
   updateWarehousesWithNewProduct,
   removeProductFromWarehouses,
 } from "../warehouses/warehouseService.js";
 
 import ApiError from "../../utils/apiError.js";
-import { asyncHandler, transactionHandler } from "../../utils/asyncHandler.js";
+import { asyncHandler, transactionHandler } from "../../utils/asyncHandlers.js";
 
 export const searchProducts = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -38,7 +39,7 @@ export const getProductsByCategoryId = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { categoryId } = req.params;
 
-    const categoryExists = await Category.findById(categoryId);
+    const categoryExists = await getCategoryById(categoryId);
     if (!categoryExists) {
       return next(new ApiError(404, "Category not found"));
     }
@@ -56,7 +57,7 @@ export const getProductIdsByCategoryId = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { categoryId } = req.params;
 
-    const categoryExists = await Category.findById(categoryId);
+    const categoryExists = await getCategoryById(categoryId);
     if (!categoryExists) {
       return next(new ApiError(404, "Category not found"));
     }
@@ -99,7 +100,7 @@ export const getProductBySlug = asyncHandler(
     }
 
     if (categorySlug) {
-      const productCategory = await Category.findById(product.category);
+      const productCategory = await getCategoryById(product.category);
 
       if (!productCategory) {
         return next(new ApiError(500, "Product category not found"));
@@ -169,7 +170,7 @@ export const addProduct = transactionHandler(
       imageUrls = { main: "", secondary: [] },
     } = req.body;
 
-    const categoryExists = await Category.findById(category).session(session);
+    const categoryExists = await getCategoryById(category);
     if (!categoryExists) {
       throw new ApiError(404, "Category not found");
     }
@@ -233,7 +234,7 @@ export const editProduct = asyncHandler(
     const updatedProduct = req.body;
 
     if (updatedProduct.category) {
-      const categoryExists = await Category.findById(updatedProduct.category);
+      const categoryExists = await getCategoryById(updatedProduct.category);
       if (!categoryExists) {
         return next(new ApiError(404, "Category not found"));
       }
@@ -271,7 +272,7 @@ export const updateProductCategory = asyncHandler(
     const { id } = req.params;
     const { categoryId } = req.body;
 
-    const categoryExists = await Category.findById(categoryId);
+    const categoryExists = await getCategoryById(categoryId);
     if (!categoryExists) {
       return next(new ApiError(404, "Category not found"));
     }
