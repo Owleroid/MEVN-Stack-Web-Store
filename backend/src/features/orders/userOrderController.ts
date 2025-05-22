@@ -7,12 +7,13 @@ import { OrderProduct, Address, Recipient } from "./OrderModel.js";
 import ApiError, { ErrorType } from "../../utils/apiError.js";
 import { asyncHandler, transactionHandler } from "../../utils/asyncHandler.js";
 
+import { handleUser, createNewOrder } from "./userOrderService.js";
+
 import {
-  handleUser,
-  determineWarehouse,
-  updateWarehouseStock,
-  createNewOrder,
-} from "./userOrderService.js";
+  findWarehouseByName,
+  removeProductsFromWarehouse,
+  loadCountryToWarehouseMap,
+} from "../warehouses/warehouseService.js";
 
 interface CreateOrderRequest {
   userId?: string;
@@ -57,15 +58,35 @@ export const createOrder = transactionHandler(
     // Step 1: Handle user creation or update
     const user = await handleUser(userId, recipient, shippingAddress, session);
 
-    // Step 2: Determine the warehouse
-    const warehouse = await determineWarehouse(
-      shippingAddress.country,
-      session
-    );
+    // Step 2: Determine the warehouse based on country
+    const countryToWarehouseMap = loadCountryToWarehouseMap();
+    const warehouseName =
+      countryToWarehouseMap[shippingAddress.country] || null;
 
-    // Step 3: Update warehouse stock if applicable
-    if (warehouse) {
-      await updateWarehouseStock(warehouse, products, session);
+    let warehouse = null;
+    if (warehouseName) {
+      warehouse = await findWarehouseByName(warehouseName, session);
+
+      if (!warehouse) {
+        throw new ApiError(
+          404,
+          `Warehouse "${warehouseName}" not found for country ${shippingAddress.country}`,
+          ErrorType.RESOURCE_NOT_FOUND
+        );
+      }
+
+      // Step 3: Update warehouse stock if applicable
+      try {
+        await removeProductsFromWarehouse(warehouse, products, session);
+      } catch (error: unknown) {
+        throw new ApiError(
+          500,
+          `Failed to update warehouse stock: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+          ErrorType.INTERNAL
+        );
+      }
     }
 
     // Step 4: Create the order
@@ -81,7 +102,7 @@ export const createOrder = transactionHandler(
       paymentMethod,
       orderNotes,
       trackingNumber,
-      warehouse,
+      warehouse ? { _id: warehouse._id as mongoose.Types.ObjectId } : null,
       session
     );
 

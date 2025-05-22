@@ -2,8 +2,11 @@ import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 
 import Product from "./ProductModel.js";
-import Warehouse from "../warehouses/WarehouseModel.js";
 import Category from "../categories/CategoryModel.js";
+import {
+  updateWarehousesWithNewProduct,
+  removeProductFromWarehouses,
+} from "../warehouses/warehouseService.js";
 
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler, transactionHandler } from "../../utils/asyncHandler.js";
@@ -210,15 +213,11 @@ export const addProduct = transactionHandler(
 
     const savedProduct = await newProduct.save({ session });
 
-    const warehouses = await Warehouse.find().session(session);
-    for (const warehouse of warehouses) {
-      warehouse.products.push({
-        product: new mongoose.Types.ObjectId(savedProduct._id),
-        name: savedProduct.name,
-        amount: 0,
-      });
-      await warehouse.save({ session });
-    }
+    await updateWarehousesWithNewProduct(
+      savedProduct._id,
+      savedProduct.name,
+      session
+    );
 
     res.status(201).json({
       success: true,
@@ -305,7 +304,7 @@ export const deleteProduct = asyncHandler(
       return next(new ApiError(404, "Product not found"));
     }
 
-    await Warehouse.updateMany({}, { $pull: { products: { product: id } } });
+    await removeProductFromWarehouses(id);
 
     res.status(200).json({
       success: true,

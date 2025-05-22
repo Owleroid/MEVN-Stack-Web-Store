@@ -333,7 +333,8 @@
           {{ $t("cancel") }}
         </button>
         <button
-          type="submit"
+          type="button"
+          @click="submitForm"
           class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-semibold shadow-md"
         >
           {{ isEdit ? $t("updateProduct") : $t("addProduct") }}

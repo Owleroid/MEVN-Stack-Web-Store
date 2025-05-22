@@ -1,20 +1,24 @@
 import { Request, Response, NextFunction } from "express";
 
-import Warehouse from "./WarehouseModel.js";
+import {
+  getAllWarehouses as getWarehouses,
+  getWarehouseById as findWarehouseById,
+  updateProductAmountInWarehouse,
+} from "./warehouseService.js";
 
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 
 export const getAllWarehouses = asyncHandler(
   async (_req: Request, res: Response, _next: NextFunction) => {
-    const warehouses = await Warehouse.find();
+    const warehouses = await getWarehouses();
     res.status(200).json(warehouses);
   }
 );
 
 export const getWarehouseById = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const warehouse = await Warehouse.findById(req.params.id);
+    const warehouse = await findWarehouseById(req.params.id);
     if (!warehouse) {
       return next(new ApiError(404, "Warehouse not found"));
     }
@@ -25,25 +29,18 @@ export const getWarehouseById = asyncHandler(
 export const updateWarehouse = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { productId, amount } = req.body;
+    const warehouseId = req.params.id;
 
-    const warehouse = await Warehouse.findById(req.params.id);
-    if (!warehouse) {
-      return next(new ApiError(404, "Warehouse not found"));
-    }
-
-    // Find the product in the warehouse and update its amount
-    const productIndex = warehouse.products.findIndex(
-      (p) => p.product.toString() === productId
+    const updatedWarehouse = await updateProductAmountInWarehouse(
+      warehouseId,
+      productId,
+      amount
     );
-    if (productIndex !== -1) {
-      warehouse.products[productIndex].amount = amount;
-    } else {
-      return next(
-        new ApiError(404, `Product with ID ${productId} not found in warehouse`)
-      );
+
+    if (!updatedWarehouse) {
+      return next(new ApiError(404, "Warehouse or product not found"));
     }
 
-    const updatedWarehouse = await warehouse.save();
     res.status(200).json(updatedWarehouse);
   }
 );

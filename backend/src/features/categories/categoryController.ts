@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import Product from "../../features/products/ProductModel.js";
 import Category from "./CategoryModel.js";
-import Warehouse from "../warehouses/WarehouseModel.js";
+import { removeProductFromWarehouses } from "../warehouses/warehouseService.js";
 
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
@@ -146,10 +146,7 @@ export const deleteCategory = asyncHandler(
     const products = await Product.find({ category: id });
 
     for (const product of products) {
-      await Warehouse.updateMany(
-        {},
-        { $pull: { products: { product: product._id } } }
-      );
+      await removeProductFromWarehouses(product._id);
     }
 
     await Product.deleteMany({ category: id });

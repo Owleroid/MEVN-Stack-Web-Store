@@ -16,7 +16,7 @@ router.post(
   "/",
   isAuthenticated,
   isAdmin,
-  upload.array("images", 10), // Allow up to 10 files
+  upload.array("images", 10),
   uploadImages
 );
 router.delete("/", isAuthenticated, isAdmin, deleteImages);

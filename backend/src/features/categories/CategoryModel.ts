@@ -12,7 +12,6 @@ const categorySchema = new mongoose.Schema({
   slug: { type: String, required: true, unique: true, lowercase: true },
 });
 
-// Pre-save middleware to generate slug from name if not provided
 categorySchema.pre("save", function (next) {
   if (!this.slug) {
     this.slug = this.name

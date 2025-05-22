@@ -1,15 +1,15 @@
 import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 
-import Warehouse from "../warehouses/WarehouseModel.js";
 import Order, { OrderDocument, OrderProduct } from "./OrderModel.js";
-
 import {
-  updateWarehouseStock,
-  recalculateTotalPrice,
+  getWarehouseById,
   returnProductsToWarehouse,
   removeProductsFromWarehouse,
-} from "./adminOrderService.js";
+  updateWarehouseStock,
+} from "../warehouses/warehouseService.js";
+
+import { recalculateTotalPrice } from "./adminOrderService.js";
 
 import ApiError, { ErrorType } from "../../utils/apiError.js";
 import { asyncHandler, transactionHandler } from "../../utils/asyncHandler.js";
@@ -88,9 +88,7 @@ export const editOrderById = transactionHandler(
       ) {
         // Case 1: Order is moving between warehouses
         if (oldWarehouseId) {
-          const oldWarehouse = await Warehouse.findById(oldWarehouseId).session(
-            session
-          );
+          const oldWarehouse = await getWarehouseById(oldWarehouseId, session);
           if (!oldWarehouse) {
             throw new ApiError(
               404,
@@ -101,17 +99,15 @@ export const editOrderById = transactionHandler(
 
           if (oldStatus !== "canceled") {
             await returnProductsToWarehouse(
-              existingOrder.products,
               oldWarehouse,
+              existingOrder.products,
               session
             );
           }
         }
 
         // Case 2: Order is assigning to new warehouse
-        const newWarehouse = await Warehouse.findById(newWarehouseId).session(
-          session
-        );
+        const newWarehouse = await getWarehouseById(newWarehouseId, session);
         if (!newWarehouse) {
           throw new ApiError(
             404,
@@ -122,15 +118,25 @@ export const editOrderById = transactionHandler(
 
         if (newStatus !== "canceled") {
           await removeProductsFromWarehouse(
-            updatedProducts,
             newWarehouse,
+            updatedProducts,
             session
           );
         }
       } else {
-        const warehouse = await Warehouse.findById(
-          existingOrder.warehouse
-        ).session(session);
+        // Handle the case where warehouse ID might be undefined
+        if (!existingOrder.warehouse) {
+          throw new ApiError(
+            404,
+            "No warehouse assigned to this order",
+            ErrorType.RESOURCE_NOT_FOUND
+          );
+        }
+
+        const warehouse = await getWarehouseById(
+          existingOrder.warehouse,
+          session
+        );
 
         if (!warehouse) {
           throw new ApiError(
@@ -143,8 +149,8 @@ export const editOrderById = transactionHandler(
         // 1. Handle status change from active to canceled
         if (oldStatus !== "canceled" && newStatus === "canceled") {
           await returnProductsToWarehouse(
-            existingOrder.products,
             warehouse,
+            existingOrder.products,
             session
           );
         }
@@ -152,15 +158,15 @@ export const editOrderById = transactionHandler(
         else if (oldStatus === "canceled" && newStatus !== "canceled") {
           // Remove ALL new products from warehouse
           await removeProductsFromWarehouse(
-            updatedProducts,
             warehouse,
+            updatedProducts,
             session
           );
         }
         // 3. Handle normal product changes (no status change or between active statuses)
         else if (oldStatus !== "canceled" && newStatus !== "canceled") {
           await updateWarehouseStock(
-            existingOrder,
+            existingOrder.products,
             updatedProducts,
             warehouse,
             session
