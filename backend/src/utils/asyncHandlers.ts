@@ -23,12 +23,10 @@ export const asyncHandler = (fn: AsyncFunction) => {
     try {
       await fn(req, res, next);
     } catch (error: unknown) {
-      // If it's already an ApiError, pass it through
       if (error instanceof ApiError) {
         return next(error);
       }
 
-      // Otherwise, create a new ApiError with appropriate context
       console.error("Unhandled controller error:", error);
 
       next(
@@ -54,18 +52,14 @@ export const transactionHandler = (fn: TransactionAsyncFunction) => {
     try {
       await fn(req, res, next, session);
 
-      // If we reach this point without errors, commit the transaction
       await session.commitTransaction();
     } catch (error: unknown) {
-      // Always abort transaction on error
       await session.abortTransaction();
 
-      // If it's already an ApiError, pass it through
       if (error instanceof ApiError) {
         return next(error);
       }
 
-      // Otherwise, create a new ApiError with appropriate context
       console.error("Unhandled transaction error:", error);
 
       next(
@@ -76,7 +70,6 @@ export const transactionHandler = (fn: TransactionAsyncFunction) => {
         )
       );
     } finally {
-      // Always end the session
       session.endSession();
     }
   };

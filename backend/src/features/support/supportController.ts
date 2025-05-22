@@ -4,9 +4,6 @@ import SupportModel from "./SupportModel.js";
 
 import { sendEmail } from "../../utils/emailService.js";
 
-/**
- * Submit a new support message from a user
- */
 export const submitSupportMessage = async (
   req: Request,
   res: Response
@@ -14,13 +11,11 @@ export const submitSupportMessage = async (
   try {
     const { email, subject, message } = req.body;
 
-    // Validate required fields
     if (!email || !message) {
       res.status(400).json({ error: "Email and message are required" });
       return;
     }
 
-    // Create new support message
     const supportMessage = new SupportModel({
       email,
       subject: subject || "Support Request",
@@ -29,7 +24,6 @@ export const submitSupportMessage = async (
 
     await supportMessage.save();
 
-    // Send confirmation email to user
     try {
       await sendEmail({
         to: email,
@@ -42,7 +36,6 @@ export const submitSupportMessage = async (
         `,
       });
     } catch (emailError) {
-      // Log email error but don't fail the request
       console.error("Failed to send confirmation email:", emailError);
     }
 
@@ -56,20 +49,15 @@ export const submitSupportMessage = async (
   }
 };
 
-/**
- * Get all support messages (admin only)
- */
 export const getAllSupportMessages = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    // Implement pagination
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
 
-    // Filter by status if provided
     const statusFilter = req.query.status ? { status: req.query.status } : {};
 
     const [messages, total] = await Promise.all([
@@ -96,9 +84,6 @@ export const getAllSupportMessages = async (
   }
 };
 
-/**
- * Get a single support message by ID (admin only)
- */
 export const getSupportMessageById = async (
   req: Request,
   res: Response
@@ -119,9 +104,6 @@ export const getSupportMessageById = async (
   }
 };
 
-/**
- * Update a support message status or add a response (admin only)
- */
 export const updateSupportMessage = async (
   req: Request,
   res: Response
@@ -136,13 +118,11 @@ export const updateSupportMessage = async (
       return;
     }
 
-    // Update fields
     if (status) message.status = status;
     if (response) message.response = response;
 
     await message.save();
 
-    // Send response email to user if a response was provided
     if (response) {
       try {
         await sendEmail({
@@ -158,7 +138,6 @@ export const updateSupportMessage = async (
           `,
         });
       } catch (emailError) {
-        // Log email error but don't fail the request
         console.error("Failed to send response email:", emailError);
       }
     }
@@ -174,9 +153,6 @@ export const updateSupportMessage = async (
   }
 };
 
-/**
- * Delete a support message (admin only)
- */
 export const deleteSupportMessage = async (
   req: Request,
   res: Response

@@ -3,13 +3,8 @@ import { Request, Response, NextFunction } from "express";
 
 import Order, { OrderDocument, OrderProduct } from "./OrderModel.js";
 
-import {
-  getWarehouseById,
-  returnProductsToWarehouse,
-  removeProductsFromWarehouse,
-  updateWarehouseStock,
-} from "../warehouses/warehouseService.js";
 import { recalculateTotalPrice } from "./adminOrderService.js";
+import * as warehouseService from "../warehouses/warehouseService.js";
 
 import ApiError, { ErrorType } from "../../utils/apiError.js";
 import { asyncHandler, transactionHandler } from "../../utils/asyncHandlers.js";
@@ -82,97 +77,39 @@ export const editOrderById = transactionHandler(
     }
 
     try {
-      if (
-        newWarehouseId &&
-        newWarehouseId.toString() !== oldWarehouseId?.toString()
-      ) {
-        // Case 1: Order is moving between warehouses
-        if (oldWarehouseId) {
-          const oldWarehouse = await getWarehouseById(oldWarehouseId, session);
-          if (!oldWarehouse) {
-            throw new ApiError(
-              404,
-              "Old warehouse not found",
-              ErrorType.RESOURCE_NOT_FOUND
-            );
-          }
+      await handleWarehouseUpdates(
+        oldWarehouseId,
+        newWarehouseId,
+        oldStatus,
+        newStatus,
+        existingOrder,
+        updatedProducts,
+        session
+      );
 
-          if (oldStatus !== "canceled") {
-            await returnProductsToWarehouse(
-              oldWarehouse,
-              existingOrder.products,
-              session
-            );
-          }
-        }
+      updateData.totalPrice = await recalculateTotalPrice(
+        updatedProducts,
+        currency
+      );
 
-        // Case 2: Order is assigning to new warehouse
-        const newWarehouse = await getWarehouseById(newWarehouseId, session);
-        if (!newWarehouse) {
-          throw new ApiError(
-            404,
-            "New warehouse not found",
-            ErrorType.RESOURCE_NOT_FOUND
-          );
-        }
+      const updatedOrder = await Order.findByIdAndUpdate(orderId, updateData, {
+        new: true,
+        session,
+      });
 
-        if (newStatus !== "canceled") {
-          await removeProductsFromWarehouse(
-            newWarehouse,
-            updatedProducts,
-            session
-          );
-        }
-      } else {
-        // Handle the case where warehouse ID might be undefined
-        if (!existingOrder.warehouse) {
-          throw new ApiError(
-            404,
-            "No warehouse assigned to this order",
-            ErrorType.RESOURCE_NOT_FOUND
-          );
-        }
-
-        const warehouse = await getWarehouseById(
-          existingOrder.warehouse,
-          session
+      if (!updatedOrder) {
+        throw new ApiError(
+          500,
+          "Failed to update the order",
+          ErrorType.INTERNAL
         );
-
-        if (!warehouse) {
-          throw new ApiError(
-            404,
-            "Warehouse not found for this order",
-            ErrorType.RESOURCE_NOT_FOUND
-          );
-        }
-
-        // 1. Handle status change from active to canceled
-        if (oldStatus !== "canceled" && newStatus === "canceled") {
-          await returnProductsToWarehouse(
-            warehouse,
-            existingOrder.products,
-            session
-          );
-        }
-        // 2. Handle status change from canceled to active
-        else if (oldStatus === "canceled" && newStatus !== "canceled") {
-          // Remove ALL new products from warehouse
-          await removeProductsFromWarehouse(
-            warehouse,
-            updatedProducts,
-            session
-          );
-        }
-        // 3. Handle normal product changes (no status change or between active statuses)
-        else if (oldStatus !== "canceled" && newStatus !== "canceled") {
-          await updateWarehouseStock(
-            existingOrder.products,
-            updatedProducts,
-            warehouse,
-            session
-          );
-        }
       }
+
+      res.status(200).json({
+        success: true,
+        message: "Order updated successfully",
+        order: updatedOrder,
+      });
     } catch (error: unknown) {
       if (error instanceof ApiError) {
         throw error;
@@ -184,28 +121,154 @@ export const editOrderById = transactionHandler(
         ErrorType.BAD_REQUEST
       );
     }
-
-    updateData.totalPrice = await recalculateTotalPrice(
-      updatedProducts,
-      currency
-    );
-
-    const updatedOrder = await Order.findByIdAndUpdate(orderId, updateData, {
-      new: true,
-      session,
-    });
-
-    if (!updatedOrder) {
-      throw new ApiError(500, "Failed to update the order", ErrorType.INTERNAL);
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Order updated successfully",
-      order: updatedOrder,
-    });
   }
 );
+
+/**
+ * Handles warehouse stock updates based on order changes
+ *
+ * @param oldWarehouseId Previous warehouse ID
+ * @param newWarehouseId New warehouse ID
+ * @param oldStatus Previous order status
+ * @param newStatus New order status
+ * @param existingOrder The existing order document
+ * @param updatedProducts Updated product list
+ * @param session Mongoose session for transaction
+ */
+async function handleWarehouseUpdates(
+  oldWarehouseId: mongoose.Types.ObjectId | undefined,
+  newWarehouseId: mongoose.Types.ObjectId | undefined,
+  oldStatus: OrderDocument["status"],
+  newStatus: OrderDocument["status"],
+  existingOrder: OrderDocument,
+  updatedProducts: OrderProduct[],
+  session: mongoose.ClientSession
+): Promise<void> {
+  if (
+    newWarehouseId &&
+    (!oldWarehouseId || newWarehouseId.toString() !== oldWarehouseId.toString())
+  ) {
+    await handleWarehouseTransfer(
+      oldWarehouseId,
+      newWarehouseId,
+      oldStatus,
+      newStatus,
+      existingOrder.products,
+      updatedProducts,
+      session
+    );
+  } else if (oldWarehouseId) {
+    await handleSameWarehouseUpdates(
+      oldWarehouseId,
+      oldStatus,
+      newStatus,
+      existingOrder.products,
+      updatedProducts,
+      session
+    );
+  }
+}
+
+/**
+ * Handles transferring an order from one warehouse to another
+ */
+async function handleWarehouseTransfer(
+  oldWarehouseId: mongoose.Types.ObjectId | undefined,
+  newWarehouseId: mongoose.Types.ObjectId,
+  oldStatus: OrderDocument["status"],
+  newStatus: OrderDocument["status"],
+  oldProducts: OrderProduct[],
+  newProducts: OrderProduct[],
+  session: mongoose.ClientSession
+): Promise<void> {
+  if (oldWarehouseId && oldStatus !== "canceled") {
+    const oldWarehouse = await warehouseService.getWarehouseById(
+      oldWarehouseId,
+      session
+    );
+
+    if (!oldWarehouse) {
+      throw new ApiError(
+        404,
+        "Old warehouse not found",
+        ErrorType.RESOURCE_NOT_FOUND
+      );
+    }
+
+    await warehouseService.returnProductsToWarehouse(
+      oldWarehouse,
+      oldProducts,
+      session
+    );
+  }
+
+  if (newStatus !== "canceled") {
+    const newWarehouse = await warehouseService.getWarehouseById(
+      newWarehouseId,
+      session
+    );
+
+    if (!newWarehouse) {
+      throw new ApiError(
+        404,
+        "New warehouse not found",
+        ErrorType.RESOURCE_NOT_FOUND
+      );
+    }
+
+    await warehouseService.removeProductsFromWarehouse(
+      newWarehouse,
+      newProducts,
+      session
+    );
+  }
+}
+
+/**
+ * Handles stock updates when the warehouse remains the same
+ */
+async function handleSameWarehouseUpdates(
+  warehouseId: mongoose.Types.ObjectId,
+  oldStatus: OrderDocument["status"],
+  newStatus: OrderDocument["status"],
+  oldProducts: OrderProduct[],
+  newProducts: OrderProduct[],
+  session: mongoose.ClientSession
+): Promise<void> {
+  const warehouse = await warehouseService.getWarehouseById(
+    warehouseId,
+    session
+  );
+
+  if (!warehouse) {
+    throw new ApiError(
+      404,
+      "Warehouse not found for this order",
+      ErrorType.RESOURCE_NOT_FOUND
+    );
+  }
+
+  if (oldStatus !== "canceled" && newStatus === "canceled") {
+    await warehouseService.returnProductsToWarehouse(
+      warehouse,
+      oldProducts,
+      session
+    );
+  } else if (oldStatus === "canceled" && newStatus !== "canceled") {
+    await warehouseService.removeProductsFromWarehouse(
+      warehouse,
+      newProducts,
+      session
+    );
+  } else if (oldStatus !== "canceled" && newStatus !== "canceled") {
+    await warehouseService.updateWarehouseStock(
+      oldProducts,
+      newProducts,
+      warehouse,
+      session
+    );
+  }
+}
 
 export const getAllOrders = asyncHandler(
   async (_req: Request, res: Response) => {

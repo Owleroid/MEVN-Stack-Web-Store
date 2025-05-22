@@ -3,14 +3,7 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import { Request, Response, NextFunction } from "express";
 
-import {
-  getUserById,
-  getUserByEmail,
-  createUser,
-  updateUser,
-  updateUserPassword,
-  setPasswordResetToken,
-} from "./authService.js";
+import * as authService from "./authService.js";
 
 import type { UserDocument } from "./UserModel.js";
 
@@ -21,7 +14,7 @@ export const getUserData = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.params;
 
-    const user = await getUserById(userId);
+    const user = await authService.getUserById(userId);
     if (!user) {
       return next(new ApiError(404, "User not found"));
     }
@@ -35,7 +28,7 @@ export const updateUserData = asyncHandler(
     const { userId } = req.params;
     const { name, surname, phone, deliveryData } = req.body;
 
-    const updatedUser = await updateUser(userId, {
+    const updatedUser = await authService.updateUser(userId, {
       name,
       surname,
       phone,
@@ -58,7 +51,7 @@ export const changeUserPassword = asyncHandler(
     const { userId } = req.params;
     const { currentPassword, newPassword } = req.body;
 
-    const user = (await getUserById(userId, true)) as UserDocument;
+    const user = (await authService.getUserById(userId, true)) as UserDocument;
     if (!user) {
       return next(new ApiError(404, "User not found"));
     }
@@ -68,7 +61,7 @@ export const changeUserPassword = asyncHandler(
       return next(new ApiError(401, "Current password is incorrect"));
     }
 
-    const updated = await updateUserPassword(userId, newPassword);
+    const updated = await authService.updateUserPassword(userId, newPassword);
     if (!updated) {
       return next(new ApiError(500, "Failed to update password"));
     }
@@ -84,7 +77,7 @@ export const checkEmail = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email } = req.params;
 
-    const user = await getUserByEmail(email);
+    const user = await authService.getUserByEmail(email);
 
     res.status(200).json({ exists: !!user });
   }
@@ -94,12 +87,12 @@ export const signup = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
 
-    const existingUser = await getUserByEmail(email);
+    const existingUser = await authService.getUserByEmail(email);
     if (existingUser) {
       return next(new ApiError(400, "User already exists"));
     }
 
-    await createUser({ email, password });
+    await authService.createUser({ email, password });
 
     res.status(201).json({
       success: true,
@@ -112,7 +105,10 @@ export const login = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
 
-    const user = (await getUserByEmail(email, true)) as UserDocument;
+    const user = (await authService.getUserByEmail(
+      email,
+      true
+    )) as UserDocument;
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return next(new ApiError(401, "Invalid credentials"));
     }
@@ -132,7 +128,7 @@ export const login = asyncHandler(
 );
 
 export const logout = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     await new Promise<void>((resolve, reject) => {
       req.session.destroy((err) => {
         if (err) {
@@ -155,7 +151,7 @@ export const resetPassword = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email } = req.body;
 
-    const user = await getUserByEmail(email);
+    const user = await authService.getUserByEmail(email);
     if (!user) {
       return next(new ApiError(404, "User not found"));
     }
@@ -165,7 +161,11 @@ export const resetPassword = asyncHandler(
     });
 
     const resetExpires = new Date(Date.now() + 3600000); // 1 hour
-    const tokenSet = await setPasswordResetToken(email, token, resetExpires);
+    const tokenSet = await authService.setPasswordResetToken(
+      email,
+      token,
+      resetExpires
+    );
 
     if (!tokenSet) {
       return next(new ApiError(500, "Failed to set password reset token"));

@@ -14,19 +14,14 @@ import {
 } from "./productController.js";
 
 import { isAuthenticated, isAdmin } from "../authorization/authMiddleware.js";
-import { applyDiscountsToProducts } from "../discounts/discountMiddleware.js";
 
 const router = express.Router();
 
 // Public routes
 router.get("/category/:categoryId/ids", getProductIdsByCategoryId);
-router.get(
-  "/category/:categoryId",
-  applyDiscountsToProducts,
-  getProductsByCategoryId
-);
+router.get("/category/:categoryId", getProductsByCategoryId);
 router.get("/search/:query", searchProducts);
-router.get("/slug/:slug", applyDiscountsToProducts, getProductBySlug);
+router.get("/slug/:slug", getProductBySlug);
 router.get("/:id", getProductById);
 
 // Admin routes

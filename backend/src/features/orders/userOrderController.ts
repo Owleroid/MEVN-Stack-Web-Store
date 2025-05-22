@@ -3,12 +3,12 @@ import { Request, Response, NextFunction } from "express";
 
 import Order, { OrderProduct, Address, Recipient } from "./OrderModel.js";
 
-import {
-  findWarehouseByName,
-  removeProductsFromWarehouse,
-  loadCountryToWarehouseMap,
-} from "../warehouses/warehouseService.js";
-import { handleUser, createNewOrder } from "./userOrderService.js";
+import * as userOrderService from "./userOrderService.js";
+import * as warehouseService from "../warehouses/warehouseService.js";
+import { getProductsByIds } from "../products/productService.js";
+import { applyDiscountsToOrderProducts } from "../discounts/discountService.js";
+
+import type { ProductDocument } from "../products/ProductModel.js";
 
 import ApiError, { ErrorType } from "../../utils/apiError.js";
 import { asyncHandler, transactionHandler } from "../../utils/asyncHandlers.js";
@@ -39,7 +39,7 @@ export const createOrder = transactionHandler(
     _next: NextFunction,
     session: mongoose.ClientSession
   ): Promise<void> => {
-    const {
+    let {
       userId,
       recipient,
       products,
@@ -53,17 +53,44 @@ export const createOrder = transactionHandler(
       trackingNumber,
     } = req.body as CreateOrderRequest;
 
+    if (products && Array.isArray(products)) {
+      const productIds = products.map((product) => product.productId);
+      const productDocuments = await getProductsByIds(productIds);
+
+      const productMap = new Map<string, ProductDocument>();
+      productDocuments.forEach((product) => {
+        productMap.set(product._id.toString(), product);
+      });
+
+      products = await applyDiscountsToOrderProducts(products, productMap);
+
+      if (totalPrice !== undefined) {
+        totalPrice = products.reduce(
+          (total, product) => total + product.productPrice * product.amount,
+          0
+        );
+      }
+    }
+
     // Step 1: Handle user creation or update
-    const user = await handleUser(userId, recipient, shippingAddress, session);
+    const user = await userOrderService.handleUser(
+      userId,
+      recipient,
+      shippingAddress,
+      session
+    );
 
     // Step 2: Determine the warehouse based on country
-    const countryToWarehouseMap = loadCountryToWarehouseMap();
+    const countryToWarehouseMap = warehouseService.loadCountryToWarehouseMap();
     const warehouseName =
       countryToWarehouseMap[shippingAddress.country] || null;
 
     let warehouse = null;
     if (warehouseName) {
-      warehouse = await findWarehouseByName(warehouseName, session);
+      warehouse = await warehouseService.findWarehouseByName(
+        warehouseName,
+        session
+      );
 
       if (!warehouse) {
         throw new ApiError(
@@ -75,7 +102,11 @@ export const createOrder = transactionHandler(
 
       // Step 3: Update warehouse stock if applicable
       try {
-        await removeProductsFromWarehouse(warehouse, products, session);
+        await warehouseService.removeProductsFromWarehouse(
+          warehouse,
+          products,
+          session
+        );
       } catch (error: unknown) {
         throw new ApiError(
           500,
@@ -88,7 +119,7 @@ export const createOrder = transactionHandler(
     }
 
     // Step 4: Create the order
-    const order = await createNewOrder(
+    const order = await userOrderService.createNewOrder(
       user._id,
       products,
       totalPrice,

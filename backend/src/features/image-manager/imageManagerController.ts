@@ -25,7 +25,6 @@ export const fetchImages = asyncHandler(
   async (_req: Request, res: Response, _next: NextFunction) => {
     const [files] = await storage.bucket(bucketName).getFiles();
 
-    // Get metadata for each file to retrieve creation date
     const imagesPromises = files.map(async (file) => {
       const [metadata] = await file.getMetadata();
 
@@ -65,7 +64,6 @@ export const uploadImages = asyncHandler(
         });
 
         stream.on("finish", async () => {
-          // Get metadata to include creation date
           const [metadata] = await blob.getMetadata();
 
           uploadedImages.push({

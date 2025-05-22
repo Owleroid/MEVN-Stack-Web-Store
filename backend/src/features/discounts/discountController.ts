@@ -1,16 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 
-import Discount from "./DiscountModel.js";
-
+import * as discountService from "./discountService.js";
 import { getProductsByIds } from "../products/productService.js";
 import { getCategoryById } from "../categories/categoryService.js";
 
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler } from "../../utils/asyncHandlers.js";
 
-export const getAllDiscounts = asyncHandler(
+export const getAllDiscountsController = asyncHandler(
   async (_req: Request, res: Response, _next: NextFunction) => {
-    const discounts = await Discount.find().sort({ createdAt: -1 });
+    const discounts = await discountService.getAllDiscounts();
 
     res.status(200).json({
       success: true,
@@ -19,11 +18,11 @@ export const getAllDiscounts = asyncHandler(
   }
 );
 
-export const getDiscountById = asyncHandler(
+export const getDiscountByIdController = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
-    const discount = await Discount.findById(id);
+    const discount = await discountService.getDiscountById(id);
 
     if (!discount) {
       return next(new ApiError(404, "Discount not found"));
@@ -36,7 +35,7 @@ export const getDiscountById = asyncHandler(
   }
 );
 
-export const createDiscount = asyncHandler(
+export const createDiscountController = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const {
       name,
@@ -81,7 +80,7 @@ export const createDiscount = asyncHandler(
       }
     }
 
-    const newDiscount = new Discount({
+    const savedDiscount = await discountService.createDiscount({
       name,
       description,
       scope,
@@ -92,8 +91,6 @@ export const createDiscount = asyncHandler(
       isActive,
     });
 
-    const savedDiscount = await newDiscount.save();
-
     res.status(201).json({
       success: true,
       discountId: savedDiscount._id,
@@ -102,7 +99,7 @@ export const createDiscount = asyncHandler(
   }
 );
 
-export const updateDiscount = asyncHandler(
+export const updateDiscountController = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const {
@@ -148,20 +145,16 @@ export const updateDiscount = asyncHandler(
       }
     }
 
-    const updatedDiscount = await Discount.findByIdAndUpdate(
-      id,
-      {
-        name,
-        description,
-        scope,
-        ...(scope !== "all" && { targetModel, targetIds }),
-        discounts,
-        startDate,
-        endDate,
-        isActive,
-      },
-      { new: true, runValidators: true }
-    );
+    const updatedDiscount = await discountService.updateDiscount(id, {
+      name,
+      description,
+      scope,
+      ...(scope !== "all" && { targetModel, targetIds }),
+      discounts,
+      startDate,
+      endDate,
+      isActive,
+    });
 
     if (!updatedDiscount) {
       return next(new ApiError(404, "Discount not found"));
@@ -175,18 +168,15 @@ export const updateDiscount = asyncHandler(
   }
 );
 
-export const toggleDiscountStatus = asyncHandler(
+export const toggleDiscountStatusController = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
-    const discount = await Discount.findById(id);
+    const discount = await discountService.toggleDiscountStatus(id);
 
     if (!discount) {
       return next(new ApiError(404, "Discount not found"));
     }
-
-    discount.isActive = !discount.isActive;
-    await discount.save();
 
     res.status(200).json({
       success: true,
@@ -196,11 +186,11 @@ export const toggleDiscountStatus = asyncHandler(
   }
 );
 
-export const deleteDiscount = asyncHandler(
+export const deleteDiscountController = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
-    const deletedDiscount = await Discount.findByIdAndDelete(id);
+    const deletedDiscount = await discountService.deleteDiscount(id);
 
     if (!deletedDiscount) {
       return next(new ApiError(404, "Discount not found"));

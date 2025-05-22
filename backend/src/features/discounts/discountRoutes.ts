@@ -1,24 +1,28 @@
 import express from "express";
 
 import {
-  getAllDiscounts,
-  getDiscountById,
-  createDiscount,
-  updateDiscount,
-  toggleDiscountStatus,
-  deleteDiscount,
+  getAllDiscountsController,
+  getDiscountByIdController,
+  createDiscountController,
+  updateDiscountController,
+  toggleDiscountStatusController,
+  deleteDiscountController,
 } from "./discountController.js";
 
 import { isAuthenticated, isAdmin } from "../authorization/authMiddleware.js";
 
 const router = express.Router();
 
-// Admin routes (all require authentication)
-router.get("/", isAuthenticated, isAdmin, getAllDiscounts);
-router.get("/:id", isAuthenticated, isAdmin, getDiscountById);
-router.post("/", isAuthenticated, isAdmin, createDiscount);
-router.put("/:id", isAuthenticated, isAdmin, updateDiscount);
-router.put("/:id/toggle", isAuthenticated, isAdmin, toggleDiscountStatus);
-router.delete("/:id", isAuthenticated, isAdmin, deleteDiscount);
+router.get("/", isAuthenticated, isAdmin, getAllDiscountsController);
+router.get("/:id", isAuthenticated, isAdmin, getDiscountByIdController);
+router.post("/", isAuthenticated, isAdmin, createDiscountController);
+router.put("/:id", isAuthenticated, isAdmin, updateDiscountController);
+router.put(
+  "/:id/toggle",
+  isAuthenticated,
+  isAdmin,
+  toggleDiscountStatusController
+);
+router.delete("/:id", isAuthenticated, isAdmin, deleteDiscountController);
 
 export default router;

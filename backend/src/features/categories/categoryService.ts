@@ -162,7 +162,6 @@ export const deleteCategoryAndReassignProducts = async (
     return null;
   }
 
-  // Import a local copy of Product for the operation
   const Product = (await import("../products/ProductModel.js")).default;
 
   await Product.updateMany(

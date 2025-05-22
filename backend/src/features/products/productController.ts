@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 
 import * as productService from "./productService.js";
+import * as discountService from "../discounts/discountService.js";
 import { getCategoryById } from "../categories/categoryService.js";
 
 import ApiError from "../../utils/apiError.js";
@@ -17,9 +18,12 @@ export const searchProducts = asyncHandler(
 
     const products = await productService.searchProducts(query);
 
+    const productsWithDiscounts =
+      await discountService.applyDiscountsToProducts(products);
+
     res.status(200).json({
       success: true,
-      products,
+      products: productsWithDiscounts,
     });
   }
 );
@@ -35,9 +39,12 @@ export const getProductsByCategoryId = asyncHandler(
 
     const products = await productService.getProductsByCategoryId(categoryId);
 
+    const productsWithDiscounts =
+      await discountService.applyDiscountsToProducts(products);
+
     res.status(200).json({
       success: true,
-      products,
+      products: productsWithDiscounts,
     });
   }
 );
@@ -71,9 +78,12 @@ export const getProductById = asyncHandler(
       return next(new ApiError(404, "Product not found"));
     }
 
+    const productWithDiscount =
+      await discountService.applyDiscountToSingleProduct(product);
+
     res.status(200).json({
       success: true,
-      product,
+      product: productWithDiscount,
     });
   }
 );
@@ -89,6 +99,9 @@ export const getProductBySlug = asyncHandler(
       return next(new ApiError(404, "Product not found"));
     }
 
+    const productWithDiscount =
+      await discountService.applyDiscountToSingleProduct(product);
+
     if (categorySlug) {
       const productCategory = await getCategoryById(product.category);
 
@@ -99,7 +112,7 @@ export const getProductBySlug = asyncHandler(
       if (productCategory.slug !== categorySlug) {
         return res.status(200).json({
           success: true,
-          product,
+          product: productWithDiscount,
           correctCategorySlug: productCategory.slug,
           redirectNeeded: true,
         });
@@ -108,7 +121,7 @@ export const getProductBySlug = asyncHandler(
 
     res.status(200).json({
       success: true,
-      product,
+      product: productWithDiscount,
     });
   }
 );
@@ -129,9 +142,12 @@ export const getProductsByIds = asyncHandler(
 
     const products = await productService.getProductsByIds(validIds);
 
+    const productsWithDiscounts =
+      await discountService.applyDiscountsToProducts(products);
+
     res.status(200).json({
       success: true,
-      products,
+      products: productsWithDiscounts,
     });
   }
 );

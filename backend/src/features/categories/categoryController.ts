@@ -72,13 +72,11 @@ export const createCategory = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { name, imageUrl, slug } = req.body;
 
-    // Check if a category with the same name already exists
     const nameExists = await categoryService.checkCategoryNameExists(name);
     if (nameExists) {
       return next(new ApiError(400, "Category with this name already exists"));
     }
 
-    // Check if a category with the same slug already exists if a slug is provided
     if (slug) {
       const slugExists = await categoryService.checkCategorySlugExists(slug);
       if (slugExists) {
@@ -106,7 +104,6 @@ export const updateCategory = asyncHandler(
     const { id } = req.params;
     const { name, imageUrl, slug } = req.body;
 
-    // Check if a category with the same slug already exists if a slug is provided
     if (slug) {
       const slugExists = await categoryService.checkCategorySlugExists(
         slug,
