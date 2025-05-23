@@ -3,6 +3,13 @@ export interface OrderProduct {
   name: string;
   amount: number;
   productPrice: number;
+  discount?: {
+    originalPrice: number;
+    discountAmount: number;
+    discountName: string;
+    discountId: string;
+    discountPercentage: number;
+  };
 }
 
 export interface ClientOrderProduct {
@@ -78,6 +85,12 @@ export interface OrderResponse {
 export interface OrdersListResponse {
   success: boolean;
   orders: OrderData[];
+  pagination?: {
+    totalOrders: number;
+    totalPages: number;
+    currentPage: number;
+    limit: number;
+  };
 }
 
 export interface OrderFilters {

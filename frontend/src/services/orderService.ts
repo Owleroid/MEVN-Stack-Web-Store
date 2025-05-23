@@ -34,13 +34,18 @@ export const createOrder = async (
 /**
  * Retrieves all orders for a specific user
  * @param userId - The ID of the user
- * @returns Promise resolving to the list of user orders
+ * @param page - The page number (defaults to 1)
+ * @param limit - The number of orders per page (defaults to 5)
+ * @returns Promise resolving to the list of user orders with pagination info
  */
 export const getOrdersByUserId = async (
-  userId: string
+  userId: string,
+  page: number = 1,
+  limit: number = 5
 ): Promise<OrdersListResponse> => {
   const response: AxiosResponse<OrdersListResponse> = await ordersService.get(
-    `/user/${userId}`
+    `/user/${userId}`,
+    { params: { page, limit } }
   );
   return response.data;
 };

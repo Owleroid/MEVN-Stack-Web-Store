@@ -1,11 +1,18 @@
 {
   "pageTitle": "Мои заказы",
+  "orderHistory": "История ваших заказов и информация об отслеживании",
   "loading": "Загрузка заказов...",
   "retry": "Повторить",
   "fetchOrdersError": "Не удалось загрузить заказы",
   "notAuthenticated": "Пожалуйста, войдите, чтобы просмотреть ваши заказы",
   "order": "Заказ",
   "products": "Товары",
+  "sortNewestFirst": "Сначала новые",
+  "sortOldestFirst": "Сначала старые",
+  "previous": "Назад",
+  "next": "Вперед",
+  "originalPrice": "Исходная цена",
+  "savedAmount": "Вы сэкономили",
   "statuses": {
     "waiting confirmation": "Ожидает подтверждения",
     "packing": "Упаковка",

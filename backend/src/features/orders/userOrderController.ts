@@ -128,12 +128,28 @@ export const createOrder = transactionHandler(
 export const getOrdersByUserId = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.params;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+    const skip = (page - 1) * limit;
 
-    const orders = await Order.find({ userId });
+    const totalOrders = await Order.countDocuments({ userId });
+
+    const orders = await Order.find({ userId })
+      .sort({ dateOfCreation: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalOrders / limit);
 
     res.status(200).json({
       success: true,
       orders,
+      pagination: {
+        totalOrders,
+        totalPages,
+        currentPage: page,
+        limit,
+      },
     });
   }
 );

@@ -1,11 +1,18 @@
 {
   "pageTitle": "My Orders",
+  "orderHistory": "Your order history and tracking information",
   "loading": "Loading orders...",
   "retry": "Try Again",
   "fetchOrdersError": "Failed to fetch orders",
   "notAuthenticated": "Please log in to view your orders",
   "order": "Order",
   "products": "Products",
+  "sortNewestFirst": "Newest first",
+  "sortOldestFirst": "Oldest first",
+  "previous": "Previous",
+  "next": "Next",
+  "originalPrice": "Original price",
+  "savedAmount": "You saved",
   "statuses": {
     "waiting confirmation": "Waiting Confirmation",
     "packing": "Packing",
