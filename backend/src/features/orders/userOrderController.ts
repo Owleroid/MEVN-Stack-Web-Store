@@ -1,22 +1,20 @@
 import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 
-import Order, { OrderProduct, Address, Recipient } from "./OrderModel.js";
+import Order, { Address, Recipient } from "./OrderModel.js";
 
 import * as userOrderService from "./userOrderService.js";
 import * as warehouseService from "../warehouses/warehouseService.js";
-import { getProductsByIds } from "../products/productService.js";
-import { applyDiscountsToOrderProducts } from "../discounts/discountService.js";
-
-import type { ProductDocument } from "../products/ProductModel.js";
 
 import ApiError, { ErrorType } from "../../utils/apiError.js";
 import { asyncHandler, transactionHandler } from "../../utils/asyncHandlers.js";
 
 interface CreateOrderRequest {
   userId?: string;
-  products: OrderProduct[];
-  totalPrice: number;
+  products: {
+    productId: string;
+    amount: number;
+  }[];
   currency: "rubles" | "euros";
   shippingAddress: Address;
   recipient: Recipient;
@@ -39,11 +37,10 @@ export const createOrder = transactionHandler(
     _next: NextFunction,
     session: mongoose.ClientSession
   ): Promise<void> => {
-    let {
+    const {
       userId,
       recipient,
       products,
-      totalPrice,
       currency,
       shippingAddress,
       status,
@@ -53,26 +50,11 @@ export const createOrder = transactionHandler(
       trackingNumber,
     } = req.body as CreateOrderRequest;
 
-    if (products && Array.isArray(products)) {
-      const productIds = products.map((product) => product.productId);
-      const productDocuments = await getProductsByIds(productIds);
+    // Step 1: Process products and calculate prices server-side
+    const { products: processedProducts, totalPrice } =
+      await userOrderService.processOrderProducts(products, currency);
 
-      const productMap = new Map<string, ProductDocument>();
-      productDocuments.forEach((product) => {
-        productMap.set(product._id.toString(), product);
-      });
-
-      products = await applyDiscountsToOrderProducts(products, productMap);
-
-      if (totalPrice !== undefined) {
-        totalPrice = products.reduce(
-          (total, product) => total + product.productPrice * product.amount,
-          0
-        );
-      }
-    }
-
-    // Step 1: Handle user creation or update
+    // Step 2: Handle user creation or update
     const user = await userOrderService.handleUser(
       userId,
       recipient,
@@ -80,7 +62,7 @@ export const createOrder = transactionHandler(
       session
     );
 
-    // Step 2: Determine the warehouse based on country
+    // Step 3: Determine the warehouse based on country
     const countryToWarehouseMap = warehouseService.loadCountryToWarehouseMap();
     const warehouseName =
       countryToWarehouseMap[shippingAddress.country] || null;
@@ -100,11 +82,11 @@ export const createOrder = transactionHandler(
         );
       }
 
-      // Step 3: Update warehouse stock if applicable
+      // Step 4: Update warehouse stock if applicable
       try {
         await warehouseService.removeProductsFromWarehouse(
           warehouse,
-          products,
+          processedProducts,
           session
         );
       } catch (error: unknown) {
@@ -118,10 +100,10 @@ export const createOrder = transactionHandler(
       }
     }
 
-    // Step 4: Create the order
+    // Step 5: Create the order
     const order = await userOrderService.createNewOrder(
       user._id,
-      products,
+      processedProducts,
       totalPrice,
       currency,
       shippingAddress,

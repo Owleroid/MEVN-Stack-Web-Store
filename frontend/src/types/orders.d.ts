@@ -5,6 +5,11 @@ export interface OrderProduct {
   productPrice: number;
 }
 
+export interface ClientOrderProduct {
+  productId: string;
+  amount: number;
+}
+
 export interface Address {
   street: string;
   buildingNumber: string;
@@ -50,6 +55,18 @@ export interface OrderData {
   paymentMethod?: string;
   orderNotes?: string;
   trackingNumber?: string;
+}
+
+// New interface for order creation - doesn't include prices
+export interface ClientOrderData {
+  userId?: string;
+  products: ClientOrderProduct[];
+  currency: Currency;
+  status: OrderStatus;
+  checked: boolean;
+  shippingAddress: Address;
+  recipient: Recipient;
+  orderNotes?: string;
 }
 
 export interface OrderResponse {

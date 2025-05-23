@@ -402,17 +402,7 @@ const formData = ref<DiscountInput>(initialFormData());
 watch(
   [() => props.discount, () => props.mode, () => props.show],
   async ([discount, mode, show]) => {
-    console.log(
-      "Watch triggered - Discount:",
-      discount,
-      "Mode:",
-      mode,
-      "Show:",
-      show
-    );
-
     if (show && mode === "add") {
-      console.log("Resetting form for add mode (from combined watcher)");
       formData.value = initialFormData();
       selectedItems.value = [];
       searchResults.value = [];
@@ -422,7 +412,6 @@ watch(
     }
 
     if (show && mode === "edit" && discount) {
-      console.log("Updating form for edit mode (from combined watcher)");
       try {
         const {
           name,
@@ -564,12 +553,6 @@ const handleScopeChange = () => {
 };
 
 const submitForm = () => {
-  console.log(
-    "Form submitted - Mode:",
-    props.mode,
-    "Form data:",
-    formData.value
-  );
   validationError.value = "";
 
   if (
@@ -605,8 +588,6 @@ const submitForm = () => {
     endDate: formData.value.endDate,
     isActive: formData.value.isActive,
   };
-
-  console.log("Emitting form data:", formDataToSubmit);
 
   emit("submit", formDataToSubmit);
 };

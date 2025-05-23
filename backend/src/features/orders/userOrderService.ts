@@ -2,13 +2,17 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto-js";
 import mongoose from "mongoose";
 
-import User, { UserDocument } from "./../authorization/UserModel.js";
 import Order, {
   OrderDocument,
   OrderProduct,
   Address,
   Recipient,
 } from "./OrderModel.js";
+import type { ProductDocument } from "../products/ProductModel.js";
+import User, { UserDocument } from "./../authorization/UserModel.js";
+
+import { getProductsByIds } from "../products/productService.js";
+import { applyDiscountsToOrderProducts } from "../discounts/discountService.js";
 
 import ApiError, { ErrorType } from "./../../utils/apiError.js";
 
@@ -29,7 +33,6 @@ export const handleUser = async (
   session: mongoose.ClientSession
 ): Promise<UserDocument> => {
   try {
-    // If userId is provided, update existing user
     if (userId) {
       return await updateExistingUser(
         userId,
@@ -39,7 +42,6 @@ export const handleUser = async (
       );
     }
 
-    // Otherwise, create new user or handle guest checkout
     return await createUserFromOrder(recipient, shippingAddress, session);
   } catch (error: unknown) {
     if (error instanceof ApiError) {
@@ -267,4 +269,84 @@ export const createNewOrder = async (
       ErrorType.INTERNAL
     );
   }
+};
+
+/**
+ * Processes client-sent products and recalculates prices server-side
+ *
+ * @param {Array} clientProducts - Array of products from client request with ID and quantity
+ * @param {string} currency - Currency for price calculation ("rubles" or "euros")
+ * @returns {Promise<{products: OrderProduct[], totalPrice: number}>} Processed products and calculated total price
+ * @throws {ApiError} If products not found or validation errors occur
+ */
+export const processOrderProducts = async (
+  clientProducts: { productId: string; amount: number }[],
+  currency: "rubles" | "euros"
+): Promise<{ products: OrderProduct[]; totalPrice: number }> => {
+  if (
+    !clientProducts ||
+    !Array.isArray(clientProducts) ||
+    clientProducts.length === 0
+  ) {
+    throw new ApiError(
+      400,
+      "Invalid products data. Products must be a non-empty array.",
+      ErrorType.VALIDATION
+    );
+  }
+
+  const productIds = clientProducts.map((product) => product.productId);
+  const productDocuments = await getProductsByIds(productIds);
+
+  if (productDocuments.length !== productIds.length) {
+    const foundIds = productDocuments.map((p) => p._id.toString());
+    const missingIds = productIds.filter((id) => !foundIds.includes(id));
+
+    throw new ApiError(
+      400,
+      `Some products do not exist: ${missingIds.join(", ")}`,
+      ErrorType.RESOURCE_NOT_FOUND
+    );
+  }
+
+  const productMap = new Map<string, ProductDocument>();
+  productDocuments.forEach((product) => {
+    productMap.set(product._id.toString(), product);
+  });
+
+  const serverProducts: any[] = [];
+
+  for (const clientProduct of clientProducts) {
+    const product = productMap.get(clientProduct.productId);
+
+    if (!product) {
+      throw new ApiError(
+        400,
+        `Product with ID ${clientProduct.productId} not found`,
+        ErrorType.RESOURCE_NOT_FOUND
+      );
+    }
+
+    serverProducts.push({
+      productId: product._id,
+      name: product.name,
+      amount: clientProduct.amount,
+      productPrice: product.price[currency],
+    });
+  }
+
+  const productsWithDiscounts = await applyDiscountsToOrderProducts(
+    serverProducts,
+    productMap
+  );
+
+  const totalPrice = productsWithDiscounts.reduce(
+    (total, product) => total + product.productPrice * product.amount,
+    0
+  );
+
+  return {
+    products: productsWithDiscounts as OrderProduct[],
+    totalPrice,
+  };
 };

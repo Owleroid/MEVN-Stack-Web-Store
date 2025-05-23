@@ -243,32 +243,22 @@ const fetchDiscounts = async () => {
 
 // Modal Management
 const openAddModal = () => {
-  console.log("Opening Add Modal - Before reset");
   selectedDiscount.value = null;
   isEdit.value = false;
-  console.log("Add Modal - After reset, before show");
   setTimeout(() => {
     showAddEditModal.value = true;
-    console.log("Add Modal - After show");
   }, 0);
 };
 
 const openEditModal = (discount: Discount) => {
-  console.log("Opening Edit Modal - Before setting discount", discount);
   selectedDiscount.value = JSON.parse(JSON.stringify(discount));
   isEdit.value = true;
   showAddEditModal.value = true;
-  console.log(
-    "Edit Modal - After show, selectedDiscount:",
-    selectedDiscount.value
-  );
 };
 
 const cancelAddEdit = () => {
-  console.log("Closing Modal");
   showAddEditModal.value = false;
   setTimeout(() => {
-    console.log("Clearing selectedDiscount after close");
     selectedDiscount.value = null;
   }, 300);
 };
@@ -280,26 +270,19 @@ const confirmDelete = (id: string) => {
 
 // CRUD Operations
 const submitDiscount = async (discount: DiscountInput) => {
-  console.log("DiscountsView received submitted data:", discount);
   try {
     if (isEdit.value && selectedDiscount.value) {
-      console.log("Updating discount with ID:", selectedDiscount.value._id);
       await updateDiscount(selectedDiscount.value._id, discount);
       toast.success(t("updateDiscountSuccess"));
     } else {
-      console.log("Creating new discount");
       await createDiscount(discount);
       toast.success(t("addDiscountSuccess"));
     }
 
-    console.log(
-      "Discount operation successful, closing modal and refreshing data"
-    );
     showAddEditModal.value = false;
     selectedDiscount.value = null;
     await fetchDiscounts();
   } catch (error) {
-    console.error("Discount operation failed:", error);
     const errorMessage = isEdit.value
       ? t("updateDiscountError")
       : t("addDiscountError");

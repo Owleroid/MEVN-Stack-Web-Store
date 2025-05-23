@@ -3,6 +3,7 @@ import type { AxiosResponse } from "axios";
 
 import type {
   OrderData,
+  ClientOrderData,
   OrderResponse,
   OrdersListResponse,
   OrderFilters,
@@ -17,11 +18,11 @@ const ordersService = axios.create({
 
 /**
  * Creates a new order
- * @param orderData - The order data to create
- * @returns Promise resolving to the created order
+ * @param orderData - The client order data to create (without prices)
+ * @returns Promise resolving to the created order with server-calculated prices
  */
 export const createOrder = async (
-  orderData: OrderData
+  orderData: ClientOrderData
 ): Promise<OrderResponse> => {
   const response: AxiosResponse<OrderResponse> = await ordersService.post(
     "/",

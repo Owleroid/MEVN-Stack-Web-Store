@@ -294,7 +294,12 @@ import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 
 import type { CartItem } from "@/types/cart";
-import type { OrderData, Recipient, Address, Currency } from "@/types/orders";
+import type {
+  ClientOrderData,
+  Recipient,
+  Address,
+  Currency,
+} from "@/types/orders";
 
 import { useEventBus } from "@/utils/eventBus";
 
@@ -396,15 +401,12 @@ const handleCheckout = async (): Promise<void> => {
     }
   }
 
-  const orderData: OrderData = {
+  const orderData: ClientOrderData = {
     userId: isAuthenticated.value ? authStore.userId : undefined,
     products: cart.value.map((item) => ({
       productId: item.product._id,
-      name: item.product.name,
       amount: item.quantity,
-      productPrice: item.product.price[currency.value],
     })),
-    totalPrice: totalPrice.value,
     currency: currency.value,
     shippingAddress: shippingAddress.value,
     recipient: recipient.value,
