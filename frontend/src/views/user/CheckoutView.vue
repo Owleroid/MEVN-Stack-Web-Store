@@ -300,7 +300,7 @@ import { useEventBus } from "@/utils/eventBus";
 
 import { checkEmail, getUserData } from "@/services/authService";
 import { createOrder } from "@/services/orderService";
-import { getCart, clearCart } from "@/services/cartService";
+import { getCart, clearCart, refreshCartItems } from "@/services/cartService";
 
 import { useAuthStore } from "@/stores/authStore";
 
@@ -429,7 +429,6 @@ const handleCheckout = async (): Promise<void> => {
 
 // Lifecycle Hooks
 onMounted(async () => {
-  // Load cart data
   cart.value = getCart();
   if (cart.value.length === 0) {
     toast.warning(t("emptyCart"));
@@ -437,10 +436,15 @@ onMounted(async () => {
     return;
   }
 
-  // Set currency from session storage
+  try {
+    cart.value = await refreshCartItems();
+  } catch (error) {
+    console.error("Failed to refresh cart items:", error);
+    toast.error(t("cartRefreshError") || "Failed to refresh cart items");
+  }
+
   currency.value = (sessionStorage.getItem("currency") as Currency) || "euros";
 
-  // Retrieve form data from local storage if available
   const savedRecipient = localStorage.getItem("recipient");
   const savedShippingAddress = localStorage.getItem("shippingAddress");
 
@@ -452,18 +456,15 @@ onMounted(async () => {
     Object.assign(shippingAddress.value, JSON.parse(savedShippingAddress));
   }
 
-  // If user is authenticated, fetch user data from backend and pre-fill the form
   if (isAuthenticated.value) {
     try {
       const userData = await getUserData(authStore.userId);
 
-      // Pre-fill recipient information from user data
       recipient.value.name = userData.name || "";
       recipient.value.surname = userData.surname || "";
       recipient.value.phone = userData.phone || "";
       recipient.value.email = userData.email || "";
 
-      // Pre-fill shipping address from user delivery data if available
       if (userData.deliveryData) {
         shippingAddress.value.country = userData.deliveryData.country || "";
         shippingAddress.value.city = userData.deliveryData.city || "";

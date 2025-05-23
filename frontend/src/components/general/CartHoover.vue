@@ -78,7 +78,7 @@ import type { Currency } from "@/types/orders";
 
 import { useEventBus } from "@/utils/eventBus";
 
-import { getCart } from "@/services/cartService";
+import { getCart, refreshCartItems } from "@/services/cartService";
 
 // Composables Setup
 const authStore = useAuthStore();
@@ -130,8 +130,14 @@ const handleImageError = (event: Event): void => {
 };
 
 // Data Fetching
-const fetchCart = (): void => {
+const fetchCart = async (): Promise<void> => {
   cart.value = getCart();
+
+  try {
+    cart.value = await refreshCartItems();
+  } catch (error) {
+    console.error("Failed to refresh cart items:", error);
+  }
 };
 
 // Lifecycle Hooks

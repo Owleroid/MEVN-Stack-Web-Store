@@ -174,6 +174,7 @@ import {
   getCart,
   removeFromCart,
   updateCartQuantity,
+  refreshCartItems,
 } from "@/services/cartService";
 
 // Composables Setup
@@ -249,7 +250,14 @@ const redirectToStore = (): void => {
 };
 
 // Lifecycle Hooks
-onMounted(() => {
+onMounted(async () => {
   cart.value = getCart();
+
+  try {
+    cart.value = await refreshCartItems();
+    emit("cart-updated");
+  } catch (error) {
+    console.error("Failed to refresh cart items:", error);
+  }
 });
 </script>

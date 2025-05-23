@@ -203,7 +203,9 @@ const { on } = useEventBus();
 const cartItemsCount = ref<number>(0);
 
 // Computed Properties
-const isCartPage = computed<boolean>(() => route.path === "/cart");
+const isCartPage = computed<boolean>(
+  () => route.path === "/cart" || route.path === "/checkout"
+);
 const currentLanguage = computed<string>(() =>
   locale.value === "en" ? "EN" : "RU"
 );
