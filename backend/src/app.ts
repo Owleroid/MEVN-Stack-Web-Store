@@ -20,6 +20,7 @@ import imageManagerRoutes from "./features/image-manager/imageManagerRoutes.js";
 import announcementRoutes from "./features/announcements/announcementRoutes.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
+import { sessionRefresh } from "./middleware/sessionRefresh.js";
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use(cors(corseConfig));
 app.use(express.json());
 app.use(mongoSanitize());
 app.use(session(sessionConfig));
+app.use(sessionRefresh);
 
 app.use("/api/geo", geoRoutes);
 app.use("/api/auth", authRoutes);

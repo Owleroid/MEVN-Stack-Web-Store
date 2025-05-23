@@ -4,20 +4,10 @@ import i18n from "@/i18n";
 
 import type { UserData, AuthResponse, UpdateResponse } from "@/types/auth";
 
+import * as authService from "@/services/authService";
 import { getUserLocation } from "@/services/geolocationService";
-import {
-  login,
-  logout,
-  signup,
-  passwordReset,
-  getUserData,
-  updateUserData,
-  changeUserPassword,
-  checkEmail,
-} from "@/services/authService";
 
 export const useAuthStore = defineStore("auth", {
-  // Application State
   state: () => ({
     isAuthenticated: sessionStorage.getItem("isAuthenticated") === "true",
     userId: sessionStorage.getItem("userId") || "",
@@ -29,7 +19,6 @@ export const useAuthStore = defineStore("auth", {
     userData: null as UserData | null,
   }),
 
-  // Computed Properties
   getters: {
     isLoggedIn(): boolean {
       return this.isAuthenticated && !!this.userId;
@@ -48,21 +37,17 @@ export const useAuthStore = defineStore("auth", {
     },
   },
 
-  // Methods
   actions: {
-    // Authentication Actions
     async login(email: string, password: string): Promise<AuthResponse> {
       try {
-        const response = await login(email, password);
+        const response = await authService.login(email, password);
 
         if (response.success && response.userId) {
-          // Update authentication state
           this.isAuthenticated = true;
           this.userId = response.userId;
           this.userEmail = email;
           this.isAdmin = !!response.isAdmin;
 
-          // Store auth data in session storage
           sessionStorage.setItem("isAuthenticated", "true");
           sessionStorage.setItem("userId", response.userId);
           sessionStorage.setItem("userEmail", email);
@@ -73,10 +58,8 @@ export const useAuthStore = defineStore("auth", {
             sessionStorage.removeItem("isAdmin");
           }
 
-          // Fetch additional user data
           await this.fetchUserData();
 
-          // Determine user's geographical region
           await this.determineUserRegion();
         }
 
@@ -90,7 +73,7 @@ export const useAuthStore = defineStore("auth", {
     async logout(): Promise<void> {
       const router = useRouter();
       try {
-        await logout();
+        await authService.logout();
 
         this.clearAuthState();
         router.push("/");
@@ -110,7 +93,6 @@ export const useAuthStore = defineStore("auth", {
       this.setLanguage("en");
       this.currency = "euros";
 
-      // Clear session storage
       sessionStorage.removeItem("isAuthenticated");
       sessionStorage.removeItem("userId");
       sessionStorage.removeItem("userEmail");
@@ -120,10 +102,9 @@ export const useAuthStore = defineStore("auth", {
       sessionStorage.removeItem("currency");
     },
 
-    // User Registration and Password Management
     async signup(email: string, password: string): Promise<AuthResponse> {
       try {
-        return await signup(email, password);
+        return await authService.signup(email, password);
       } catch (error) {
         console.error("Signup failed:", error);
         throw error;
@@ -132,7 +113,7 @@ export const useAuthStore = defineStore("auth", {
 
     async resetPassword(email: string): Promise<UpdateResponse> {
       try {
-        return await passwordReset(email);
+        return await authService.passwordReset(email);
       } catch (error) {
         console.error("Password reset failed:", error);
         throw error;
@@ -141,7 +122,7 @@ export const useAuthStore = defineStore("auth", {
 
     async checkEmailExists(email: string): Promise<boolean> {
       try {
-        const response = await checkEmail(email);
+        const response = await authService.checkEmail(email);
         return response.exists;
       } catch (error) {
         console.error("Email check failed:", error);
@@ -149,12 +130,11 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
-    // User Data Management
     async fetchUserData(): Promise<UserData | null> {
       try {
         if (!this.userId) return null;
 
-        const userData = await getUserData(this.userId);
+        const userData = await authService.getUserData(this.userId);
         this.userData = userData;
         return userData;
       } catch (error) {
@@ -169,9 +149,11 @@ export const useAuthStore = defineStore("auth", {
           throw new Error("No user ID available");
         }
 
-        const response = await updateUserData(this.userId, userData);
+        const response = await authService.updateUserData(
+          this.userId,
+          userData
+        );
 
-        // Refresh user data after update
         await this.fetchUserData();
 
         return response;
@@ -190,7 +172,7 @@ export const useAuthStore = defineStore("auth", {
           throw new Error("No user ID available");
         }
 
-        return await changeUserPassword(
+        return await authService.changeUserPassword(
           this.userId,
           currentPassword,
           newPassword
@@ -201,13 +183,11 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
-    // Localization and Region Settings
     setLanguage(language: string): void {
       this.language = language;
       sessionStorage.setItem("language", language);
       document.documentElement.lang = language;
 
-      // Update the i18n locale dynamically
       i18n.global.locale.value = language;
     },
 
@@ -216,23 +196,19 @@ export const useAuthStore = defineStore("auth", {
       sessionStorage.setItem("currency", currency);
     },
 
-    // Geolocation
     async determineUserRegion(): Promise<string> {
-      // Check if we already have a region stored
       const storedRegion = sessionStorage.getItem("userRegion");
       if (storedRegion) {
         this.userRegion = storedRegion;
         return storedRegion;
       }
 
-      // Try automatic geolocation
       try {
         const location = await getUserLocation();
         if (location && location.country_code) {
           this.userRegion = location.country_code;
           sessionStorage.setItem("userRegion", location.country_code);
 
-          // Set language and currency based on user region
           if (location.country_code === "RU") {
             this.setLanguage("ru");
             this.currency = "rubles";
@@ -248,7 +224,6 @@ export const useAuthStore = defineStore("auth", {
         console.error("Automatic geolocation failed:", error);
       }
 
-      // If we reach here, automatic geolocation failed
       return "";
     },
   },

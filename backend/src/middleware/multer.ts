@@ -1,16 +1,13 @@
 import multer from "multer";
 
-// Configure Multer to store files in memory
 const storage = multer.memoryStorage();
 
-// Create the Multer instance with the storage configuration
 export const upload = multer({
   storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // Limit file size to 5MB
+    fileSize: 5 * 1024 * 1024,
   },
   fileFilter: (_req, file, cb) => {
-    // Define allowed MIME types for popular image formats
     const allowedMimeTypes = [
       "image/jpeg",
       "image/png",

@@ -13,7 +13,6 @@ export const errorHandler = (
     `[${new Date().toISOString()}] Error: ${err.name}: ${err.message}`
   );
 
-  // Handle ApiError
   if (err instanceof ApiError) {
     const response = {
       status: "error",
@@ -22,7 +21,6 @@ export const errorHandler = (
       errorType: err.errorType,
     };
 
-    // Log with more detail for server-side debugging
     console.error(
       `[${new Date().toISOString()}] ${err.errorType}: ${err.message}`,
       {
@@ -35,12 +33,10 @@ export const errorHandler = (
     return;
   }
 
-  // Handle Multer-specific errors
   if (err instanceof multer.MulterError) {
     let message = "File upload error";
     let errorType = ErrorType.BAD_REQUEST;
 
-    // Customize error messages based on Multer error codes
     switch (err.code) {
       case "LIMIT_FILE_SIZE":
         message = "File size exceeds the allowed limit of 5MB";
@@ -69,7 +65,6 @@ export const errorHandler = (
     return;
   }
 
-  // Handle other errors
   console.error(`[${new Date().toISOString()}] Unhandled Error:`, {
     name: err.name,
     message: err.message,
