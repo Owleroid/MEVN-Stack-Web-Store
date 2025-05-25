@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+.vti__dropdown-list {
+  z-index: 50;
+}
+
+.vti__dropdown-item.highlighted {
+  background-color: rgb(219, 234, 254);
+}
+
+.vue-tel-input input {
+  height: 46px !important;
+}
