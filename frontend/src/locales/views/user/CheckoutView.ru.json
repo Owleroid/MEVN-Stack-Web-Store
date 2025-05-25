@@ -31,5 +31,6 @@
   "emptyCartError": "Невозможно оформить заказ с пустой корзиной.",
   "searchAddress": "Поиск адреса",
   "enterAddress": "Введите местоположение или адрес",
-  "searchAddressHint": "Используйте Google Maps для удобного поиска адреса"
+  "searchAddressHint": "Используйте Google Maps для удобного поиска адреса",
+  "invalidPhoneNumber": "Пожалуйста, введите действительный номер телефона"
 }

@@ -31,5 +31,6 @@
   "emptyCartError": "Cannot place order with an empty cart.",
   "searchAddress": "Search Address",
   "enterAddress": "Enter a location or address",
-  "searchAddressHint": "Use Google Maps to easily find your address"
+  "searchAddressHint": "Use Google Maps to easily find your address",
+  "invalidPhoneNumber": "Please enter a valid phone number"
 }

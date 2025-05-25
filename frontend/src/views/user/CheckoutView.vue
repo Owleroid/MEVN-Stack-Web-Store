@@ -114,20 +114,32 @@
                   />
                 </div>
 
-                <div>
+                <div class="transition-all duration-300">
                   <label
                     for="phone"
                     class="block text-sm font-medium text-gray-700"
                   >
                     {{ $t("phone") }} *
                   </label>
-                  <input
+                  <vue-tel-input
                     v-model="recipient.phone"
-                    type="tel"
-                    id="phone"
-                    required
-                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm text-base border-gray-300 rounded-md px-4 py-3"
-                  />
+                    :inputOptions="{ id: 'phone', required: true }"
+                    :dropdownOptions="{
+                      showDialCodeInSelection: true,
+                      showFlags: true,
+                      showSearchBox: true,
+                    }"
+                    mode="international"
+                    :validCharactersOnly="true"
+                    autoFormat
+                    @validate="validatePhone"
+                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm text-base border-gray-300 rounded-md"
+                  ></vue-tel-input>
+                  <transition name="fade">
+                    <p v-if="phoneError" class="mt-1 text-xs text-red-600">
+                      {{ phoneError }}
+                    </p>
+                  </transition>
                 </div>
 
                 <div>
@@ -284,7 +296,8 @@
               <div class="mt-8 flex flex-col space-y-4">
                 <button
                   type="submit"
-                  class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  :disabled="!isPhoneValid"
+                  class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed transition-all duration-300"
                 >
                   {{ $t("placeOrder") }}
                 </button>
@@ -309,6 +322,8 @@ import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
+import { VueTelInput } from "vue-tel-input";
+import "vue-tel-input/vue-tel-input.css";
 
 import type { CartItem } from "@/types/cart";
 import type {
@@ -347,6 +362,24 @@ const recipient = ref<Recipient>({
   phone: "",
   email: "",
 });
+
+// Phone validation
+const isPhoneValid = ref<boolean>(false);
+const phoneError = ref<string>("");
+
+const validatePhone = (validation: {
+  valid: boolean;
+  number: string;
+  country: any;
+}) => {
+  isPhoneValid.value = validation.valid;
+  if (!validation.valid) {
+    phoneError.value = t("invalidPhoneNumber");
+  } else {
+    phoneError.value = "";
+    recipient.value.phone = validation.number;
+  }
+};
 
 const shippingAddress = ref<Address>({
   country: "",
@@ -418,6 +451,11 @@ const handleAddressSelect = (addressData: Partial<Address>): void => {
 const handleCheckout = async (): Promise<void> => {
   if (cart.value.length === 0) {
     toast.error(t("emptyCartError"));
+    return;
+  }
+
+  if (!isPhoneValid.value) {
+    toast.error(t("invalidPhoneNumber"));
     return;
   }
 
@@ -525,3 +563,15 @@ onMounted(async () => {
   }
 });
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s, transform 0.3s;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+</style>
