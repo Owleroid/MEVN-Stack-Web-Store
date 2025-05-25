@@ -28,5 +28,8 @@
   "orderSuccess": "Order placed successfully!",
   "orderError": "An error occurred while creating the order. Please try again.",
   "emptyCart": "Your cart is empty.",
-  "emptyCartError": "Cannot place order with an empty cart."
+  "emptyCartError": "Cannot place order with an empty cart.",
+  "searchAddress": "Search Address",
+  "enterAddress": "Enter a location or address",
+  "searchAddressHint": "Use Google Maps to easily find your address"
 }

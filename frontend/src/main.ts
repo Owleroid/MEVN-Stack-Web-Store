@@ -2,8 +2,8 @@ import i18n from "./i18n";
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import Toast from "vue-toastification";
-import type { PluginOptions } from "vue-toastification";
 import "vue-toastification/dist/index.css";
+import type { PluginOptions } from "vue-toastification";
 
 import App from "./App.vue";
 import router from "./router";

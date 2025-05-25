@@ -153,6 +153,23 @@
                   </h3>
                 </div>
 
+                <!-- Address Autocomplete -->
+                <div class="col-span-full">
+                  <label
+                    for="addressAutocomplete"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    {{ $t("searchAddress") }} *
+                  </label>
+                  <AddressAutocomplete
+                    :placeholder="$t('enterAddress')"
+                    @address-components="handleAddressSelect"
+                  />
+                  <p class="mt-1 text-xs text-gray-500">
+                    {{ $t("searchAddressHint") }}
+                  </p>
+                </div>
+
                 <div>
                   <label
                     for="country"
@@ -308,6 +325,7 @@ import { createOrder } from "@/services/orderService";
 import { getCart, clearCart, refreshCartItems } from "@/services/cartService";
 
 import { useAuthStore } from "@/stores/authStore";
+import AddressAutocomplete from "@/components/general/AddressAutocomplete.vue";
 
 // Composables Setup
 const authStore = useAuthStore();
@@ -371,6 +389,29 @@ const formatPrice = (price: number): string => {
         style: "currency",
         currency: "EUR",
       }).format(price);
+};
+
+// Google Maps Address Handler
+const handleAddressSelect = (addressData: Partial<Address>): void => {
+  if (addressData.country) {
+    shippingAddress.value.country = addressData.country;
+  }
+
+  if (addressData.city) {
+    shippingAddress.value.city = addressData.city;
+  }
+
+  if (addressData.street) {
+    shippingAddress.value.street = addressData.street;
+  }
+
+  if (addressData.buildingNumber) {
+    shippingAddress.value.buildingNumber = addressData.buildingNumber;
+  }
+
+  if (addressData.postalCode) {
+    shippingAddress.value.postalCode = addressData.postalCode;
+  }
 };
 
 // Form Handling
