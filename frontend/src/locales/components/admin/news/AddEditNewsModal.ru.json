@@ -1,0 +1,16 @@
+{
+  "editNews": "Редактировать новость",
+  "addNews": "Добавить новость",
+  "newsTitle": "Заголовок новости",
+  "newsTitlePlaceholder": "Введите заголовок новости",
+  "language": "Язык",
+  "languageHelpText": "Выберите язык для этой новости",
+  "newsContent": "Содержание новости",
+  "newsContentPlaceholder": "Введите содержание новости здесь...",
+  "newsImage": "Изображение новости",
+  "imageUrlPlaceholder": "URL изображения",
+  "chooseFromImageManager": "Выбрать из менеджера изображений",
+  "activeStatus": "Активный статус",
+  "cancel": "Отмена",
+  "saveChanges": "Сохранить изменения"
+}

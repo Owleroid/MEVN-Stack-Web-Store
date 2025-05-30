@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, defineProps, defineEmits } from "vue";
+import { ref, onMounted } from "vue";
 
 interface PlaceResult {
   address_components?: google.maps.GeocoderAddressComponent[];

@@ -1,0 +1,16 @@
+{
+  "editNews": "Edit News",
+  "addNews": "Add News",
+  "newsTitle": "News Title",
+  "newsTitlePlaceholder": "Enter news title",
+  "language": "Language",
+  "languageHelpText": "Choose the language for this news item",
+  "newsContent": "News Content",
+  "newsContentPlaceholder": "Enter news content here...",
+  "newsImage": "News Image",
+  "imageUrlPlaceholder": "Image URL",
+  "chooseFromImageManager": "Choose from Image Manager",
+  "activeStatus": "Active Status",
+  "cancel": "Cancel",
+  "saveChanges": "Save Changes"
+}

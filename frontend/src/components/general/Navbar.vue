@@ -197,7 +197,7 @@ import { useEventBus } from "@/utils/eventBus";
 const authStore = useAuthStore();
 const route = useRoute();
 const { locale } = useI18n();
-const { on } = useEventBus();
+const { on, emit } = useEventBus();
 
 // State Management
 const cartItemsCount = ref<number>(0);
@@ -222,13 +222,16 @@ const toggleLanguage = async (): Promise<void> => {
   // Update i18n
   const messages = await loadLocaleMessages(newLanguage);
   i18n.global.setLocaleMessage(newLanguage, messages);
+
+  // Emit event to notify components about language change
+  emit("language-changed", newLanguage);
 };
 
 // Authentication Management
 const handleLogout = async (): Promise<void> => {
   try {
     await authStore.logout();
-    updateCartCount(); // Refresh cart count after logout
+    updateCartCount();
   } catch (error) {
     console.error("Logout failed:", error);
   }

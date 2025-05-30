@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.5",
+    "@vueup/vue-quill": "^1.2.0",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
     "lodash": "^4.17.21",
