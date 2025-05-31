@@ -24,10 +24,24 @@
               $emit('update:currentPage', currentPage > 1 ? currentPage - 1 : 1)
             "
             :disabled="currentPage === 1"
-            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200"
             :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }"
           >
-            &laquo;
+            <span class="sr-only">{{ $t("previous") }}</span>
+            <svg
+              class="h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
           </button>
 
           <!-- Page number buttons -->
@@ -36,7 +50,7 @@
             :key="page"
             @click="$emit('update:currentPage', page)"
             :class="[
-              'relative inline-flex items-center px-4 py-2 border text-sm font-medium',
+              'relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors duration-200',
               currentPage === page
                 ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
                 : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
@@ -54,12 +68,26 @@
               )
             "
             :disabled="currentPage === totalPages"
-            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200"
             :class="{
               'opacity-50 cursor-not-allowed': currentPage === totalPages,
             }"
           >
-            &raquo;
+            <span class="sr-only">{{ $t("next") }}</span>
+            <svg
+              class="h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
           </button>
         </nav>
       </div>
@@ -72,7 +100,7 @@
           $emit('update:currentPage', currentPage > 1 ? currentPage - 1 : 1)
         "
         :disabled="currentPage === 1"
-        class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+        class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200"
         :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }"
       >
         {{ $t("previous") }}
@@ -85,7 +113,7 @@
           )
         "
         :disabled="currentPage === totalPages"
-        class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+        class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200"
         :class="{ 'opacity-50 cursor-not-allowed': currentPage === totalPages }"
       >
         {{ $t("next") }}
@@ -119,21 +147,17 @@ const paginationRange = computed((): number[] => {
   const maxDisplayedPages = 5;
 
   if (totalPages.value <= maxDisplayedPages) {
-    // If we have fewer pages than our max display, show all pages
     for (let i = 1; i <= totalPages.value; i++) {
       range.push(i);
     }
   } else {
-    // Calculate a window around the current page
     let start = Math.max(1, props.currentPage - 2);
     let end = Math.min(totalPages.value, start + maxDisplayedPages - 1);
 
-    // Adjust the start if we're near the end
     if (end - start + 1 < maxDisplayedPages) {
       start = Math.max(1, end - maxDisplayedPages + 1);
     }
 
-    // Generate the page numbers
     for (let i = start; i <= end; i++) {
       range.push(i);
     }

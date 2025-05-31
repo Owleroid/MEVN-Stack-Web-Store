@@ -1,11 +1,12 @@
 {
-  "email": "Электронная почта",
+  "from": "От",
   "subject": "Тема",
   "date": "Дата",
-  "noSubject": "Без темы",
-  "actions": "Действия",
-  "customer": "Клиент",
-  "createdAt": "Дата создания",
   "status": "Статус",
-  "dateNotAvailable": "Дата недоступна"
+  "actions": "Действия",
+  "view": "Просмотр",
+  "respond": "Ответить",
+  "new": "Новое",
+  "inProgress": "В обработке",
+  "resolved": "Решено"
 }

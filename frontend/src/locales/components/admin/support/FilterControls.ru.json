@@ -1,9 +1,0 @@
-{
-  "sortByDate": "Сортировать по дате",
-  "newestToOldest": "Сначала новые",
-  "oldestToNewest": "Сначала старые",
-  "filterByStatus": "Фильтр по статусу",
-  "all": "Все статусы",
-  "inProgress": "В обработке",
-  "resolved": "Решено"
-}

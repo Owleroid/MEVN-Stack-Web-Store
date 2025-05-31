@@ -1,22 +1,22 @@
 <template>
   <div
     v-if="show"
-    class="fixed inset-0 z-10 flex items-center justify-center overflow-auto bg-black/40"
+    class="fixed inset-0 z-10 flex items-center justify-center overflow-auto bg-black/50"
   >
     <div
-      class="relative w-11/12 max-w-3xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-200 my-4 max-h-[90vh] overflow-y-auto"
+      class="relative w-11/12 max-w-3xl mx-auto bg-white rounded-xl shadow-xl border border-gray-200 my-4 max-h-[90vh] overflow-y-auto transition-all duration-300 transform"
     >
       <!-- Modal Header -->
       <div
-        class="sticky top-0 z-20 bg-gradient-to-b from-gray-50 to-white border-b border-gray-100 rounded-t-2xl px-6 pt-6 pb-4"
+        class="sticky top-0 z-20 bg-gradient-to-r from-blue-50 to-white border-b border-gray-100 rounded-t-xl px-6 pt-6 pb-4"
       >
         <button
           @click="close"
-          class="absolute top-4 right-4 text-2xl font-bold text-gray-400 hover:text-gray-800 transition-colors"
+          class="absolute top-4 right-4 text-2xl font-bold text-gray-400 hover:text-gray-800 transition-colors focus:outline-none focus:text-blue-600"
         >
           &times;
         </button>
-        <h2 class="text-2xl font-extrabold text-gray-800 text-center">
+        <h2 class="text-xl font-bold text-gray-800">
           {{ isEditing ? $t("editOrder") : $t("orderDetails") }}
         </h2>
       </div>
@@ -24,9 +24,11 @@
       <div v-if="order" class="p-6 space-y-6">
         <!-- Order Details Section -->
         <section
-          class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+          class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
         >
-          <div class="px-6 py-4 bg-gray-50 border-b border-gray-100">
+          <div
+            class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center"
+          >
             <h3 class="text-lg font-semibold text-gray-800">
               {{ $t("orderDetails") }}
             </h3>
@@ -135,9 +137,11 @@
 
         <!-- Recipient Details Section -->
         <section
-          class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+          class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
         >
-          <div class="px-6 py-4 bg-gray-50 border-b border-gray-100">
+          <div
+            class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center"
+          >
             <h3 class="text-lg font-semibold text-gray-800">
               {{ $t("recipientDetails") }}
             </h3>
@@ -219,9 +223,11 @@
 
         <!-- Shipping Address Section -->
         <section
-          class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+          class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
         >
-          <div class="px-6 py-4 bg-gray-50 border-b border-gray-100">
+          <div
+            class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center"
+          >
             <h3 class="text-lg font-semibold text-gray-800">
               {{ $t("shippingAddress") }}
             </h3>
@@ -329,9 +335,11 @@
 
         <!-- Products Section -->
         <section
-          class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+          class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
         >
-          <div class="px-6 py-4 bg-gray-50 border-b border-gray-100">
+          <div
+            class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center"
+          >
             <h3 class="text-lg font-semibold text-gray-800">
               {{ $t("products") }}
             </h3>
@@ -371,7 +379,7 @@
             v-if="isEditing"
             type="submit"
             @click.prevent="submitForm"
-            class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm"
+            class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transform hover:scale-105 shadow-sm"
           >
             {{ $t("updateOrder") }}
           </button>
@@ -379,7 +387,7 @@
           <button
             type="button"
             @click="cancelEdit"
-            class="px-6 py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm"
+            class="px-5 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-1 transform hover:scale-105 shadow-sm"
           >
             {{ isEditing ? $t("cancel") : $t("close") }}
           </button>

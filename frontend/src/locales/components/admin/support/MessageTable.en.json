@@ -1,11 +1,12 @@
 {
-  "email": "Email",
+  "from": "From",
   "subject": "Subject",
   "date": "Date",
-  "noSubject": "No Subject",
-  "actions": "Actions",
-  "customer": "Customer",
-  "createdAt": "Date Created",
   "status": "Status",
-  "dateNotAvailable": "Date not available"
+  "actions": "Actions",
+  "view": "View",
+  "respond": "Respond",
+  "new": "New",
+  "inProgress": "In Progress",
+  "resolved": "Resolved"
 }

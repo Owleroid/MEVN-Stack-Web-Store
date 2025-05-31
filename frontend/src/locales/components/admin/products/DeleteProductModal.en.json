@@ -1,0 +1,7 @@
+{
+  "deleteProduct": "Delete Product",
+  "deleteProductConfirmation": "Are you sure you want to delete this product? This action cannot be undone.",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "noImage": "No image"
+}

@@ -2,6 +2,7 @@
   "noWarehousesFound": "No warehouses found. Please set up warehouses first.",
   "selectWarehouse": "Select Warehouse",
   "loading": "Loading warehouse data...",
+  "loadingWarehouses": "Loading warehouses...",
   "categories": "Categories",
   "products": "Products",
   "noProductsFound": "No products found in this category.",
@@ -17,5 +18,7 @@
   "failedToUpdateProductAmount": "Failed to update product amount.",
   "loadingProducts": "Loading products...",
   "criticalStockAlert": "Critical Stock Alert",
-  "noCriticalStock": "No products with critical stock levels"
+  "noCriticalStock": "No products with critical stock levels",
+  "threshold": "Threshold",
+  "warehouse": "Warehouse"
 }

@@ -1,7 +1,21 @@
 {
-  "fetchMessagesError": "Не удалось загрузить сообщения",
+  "newMessages": "Новые сообщения",
+  "allMessages": "Все сообщения",
+  "sortByDate": "Сортировать по дате",
+  "newestToOldest": "От новых к старым",
+  "oldestToNewest": "От старых к новым",
+  "filterByStatus": "Фильтр по статусу",
+  "all": "Все",
+  "inProgress": "В обработке",
+  "resolved": "Решено",
+  "loading": "Загрузка",
+  "retry": "Повторить",
+  "noMessagesFound": "Сообщения не найдены",
+  "fetchMessagesError": "Не удалось загрузить сообщения поддержки",
   "responseSubmitted": "Ответ успешно отправлен",
-  "responseError": "Ошибка при отправке ответа",
+  "responseError": "Не удалось отправить ответ",
   "messageDeleted": "Сообщение успешно удалено",
-  "deleteError": "Ошибка при удалении сообщения"
+  "deleteError": "Не удалось удалить сообщение",
+  "confirmDelete": "Подтвердить удаление",
+  "deleteConfirmMessage": "Вы уверены, что хотите удалить это сообщение? Это действие нельзя отменить."
 }

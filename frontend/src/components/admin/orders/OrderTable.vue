@@ -6,31 +6,31 @@
         <tr>
           <th
             scope="col"
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
           >
             {{ $t("orderNumber") }}
           </th>
           <th
             scope="col"
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
           >
             {{ $t("products") }}
           </th>
           <th
             scope="col"
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
           >
             {{ $t("date") }}
           </th>
           <th
             scope="col"
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
           >
             {{ $t("status") }}
           </th>
           <th
             scope="col"
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
           >
             {{ $t("actions") }}
           </th>
@@ -40,11 +40,11 @@
         <tr
           v-for="order in orders"
           :key="order._id"
-          class="hover:bg-gray-50 transition-colors"
+          class="hover:bg-gray-50 transition-all duration-200 ease-in-out"
         >
           <td
             @click="viewOrder(order)"
-            class="px-6 py-4 whitespace-nowrap text-blue-600 underline cursor-pointer"
+            class="px-6 py-4 whitespace-nowrap text-blue-600 font-medium hover:underline cursor-pointer"
           >
             {{ order.orderNumber }}
           </td>
@@ -53,15 +53,18 @@
               <li
                 v-for="product in order.products"
                 :key="product.productId"
-                class="mb-1 last:mb-0"
+                class="mb-1 last:mb-0 text-gray-700"
               >
-                {{ product.name }} ({{ product.amount }})
+                {{ product.name }}
+                <span class="text-gray-500 font-medium"
+                  >({{ product.amount }})</span
+                >
               </li>
             </ul>
           </td>
           <td
             @click="viewOrder(order)"
-            class="px-6 py-4 whitespace-nowrap cursor-pointer"
+            class="px-6 py-4 whitespace-nowrap text-gray-700 cursor-pointer"
           >
             {{ formatDate(order.dateOfCreation) }}
           </td>
@@ -69,14 +72,14 @@
             <select
               v-model="order.status"
               @change="updateStatus(order)"
-              class="py-1 px-2 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              class="py-1.5 px-3 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors duration-200"
               :class="getStatusSelectClass(order.status)"
             >
               <option
                 v-if="order.status === 'waiting confirmation'"
                 value="waiting confirmation"
               >
-                {{ $t("waiting confirmation") }}
+                {{ $t("waitingConfirmation") }}
               </option>
               <option value="packing">{{ $t("packing") }}</option>
               <option value="sended">{{ $t("sended") }}</option>
@@ -88,7 +91,7 @@
             <button
               @click.stop="editOrder(order)"
               :disabled="order.status === 'canceled'"
-              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transform hover:scale-105"
               :class="{
                 'opacity-50 cursor-not-allowed': order.status === 'canceled',
               }"

@@ -1,217 +1,380 @@
 <template>
-  <div class="max-w-5xl mx-auto p-6">
-    <div class="flex flex-col md:flex-row gap-6">
-      <!-- Categories Menu -->
-      <div
-        class="w-full md:w-64 bg-white p-4 rounded-lg shadow border border-gray-200 flex flex-col"
-      >
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">
-          {{ $t("categories") }}
-        </h2>
-
-        <div class="flex-1 min-h-[200px]">
-          <!-- Loading State for Categories -->
+  <div class="p-6 bg-gray-100 min-h-screen">
+    <div class="max-w-6xl mx-auto">
+      <!-- Main Content -->
+      <div class="flex flex-col md:flex-row gap-6">
+        <!-- Categories Menu - Fixed width, self-contained height -->
+        <div class="w-full md:w-64 self-start sticky top-6">
           <div
-            v-if="loadingCategories"
-            class="flex flex-col items-center justify-center h-full"
+            class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col"
           >
-            <div
-              class="w-8 h-8 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-2"
-            ></div>
-            <p class="text-gray-600 text-sm">{{ $t("loadingCategories") }}</p>
-          </div>
-
-          <!-- No Categories State -->
-          <div
-            v-else-if="categories.length === 0"
-            class="flex flex-col justify-center items-center h-full"
-          >
-            <p class="text-gray-500 mb-4 text-center">
-              {{ $t("noCategoriesFound") }}
-            </p>
-            <button
-              @click="goToCategories"
-              class="w-full py-2 px-4 bg-blue-500 text-white rounded-md font-medium hover:bg-blue-600 transition-colors"
+            <h2
+              class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100"
             >
-              {{ $t("goToCategories") }}
-            </button>
-          </div>
+              {{ $t("categories") }}
+            </h2>
 
-          <!-- Categories List -->
-          <div v-else class="flex flex-col gap-2 h-full">
-            <button
-              v-for="category in categories"
-              :key="category._id"
-              :class="[
-                'py-2.5 px-4 text-sm font-medium rounded-md transition-colors w-full text-left',
-                category._id === selectedCategory
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="selectCategory(category._id ?? '')"
-            >
-              {{ category.name }}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Products List -->
-      <div class="flex-1" v-if="categories.length > 0 || loadingCategories">
-        <div
-          class="bg-white rounded-lg shadow border border-gray-200 min-h-[400px] flex flex-col"
-        >
-          <!-- Header -->
-          <div class="p-4 border-b border-gray-200">
-            <div
-              class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
-            >
-              <h2 class="text-xl font-semibold text-gray-800 m-0">
-                {{ $t("products") }}
-              </h2>
-              <button
-                @click="openAddProductModal"
-                class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm font-medium"
-                :disabled="loadingProducts || categories.length === 0"
+            <div class="min-h-fit">
+              <!-- Loading State for Categories -->
+              <div
+                v-if="loadingCategories"
+                class="py-8 flex flex-col items-center justify-center"
               >
-                {{ $t("addNewProduct") }}
-              </button>
+                <div
+                  class="w-8 h-8 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-2"
+                ></div>
+                <p class="text-gray-600 text-sm">
+                  {{ $t("loadingCategories") }}
+                </p>
+              </div>
+
+              <!-- No Categories State -->
+              <div
+                v-else-if="categories.length === 0"
+                class="py-8 flex flex-col justify-center items-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-12 w-12 text-gray-300 mb-3"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  />
+                </svg>
+                <p class="text-gray-500 mb-4 text-center">
+                  {{ $t("noCategoriesFound") }}
+                </p>
+                <button
+                  @click="goToCategories"
+                  class="w-full py-2 px-4 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors"
+                >
+                  {{ $t("goToCategories") }}
+                </button>
+              </div>
+
+              <!-- Categories List -->
+              <div
+                v-else
+                class="max-h-[calc(100vh-15rem)] overflow-y-auto pr-1"
+              >
+                <div class="flex flex-col gap-2">
+                  <button
+                    v-for="category in categories"
+                    :key="category._id"
+                    :class="[
+                      'py-2.5 px-4 text-sm font-medium rounded-md transition-colors w-full text-left',
+                      category._id === selectedCategory
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                    ]"
+                    @click="selectCategory(category._id ?? '')"
+                  >
+                    {{ category.name }}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
 
-          <!-- Content Area -->
-          <div class="flex-1 flex flex-col">
-            <!-- Loading State for Products -->
-            <div
-              v-if="loadingProducts"
-              class="flex-1 flex items-center justify-center"
-            >
-              <div class="flex flex-col items-center">
-                <div
-                  class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-2"
-                ></div>
-                <p class="text-gray-600 text-sm">{{ $t("loadingProducts") }}</p>
+        <!-- Products List - Adaptive height based on content -->
+        <div class="flex-1" v-if="categories.length > 0 || loadingCategories">
+          <div
+            class="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col h-full"
+          >
+            <!-- Header -->
+            <div class="p-4 border-b border-gray-200">
+              <div
+                class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+              >
+                <h2 class="text-lg font-semibold text-gray-800 m-0">
+                  {{ selectedCategoryName || $t("allProducts") }}
+                </h2>
+                <button
+                  @click="openAddProductModal"
+                  class="px-4 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium flex items-center shadow-sm"
+                  :disabled="loadingProducts || categories.length === 0"
+                >
+                  <span class="mr-1.5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                  </span>
+                  {{ $t("addNewProduct") }}
+                </button>
               </div>
             </div>
 
-            <!-- No Products State -->
-            <div
-              v-else-if="products.length === 0"
-              class="flex-1 flex items-center justify-center"
-            >
-              <p class="text-gray-500">{{ $t("noProductsFound") }}</p>
-            </div>
+            <!-- Content Area - Will adapt to content height -->
+            <div class="flex-1 flex flex-col">
+              <transition
+                enter-active-class="transition-opacity duration-300"
+                enter-from-class="opacity-0"
+                enter-to-class="opacity-100"
+                leave-active-class="transition-opacity duration-200"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+                mode="out-in"
+              >
+                <!-- Dynamic content with a different key for each state -->
+                <div
+                  v-if="loadingProducts"
+                  class="flex-1 flex items-center justify-center py-16"
+                  key="loading-state"
+                >
+                  <div class="flex flex-col items-center">
+                    <div
+                      class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-2"
+                    ></div>
+                    <p class="text-gray-600 text-sm">
+                      {{ $t("loadingProducts") }}
+                    </p>
+                  </div>
+                </div>
 
-            <!-- Products Table -->
-            <div v-else class="flex-1 overflow-x-auto">
-              <table class="w-full border-collapse">
-                <thead>
-                  <tr>
-                    <th
-                      class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
-                    >
-                      {{ $t("productImage") }}
-                    </th>
-                    <th
-                      class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
-                    >
-                      {{ $t("productName") }}
-                    </th>
-                    <th
-                      class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
-                    >
-                      {{ $t("actions") }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="product in products"
-                    :key="product._id"
-                    class="hover:bg-gray-50 transition-colors"
+                <div
+                  v-else-if="!loadingProducts && products.length === 0"
+                  class="flex-1 flex flex-col items-center justify-center py-16"
+                  key="empty-state"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-16 w-16 text-gray-300 mb-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    <td class="p-4 border-b border-gray-200">
-                      <div
-                        class="w-16 h-16 rounded-md overflow-hidden bg-gray-100 border border-gray-200"
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    />
+                  </svg>
+                  <p class="text-gray-500 text-lg mb-1">
+                    {{ $t("noProductsFound") }}
+                  </p>
+                  <p class="text-gray-400 text-sm mb-4">
+                    {{ $t("addProductsToThisCategory") }}
+                  </p>
+                  <button
+                    @click="openAddProductModal"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    :disabled="categories.length === 0"
+                  >
+                    {{ $t("addNewProduct") }}
+                  </button>
+                </div>
+
+                <div
+                  v-else
+                  class="overflow-x-auto"
+                  :key="'products-for-' + selectedCategory"
+                >
+                  <table class="w-full border-collapse">
+                    <thead>
+                      <tr>
+                        <th
+                          class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200 w-20"
+                        >
+                          {{ $t("productImage") }}
+                        </th>
+                        <th
+                          class="bg-gray-50 p-4 text-left font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200"
+                        >
+                          {{ $t("productName") }}
+                        </th>
+                        <th
+                          class="bg-gray-50 p-4 text-right font-semibold text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200 w-52"
+                        >
+                          {{ $t("actions") }}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="(product, index) in products"
+                        :key="product._id"
+                        class="hover:bg-gray-50 transition-colors"
+                        :class="{ 'last-row': index === products.length - 1 }"
                       >
-                        <img
-                          v-if="product.imageUrls?.main"
-                          :src="product.imageUrls.main"
-                          :alt="product.name"
-                          class="w-full h-full object-cover"
-                          @error="handleImageError"
-                        />
-                        <div
-                          v-else
-                          class="w-full h-full flex items-center justify-center text-gray-400 text-xs"
+                        <td
+                          class="p-4 border-b border-gray-200"
+                          :class="{
+                            'border-b-0': index === products.length - 1,
+                          }"
                         >
-                          {{ $t("noImage") }}
-                        </div>
-                      </div>
-                    </td>
-                    <td class="p-4 border-b border-gray-200">
-                      {{ product.name }}
-                    </td>
-                    <td class="p-4 border-b border-gray-200">
-                      <div class="flex flex-wrap gap-2">
-                        <button
-                          @click="openChangeCategoryModal(product)"
-                          class="px-3 py-1 bg-blue-500 text-white rounded text-xs font-medium hover:bg-blue-600 transition-colors"
+                          <div
+                            class="w-16 h-16 rounded-md overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center"
+                          >
+                            <img
+                              v-if="product.imageUrls?.main"
+                              :src="product.imageUrls.main"
+                              :alt="product.name"
+                              class="w-full h-full object-cover"
+                              @error="handleImageError"
+                            />
+                            <div
+                              v-else
+                              class="w-full h-full flex items-center justify-center text-gray-400 text-xs"
+                            >
+                              {{ $t("noImage") }}
+                            </div>
+                          </div>
+                        </td>
+                        <td
+                          class="p-4 border-b border-gray-200 font-medium text-gray-700"
+                          :class="{
+                            'border-b-0': index === products.length - 1,
+                          }"
                         >
-                          {{ $t("changeCategory") }}
-                        </button>
-                        <button
-                          @click="openEditProductModal(product)"
-                          class="px-3 py-1 bg-green-500 text-white rounded text-xs font-medium hover:bg-green-600 transition-colors"
+                          {{ product.name }}
+                        </td>
+                        <td
+                          class="p-4 border-b border-gray-200"
+                          :class="{
+                            'border-b-0': index === products.length - 1,
+                          }"
                         >
-                          {{ $t("edit") }}
-                        </button>
-                        <button
-                          @click="deleteProduct(product._id)"
-                          class="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600 transition-colors"
-                        >
-                          {{ $t("delete") }}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                          <div class="flex flex-wrap justify-end gap-2">
+                            <button
+                              @click="openChangeCategoryModal(product)"
+                              class="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
+                              :title="$t('changeCategory')"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                                />
+                              </svg>
+                            </button>
+                            <button
+                              @click="openEditProductModal(product)"
+                              class="p-2 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-colors"
+                              :title="$t('edit')"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                />
+                              </svg>
+                            </button>
+                            <button
+                              @click="openDeleteProductModal(product)"
+                              class="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors"
+                              :title="$t('delete')"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </transition>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Modals -->
+      <transition name="fade" mode="out-in">
+        <ChangeCategoryModal
+          v-if="showChangeCategoryModal"
+          :show="showChangeCategoryModal"
+          :productToChangeCategory="productToChangeCategory || {}"
+          :categories="categories"
+          @close="closeChangeCategoryModal"
+          @changeCategory="changeCategory"
+        />
+      </transition>
+
+      <transition name="fade" mode="out-in">
+        <AddEditProductModal
+          v-if="showAddProductModal"
+          :show="showAddProductModal"
+          :isEdit="false"
+          :product="newProduct"
+          @close="closeAddProductModal"
+          @submitForm="submitAddProductForm"
+        />
+      </transition>
+
+      <transition name="fade" mode="out-in">
+        <AddEditProductModal
+          v-if="showEditProductModal"
+          :show="showEditProductModal"
+          :isEdit="true"
+          :product="editProduct"
+          @close="closeEditProductModal"
+          @submitForm="submitEditProductForm"
+        />
+      </transition>
+
+      <transition name="fade" mode="out-in">
+        <DeleteProductModal
+          v-if="showDeleteProductModal"
+          :show="showDeleteProductModal"
+          :product="productToDelete"
+          @confirm="confirmDeleteProduct"
+          @cancel="closeDeleteProductModal"
+        />
+      </transition>
     </div>
-
-    <!-- Modals -->
-    <ChangeCategoryModal
-      :show="showChangeCategoryModal"
-      :productToChangeCategory="productToChangeCategory || {}"
-      :categories="categories"
-      @close="closeChangeCategoryModal"
-      @changeCategory="changeCategory"
-    />
-
-    <AddEditProductModal
-      :show="showAddProductModal"
-      :isEdit="false"
-      :product="newProduct"
-      @close="closeAddProductModal"
-      @submitForm="submitAddProductForm"
-    />
-
-    <AddEditProductModal
-      :show="showEditProductModal"
-      :isEdit="true"
-      :product="editProduct"
-      @close="closeEditProductModal"
-      @submitForm="submitEditProductForm"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -220,6 +383,7 @@ import { useEventBus } from "@/utils/eventBus";
 
 import ChangeCategoryModal from "@/components/admin/products/ChangeCategoryModal.vue";
 import AddEditProductModal from "@/components/admin/products/AddEditProductModal.vue";
+import DeleteProductModal from "@/components/admin/products/DeleteProductModal.vue";
 
 import type { Product, ProductInput } from "@/types/products";
 import type { Category } from "@/types/category";
@@ -248,13 +412,23 @@ const selectedCategory = ref<string>("");
 const loadingCategories = ref(true);
 const loadingProducts = ref(false);
 
+// Computed properties
+const selectedCategoryName = computed(() => {
+  const category = categories.value.find(
+    (c) => c._id === selectedCategory.value
+  );
+  return category ? category.name : "";
+});
+
 // UI state - modals
 const showChangeCategoryModal = ref(false);
 const showAddProductModal = ref(false);
 const showEditProductModal = ref(false);
+const showDeleteProductModal = ref(false);
 
 // Form state
 const productToChangeCategory = ref<Product | null>(null);
+const productToDelete = ref<Product | undefined>(undefined);
 
 interface ProductFormData {
   name: string;
@@ -338,7 +512,13 @@ const fetchCategories = async () => {
 const fetchProducts = async () => {
   if (!selectedCategory.value) return;
 
-  loadingProducts.value = true;
+  // Set loading state first and clear products to trigger proper transitions
+  products.value = [];
+
+  // Start a timer to track loading time
+  const loadingTimer = setTimeout(() => {
+    loadingProducts.value = true;
+  }, 200); // Only show loading state if fetching takes more than 200ms
 
   try {
     const response = await getProductsByCategoryId(selectedCategory.value);
@@ -347,6 +527,8 @@ const fetchProducts = async () => {
     console.error("Failed to fetch products:", error);
     toast.error(t("failedToFetchProducts"));
   } finally {
+    // Clear the timer and loading state
+    clearTimeout(loadingTimer);
     loadingProducts.value = false;
   }
 };
@@ -547,6 +729,23 @@ const submitEditProductForm = async () => {
   }
 };
 
+const openDeleteProductModal = (product: Product) => {
+  productToDelete.value = product;
+  showDeleteProductModal.value = true;
+};
+
+const closeDeleteProductModal = () => {
+  showDeleteProductModal.value = false;
+  productToDelete.value = undefined;
+};
+
+const confirmDeleteProduct = async () => {
+  if (!productToDelete.value) return;
+
+  await deleteProduct(productToDelete.value._id);
+  closeDeleteProductModal();
+};
+
 const deleteProduct = async (id: string) => {
   loadingProducts.value = true;
 
@@ -574,3 +773,15 @@ onMounted(() => {
   on("productUpdated", fetchProducts);
 });
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

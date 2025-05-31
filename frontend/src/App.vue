@@ -1,8 +1,10 @@
 <template>
   <div id="app">
     <Navbar v-if="!isAdminRoute" />
-    <AdminNavbar v-if="isAdminRoute" />
-    <router-view />
+    <AdminNavbar v-if="isAdminRoute">
+      <router-view />
+    </AdminNavbar>
+    <router-view v-if="!isAdminRoute" />
 
     <!-- Region selector modal -->
     <RegionSelector
@@ -30,10 +32,8 @@ const isAdminRoute = computed(() => {
 });
 
 onMounted(async () => {
-  // Try to determine user region automatically
   const region = await authStore.determineUserRegion();
 
-  // If no region was determined, show the selector
   if (!region) {
     showRegionSelector.value = true;
   }

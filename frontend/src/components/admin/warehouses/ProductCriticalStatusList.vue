@@ -4,10 +4,15 @@
     <!-- Products Table (when there are low stock items) -->
     <div v-if="filteredProducts.length > 0" class="h-full">
       <!-- Header area with explanation and legend -->
-      <div class="mb-4 flex flex-wrap items-center justify-between">
+      <div
+        class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+      >
         <!-- Critical stock explanation text -->
-        <div class="text-gray-600 text-sm italic mb-2 md:mb-0">
+        <div class="text-gray-600 text-sm italic">
           {{ $t("criticalStockExplanation") }}
+          <span class="font-medium ml-1 text-gray-700 not-italic">
+            {{ $t("sortedByCriticality") }}
+          </span>
         </div>
 
         <!-- Legend moved up -->
@@ -48,26 +53,53 @@
               </th>
             </tr>
           </thead>
-          <tbody>
+          <transition-group
+            tag="tbody"
+            enter-active-class="transition-all duration-300 ease-out"
+            leave-active-class="transition-all duration-200 ease-in"
+            enter-from-class="opacity-0 transform -translate-x-4"
+            enter-to-class="opacity-100 transform translate-x-0"
+            leave-from-class="opacity-100 transform translate-x-0"
+            leave-to-class="opacity-0 transform -translate-x-4"
+            class="transition-all"
+          >
             <tr
-              v-for="product in filteredProducts"
+              v-for="(product, index) in filteredProducts"
               :key="product.product"
               :class="getProductRowClass(product)"
-              class="transition-all hover:bg-gray-50"
+              class="transition-all duration-300 ease-in-out transform hover:bg-gray-50 hover:scale-[1.01] hover:shadow-sm"
             >
-              <td class="p-4 border-b border-gray-200">
+              <td
+                class="p-4"
+                :class="{
+                  'border-b border-gray-200':
+                    index !== filteredProducts.length - 1,
+                }"
+              >
                 <div class="font-medium">{{ product.name }}</div>
               </td>
-              <td class="p-4 border-b border-gray-200">
+              <td
+                class="p-4"
+                :class="{
+                  'border-b border-gray-200':
+                    index !== filteredProducts.length - 1,
+                }"
+              >
                 <div class="font-bold" :class="getAmountTextClass(product)">
                   {{ product.amount }}
                 </div>
               </td>
-              <td class="p-4 border-b border-gray-200">
+              <td
+                class="p-4"
+                :class="{
+                  'border-b border-gray-200':
+                    index !== filteredProducts.length - 1,
+                }"
+              >
                 <div class="flex items-center">
                   <span
                     :class="getStatusBadgeClass(product)"
-                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
+                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium transition-transform hover:scale-105 duration-200 ease-in-out"
                   >
                     <svg
                       v-if="getAmountLevel(product) === 'outOfStock'"
@@ -102,35 +134,48 @@
                 </div>
               </td>
             </tr>
-          </tbody>
+          </transition-group>
         </table>
       </div>
     </div>
 
     <!-- Empty State - No Critical Products -->
-    <div v-else class="h-full flex items-center justify-center">
+    <transition
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="opacity-0 transform scale-95"
+      enter-to-class="opacity-100 transform scale-100"
+      leave-active-class="transition-all duration-200 ease-in"
+      leave-from-class="opacity-100 transform scale-100"
+      leave-to-class="opacity-0 transform scale-95"
+      mode="out-in"
+    >
       <div
-        class="text-center bg-green-50 p-8 rounded-lg shadow-sm border border-green-100 max-w-md"
+        v-if="filteredProducts.length === 0"
+        class="h-full flex items-center justify-center"
       >
-        <svg
-          class="w-16 h-16 mx-auto text-green-500 mb-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+        <div
+          class="text-center bg-green-50 p-8 rounded-lg shadow-sm border border-green-100 max-w-md"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-          ></path>
-        </svg>
-        <h3 class="text-lg font-medium text-green-700 mb-2">
-          {{ $t("allGood") }}
-        </h3>
-        <p class="text-green-600">{{ $t("allProductsInStock") }}</p>
+          <svg
+            class="w-16 h-16 mx-auto text-green-500 mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <h3 class="text-lg font-medium text-green-700 mb-2">
+            {{ $t("allGood") }}
+          </h3>
+          <p class="text-green-600">{{ $t("allProductsInStock") }}</p>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -147,13 +192,29 @@ const props = defineProps<{
 
 // Computed Properties
 const filteredProducts = computed<ProductAmount[]>(() => {
-  return props.products.filter((product) => {
+  // First filter products that are at or below the critical threshold
+  const criticalProducts = props.products.filter((product) => {
     const amountToCheck =
       props.originalAmounts &&
       props.originalAmounts[product.product] !== undefined
         ? props.originalAmounts[product.product]
         : product.amount;
     return amountToCheck <= props.criticalThreshold;
+  });
+
+  // Then sort them by amount (ascending - most critical first)
+  return criticalProducts.sort((a, b) => {
+    const amountA =
+      props.originalAmounts && props.originalAmounts[a.product] !== undefined
+        ? props.originalAmounts[a.product]
+        : a.amount;
+
+    const amountB =
+      props.originalAmounts && props.originalAmounts[b.product] !== undefined
+        ? props.originalAmounts[b.product]
+        : b.amount;
+
+    return amountB - amountA; // Sort descending (highest/less critical first)
   });
 });
 

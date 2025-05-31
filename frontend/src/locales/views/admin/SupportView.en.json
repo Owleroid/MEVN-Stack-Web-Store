@@ -1,7 +1,21 @@
 {
-  "fetchMessagesError": "Failed to fetch messages",
-  "responseSubmitted": "Response has been successfully submitted",
-  "responseError": "Error submitting response",
-  "messageDeleted": "Message has been successfully deleted",
-  "deleteError": "Error deleting message"
+  "newMessages": "New Messages",
+  "allMessages": "All Messages",
+  "sortByDate": "Sort by date",
+  "newestToOldest": "Newest to oldest",
+  "oldestToNewest": "Oldest to newest",
+  "filterByStatus": "Filter by status",
+  "all": "All",
+  "inProgress": "In Progress",
+  "resolved": "Resolved",
+  "loading": "Loading",
+  "retry": "Retry",
+  "noMessagesFound": "No messages found",
+  "fetchMessagesError": "Failed to fetch support messages",
+  "responseSubmitted": "Response submitted successfully",
+  "responseError": "Failed to submit response",
+  "messageDeleted": "Message deleted successfully",
+  "deleteError": "Failed to delete message",
+  "confirmDelete": "Confirm Delete",
+  "deleteConfirmMessage": "Are you sure you want to delete this message? This action cannot be undone."
 }

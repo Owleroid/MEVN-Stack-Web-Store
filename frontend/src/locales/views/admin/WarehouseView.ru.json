@@ -2,6 +2,7 @@
   "noWarehousesFound": "Склады не найдены. Сначала настройте склады.",
   "selectWarehouse": "Выбрать склад",
   "loading": "Загрузка данных склада...",
+  "loadingWarehouses": "Загрузка складов...",
   "categories": "Категории",
   "products": "Товары",
   "noProductsFound": "В этой категории товаров не найдено.",
@@ -17,5 +18,7 @@
   "failedToUpdateProductAmount": "Не удалось обновить количество товара.",
   "loadingProducts": "Загрузка товаров...",
   "criticalStockAlert": "Предупреждение о критическом запасе",
-  "noCriticalStock": "Нет товаров с критическим уровнем запаса"
+  "noCriticalStock": "Нет товаров с критическим уровнем запаса",
+  "threshold": "Порог",
+  "warehouse": "Склад"
 }

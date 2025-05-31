@@ -1,6 +1,7 @@
 {
   "criticalStockAlert": "Critical Stock Alert",
   "criticalStockExplanation": "The following products are running low and need attention",
+  "sortedByCriticality": "(sorted by amount, highest first)",
   "outOfStock": "Out of Stock",
   "lowStock": "Low Stock",
   "productName": "Product Name",

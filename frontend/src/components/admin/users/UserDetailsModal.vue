@@ -1,34 +1,44 @@
 <template>
   <div
     v-if="show"
-    class="fixed inset-0 z-10 flex items-center justify-center overflow-auto bg-black/40"
+    class="fixed inset-0 bg-black/50 flex items-center justify-center z-10 overflow-auto"
     @click="closeModal"
   >
     <div
-      class="relative w-11/12 max-w-3xl mx-auto bg-white rounded-lg shadow-lg max-h-[90vh] overflow-y-auto"
+      class="relative w-11/12 max-w-3xl mx-auto bg-white rounded-xl shadow-xl border border-gray-200 max-h-[90vh] overflow-y-auto"
       @click.stop
     >
       <!-- Modal Header -->
       <div
-        class="p-6 border-b border-gray-200 flex justify-between items-center"
+        class="sticky top-0 z-20 bg-gradient-to-r from-blue-50 to-white border-b border-gray-100 rounded-t-xl px-6 pt-6 pb-4"
       >
-        <h2 class="text-2xl font-bold text-gray-800">
+        <button
+          @click="closeModal"
+          class="absolute top-4 right-4 text-2xl font-bold text-gray-400 hover:text-gray-800 transition-colors focus:outline-none focus:text-blue-600"
+        >
+          &times;
+        </button>
+        <h2 class="text-xl font-bold text-gray-800">
           {{ $t("userDetails.title") }}
         </h2>
       </div>
 
       <!-- Modal Content -->
-      <div class="p-6" v-if="user">
+      <div class="p-6 space-y-6" v-if="user">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Basic Info -->
-          <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <h3
-              class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-200"
+          <div
+            class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+          >
+            <div
+              class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center"
             >
-              {{ $t("userDetails.basicInfo") }}
-            </h3>
+              <h3 class="text-lg font-semibold text-gray-800">
+                {{ $t("userDetails.basicInfo") }}
+              </h3>
+            </div>
 
-            <div class="space-y-4">
+            <div class="p-6 space-y-4">
               <div class="flex flex-col sm:flex-row">
                 <span
                   class="text-sm font-medium text-gray-600 sm:w-2/5 mb-1 sm:mb-0"
@@ -69,7 +79,7 @@
                 <span class="sm:w-3/5">
                   <span
                     :class="user.isAdmin ? 'bg-orange-500' : 'bg-blue-500'"
-                    class="px-2 py-1 rounded-full text-xs font-medium text-white"
+                    class="px-2.5 py-1 rounded-full text-xs font-medium text-white inline-flex items-center"
                   >
                     {{
                       user.isAdmin
@@ -96,15 +106,17 @@
           <!-- Delivery Info -->
           <div
             v-if="hasDeliveryData"
-            class="p-4 bg-gray-50 rounded-lg border border-gray-200"
+            class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
           >
-            <h3
-              class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-200"
+            <div
+              class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center"
             >
-              {{ $t("userDetails.deliveryInfo") }}
-            </h3>
+              <h3 class="text-lg font-semibold text-gray-800">
+                {{ $t("userDetails.deliveryInfo") }}
+              </h3>
+            </div>
 
-            <div class="space-y-4">
+            <div class="p-6 space-y-4">
               <div
                 v-if="user.deliveryData?.country"
                 class="flex flex-col sm:flex-row"
@@ -194,10 +206,10 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="p-6 border-t border-gray-200 flex justify-end">
+      <div class="p-6 border-t border-gray-100 flex justify-end">
         <button
           @click="closeModal"
-          class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          class="px-5 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-1 shadow-sm"
         >
           {{ $t("userDetails.close") }}
         </button>
