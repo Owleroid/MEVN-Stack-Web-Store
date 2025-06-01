@@ -48,12 +48,18 @@ export const getProductIdsByCategoryId = async (
 /**
  * Get a product by ID
  * @param {string} id - The product ID
+ * @param {mongoose.ClientSession} [session] - Optional mongoose session
  * @returns {Promise<Object|null>} The product or null if not found
  */
 export const getProductById = async (
-  id: string | mongoose.Types.ObjectId
+  id: string | mongoose.Types.ObjectId,
+  session?: mongoose.ClientSession
 ): Promise<any | null> => {
-  return Product.findById(id);
+  const query = Product.findById(id);
+  if (session) {
+    return query.session(session).exec();
+  }
+  return query;
 };
 
 /**
@@ -222,15 +228,18 @@ export const updateProductCategory = async (
 /**
  * Delete a product
  * @param {string} id - The product ID
+ * @param {mongoose.ClientSession} [session] - Optional mongoose session
  * @returns {Promise<Object|null>} Deleted product or null if not found
  */
 export const deleteProduct = async (
-  id: string | mongoose.Types.ObjectId
+  id: string | mongoose.Types.ObjectId,
+  session?: mongoose.ClientSession
 ): Promise<any | null> => {
-  const product = await Product.findByIdAndDelete(id);
+  const options = session ? { session } : {};
+  const product = await Product.findByIdAndDelete(id, options);
 
   if (product) {
-    await removeProductFromWarehouses(id);
+    await removeProductFromWarehouses(id, session);
   }
 
   return product;

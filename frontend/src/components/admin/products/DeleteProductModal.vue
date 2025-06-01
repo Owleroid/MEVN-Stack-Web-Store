@@ -91,7 +91,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits } from "vue";
 import type { Product } from "@/types/products";
 
 defineProps<{

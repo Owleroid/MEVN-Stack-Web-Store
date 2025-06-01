@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from "express";
 import * as productService from "./productService.js";
 import * as discountService from "../discounts/discountService.js";
 import { getCategoryById } from "../categories/categoryService.js";
+import { deleteAnnouncementsByProductId } from "../announcements/announcementService.js";
 
 import ApiError from "../../utils/apiError.js";
 import { asyncHandler, transactionHandler } from "../../utils/asyncHandlers.js";
@@ -289,15 +290,26 @@ export const updateProductCategory = asyncHandler(
   }
 );
 
-export const deleteProduct = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+export const deleteProduct = transactionHandler(
+  async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+    session: mongoose.ClientSession
+  ) => {
     const { id } = req.params;
 
-    const product = await productService.deleteProduct(id);
-
+    // First check if product exists
+    const product = await productService.getProductById(id, session);
     if (!product) {
-      return next(new ApiError(404, "Product not found"));
+      throw new ApiError(404, "Product not found");
     }
+
+    // Delete related announcements within the transaction
+    await deleteAnnouncementsByProductId(id, session);
+
+    // Delete the product within the same transaction
+    const deletedProduct = await productService.deleteProduct(id, session);
 
     res.status(200).json({
       success: true,
