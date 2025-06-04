@@ -1,4 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --color-main-gray: #585858;
+  --color-main-gray-hover: #818181;
+  --color-main-red: #C80103;
+  --font-display: "Oswald";
+}
 
 .vti__dropdown-list {
   z-index: 50;

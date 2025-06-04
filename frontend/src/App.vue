@@ -1,5 +1,8 @@
 <template>
-  <div id="app">
+  <div
+    id="app"
+    class="min-h-screen bg-gradient-to-r from-[#191919] to-[#0E0E0E] text-main-gray font-normal font-['Oswald']"
+  >
     <Navbar v-if="!isAdminRoute" />
     <AdminNavbar v-if="isAdminRoute">
       <router-view />
@@ -43,3 +46,14 @@ const onRegionSelected = () => {
   showRegionSelector.value = false;
 };
 </script>
+
+<style>
+:root {
+  --Background: linear-gradient(90deg, #191919 0%, #0e0e0e 100%);
+}
+
+#app {
+  background: var(--Background);
+  min-height: 100vh;
+}
+</style>
