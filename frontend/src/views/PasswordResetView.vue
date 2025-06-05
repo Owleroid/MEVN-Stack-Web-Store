@@ -1,37 +1,63 @@
 <template>
-  <div class="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md my-8">
-    <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">
+  <div class="px-4 py-10 md:max-w-md md:mx-auto">
+    <!-- Page Title -->
+    <h1 class="text-3xl text-main-red mb-8 text-center">
       {{ $t("passwordReset") }}
     </h1>
 
     <form @submit.prevent="handlePasswordReset" class="space-y-6">
       <!-- Email Input -->
-      <div>
-        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+      <div class="space-y-1">
+        <label
+          for="email"
+          :class="[
+            'block text-base transition-colors duration-500 ease-in-out',
+            activeInput === 'email' || form.email
+              ? 'text-white'
+              : 'text-main-gray-hover',
+          ]"
+        >
           {{ $t("email") }}
         </label>
-        <input
-          v-model="form.email"
-          type="email"
-          id="email"
-          required
-          placeholder="email@example.com"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-          :class="{ 'border-red-500': error }"
-        />
-        <p v-if="error" class="mt-1 text-sm text-red-600">
+        <div
+          :class="[
+            'border p-3 bg-transparent transition-colors duration-500 ease-in-out',
+            activeInput === 'email' || form.email
+              ? 'border-main-red'
+              : 'border-white border-opacity-50',
+          ]"
+          @click="focusEmailInput"
+        >
+          <input
+            v-model="form.email"
+            type="email"
+            id="email"
+            required
+            placeholder="example@mail.com"
+            class="w-full bg-transparent font-medium text-white focus:outline-none"
+            @focus="activeInput = 'email'"
+            @blur="activeInput = ''"
+            ref="emailInputRef"
+          />
+        </div>
+        <p v-if="error" class="text-sm text-red-500">
           {{ error }}
         </p>
       </div>
 
+      <!-- Password Reset Instructions -->
+      <div class="text-sm text-main-gray-hover text-center">
+        {{ $t("passwordResetInstructions") }}
+      </div>
+
       <!-- Submit Button -->
-      <div class="flex justify-center">
+      <div class="flex justify-center mt-6">
         <button
           type="submit"
-          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          class="px-8 py-3 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] border border-[#240000] focus:outline-none"
           :disabled="loading"
         >
-          <span v-if="loading" class="flex items-center">
+          <span v-if="loading" class="flex items-center justify-center">
             <svg
               class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
               xmlns="http://www.w3.org/2000/svg"
@@ -59,19 +85,14 @@
       </div>
     </form>
 
-    <!-- Password Reset Instructions -->
-    <div class="mt-4 text-sm text-center text-gray-600">
-      {{ $t("passwordResetInstructions") }}
-    </div>
-
     <!-- Login Link -->
-    <div class="mt-4 text-center text-sm">
-      <p class="text-gray-600">
-        {{ $t("rememberPassword") }}
-        <router-link to="/login" class="text-blue-600 hover:underline">
-          {{ $t("login") }}
-        </router-link>
-      </p>
+    <div class="mt-8 text-center">
+      <router-link
+        to="/login"
+        class="text-main-gray-hover text-base underline hover:text-main-red transition-colors duration-500 ease-in-out"
+      >
+        {{ $t("backToLogin") }}
+      </router-link>
     </div>
   </div>
 </template>
@@ -90,6 +111,17 @@ const router = useRouter();
 const authStore = useAuthStore();
 const toast = useToast();
 const { t } = useI18n();
+
+// Input focus state and refs
+const activeInput = ref("");
+const emailInputRef = ref<HTMLInputElement | null>(null);
+
+// Focus input function
+const focusEmailInput = () => {
+  if (emailInputRef.value) {
+    emailInputRef.value.focus();
+  }
+};
 
 // Form State
 interface PasswordResetForm {
