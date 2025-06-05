@@ -1,22 +1,202 @@
 <template>
-  <div class="max-w-5xl mx-auto p-6">
+  <div class="px-4 py-8 md:py-10 max-w-5xl mx-auto">
+    <!-- Main Content Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <!-- Contact Information -->
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-6">
-          {{ $t("title") }}
-        </h1>
+      <!-- Contact Form - Shown first on mobile for better user experience -->
+      <div class="order-1 md:order-2">
+        <h2 class="text-2xl text-main-red mb-4">
+          {{ $t("contactUs") }}
+        </h2>
 
-        <p class="text-lg text-gray-700 mb-8">
-          {{ $t("description") }}
+        <p class="text-main-gray-hover mb-6">
+          {{ $t("formDescription") }}
         </p>
+
+        <form @submit.prevent="submitForm" class="space-y-6">
+          <!-- Email Input -->
+          <div class="space-y-1">
+            <label
+              for="email"
+              :class="[
+                'block text-base transition-colors duration-500 ease-in-out',
+                activeInput === 'email' || form.email
+                  ? 'text-white'
+                  : 'text-main-gray-hover',
+              ]"
+            >
+              {{ $t("email") }} *
+            </label>
+            <div
+              :class="[
+                'border p-3 bg-transparent transition-colors duration-500 ease-in-out',
+                activeInput === 'email' || form.email
+                  ? 'border-main-red'
+                  : 'border-white border-opacity-50',
+              ]"
+              @click="focusEmailInput"
+            >
+              <input
+                type="email"
+                id="email"
+                v-model="form.email"
+                required
+                placeholder="email@example.com"
+                class="w-full bg-transparent font-medium text-white focus:outline-none"
+                @focus="activeInput = 'email'"
+                @blur="activeInput = ''"
+                ref="emailInputRef"
+              />
+            </div>
+            <p v-if="errors.email" class="text-sm text-red-500">
+              {{ errors.email }}
+            </p>
+          </div>
+
+          <!-- Subject Input -->
+          <div class="space-y-1">
+            <label
+              for="subject"
+              :class="[
+                'block text-base transition-colors duration-500 ease-in-out',
+                activeInput === 'subject' || form.subject
+                  ? 'text-white'
+                  : 'text-main-gray-hover',
+              ]"
+            >
+              {{ $t("subject") }}
+            </label>
+            <div
+              :class="[
+                'border p-3 bg-transparent transition-colors duration-500 ease-in-out',
+                activeInput === 'subject' || form.subject
+                  ? 'border-main-red'
+                  : 'border-white border-opacity-50',
+              ]"
+              @click="focusSubjectInput"
+            >
+              <input
+                type="text"
+                id="subject"
+                v-model="form.subject"
+                :placeholder="$t('subjectPlaceholder')"
+                class="w-full bg-transparent font-medium text-white focus:outline-none"
+                @focus="activeInput = 'subject'"
+                @blur="activeInput = ''"
+                ref="subjectInputRef"
+              />
+            </div>
+          </div>
+
+          <!-- Message Input -->
+          <div class="space-y-1">
+            <label
+              for="message"
+              :class="[
+                'block text-base transition-colors duration-500 ease-in-out',
+                activeInput === 'message' || form.message
+                  ? 'text-white'
+                  : 'text-main-gray-hover',
+              ]"
+            >
+              {{ $t("message") }} *
+            </label>
+            <div
+              :class="[
+                'border p-3 bg-transparent transition-colors duration-500 ease-in-out',
+                activeInput === 'message' || form.message
+                  ? 'border-main-red'
+                  : 'border-white border-opacity-50',
+              ]"
+              @click="focusMessageInput"
+            >
+              <textarea
+                id="message"
+                v-model="form.message"
+                required
+                rows="5"
+                :placeholder="$t('messagePlaceholder')"
+                class="w-full bg-transparent font-medium text-white focus:outline-none"
+                @focus="activeInput = 'message'"
+                @blur="activeInput = ''"
+                ref="messageInputRef"
+              ></textarea>
+            </div>
+            <p v-if="errors.message" class="text-sm text-red-500">
+              {{ errors.message }}
+            </p>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="flex justify-center mt-6">
+            <button
+              type="submit"
+              class="px-8 py-3 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] border border-[#240000] focus:outline-none"
+              :disabled="loading"
+            >
+              <span v-if="loading" class="flex items-center justify-center">
+                <svg
+                  class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                {{ $t("sending") }}
+              </span>
+              <span v-else>{{ $t("send") }}</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Success Message -->
+        <div
+          v-if="submissionSuccess"
+          class="mt-6 p-4 border border-green-500 bg-transparent text-green-400 rounded-md"
+        >
+          <div class="flex items-center">
+            <svg
+              class="h-5 w-5 text-green-400 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <p>{{ $t("messageSentSuccess") }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Information - Shown second on mobile -->
+      <div class="order-2 md:order-1 mt-8 md:mt-0">
+        <h2 class="text-2xl text-main-red mb-4 md:hidden">
+          {{ $t("contactInfo") }}
+        </h2>
 
         <div class="space-y-6">
           <!-- Email -->
           <div class="flex items-start">
             <div class="flex-shrink-0">
               <svg
-                class="h-6 w-6 text-blue-600"
+                class="h-6 w-6 text-main-red"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -30,10 +210,12 @@
               </svg>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">
+              <h3 class="text-lg font-medium text-white">
                 {{ $t("email") }}
               </h3>
-              <p class="mt-1 text-gray-600">contact@irbis-miniatures.com</p>
+              <p class="mt-1 text-main-gray-hover">
+                contact@irbis-miniatures.com
+              </p>
             </div>
           </div>
 
@@ -41,7 +223,7 @@
           <div class="flex items-start">
             <div class="flex-shrink-0">
               <svg
-                class="h-6 w-6 text-blue-600"
+                class="h-6 w-6 text-main-red"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -55,10 +237,10 @@
               </svg>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">
+              <h3 class="text-lg font-medium text-white">
                 {{ $t("phone") }}
               </h3>
-              <p class="mt-1 text-gray-600">+1 (555) 123-4567</p>
+              <p class="mt-1 text-main-gray-hover">+1 (555) 123-4567</p>
             </div>
           </div>
 
@@ -66,7 +248,7 @@
           <div class="flex items-start">
             <div class="flex-shrink-0">
               <svg
-                class="h-6 w-6 text-blue-600"
+                class="h-6 w-6 text-main-red"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -86,10 +268,10 @@
               </svg>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">
+              <h3 class="text-lg font-medium text-white">
                 {{ $t("address") }}
               </h3>
-              <p class="mt-1 text-gray-600">
+              <p class="mt-1 text-main-gray-hover">
                 {{ $t("addressDetails") }}
               </p>
             </div>
@@ -99,7 +281,7 @@
           <div class="flex items-start">
             <div class="flex-shrink-0">
               <svg
-                class="h-6 w-6 text-blue-600"
+                class="h-6 w-6 text-main-red"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -113,11 +295,14 @@
               </svg>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">
+              <h3 class="text-lg font-medium text-white">
                 {{ $t("followUs") }}
               </h3>
               <div class="mt-2 flex space-x-4">
-                <a href="#" class="text-gray-500 hover:text-blue-700">
+                <a
+                  href="#"
+                  class="text-main-gray-hover hover:text-main-red transition-colors duration-500 ease-in-out"
+                >
                   <span class="sr-only">Instagram</span>
                   <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                     <path
@@ -127,7 +312,10 @@
                     />
                   </svg>
                 </a>
-                <a href="#" class="text-gray-500 hover:text-blue-700">
+                <a
+                  href="#"
+                  class="text-main-gray-hover hover:text-main-red transition-colors duration-500 ease-in-out"
+                >
                   <span class="sr-only">Facebook</span>
                   <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                     <path
@@ -137,7 +325,10 @@
                     />
                   </svg>
                 </a>
-                <a href="#" class="text-gray-500 hover:text-blue-700">
+                <a
+                  href="#"
+                  class="text-main-gray-hover hover:text-main-red transition-colors duration-500 ease-in-out"
+                >
                   <span class="sr-only">Twitter</span>
                   <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                     <path
@@ -146,139 +337,6 @@
                   </svg>
                 </a>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Contact Form -->
-      <div>
-        <div class="bg-white rounded-lg shadow border border-gray-200 p-6">
-          <h2 class="text-2xl font-bold text-gray-800 mb-4">
-            {{ $t("contactUs") }}
-          </h2>
-
-          <p class="text-gray-600 mb-6">
-            {{ $t("formDescription") }}
-          </p>
-
-          <form @submit.prevent="submitForm" class="space-y-6">
-            <!-- Email Input -->
-            <div>
-              <label
-                for="email"
-                class="block text-sm font-medium text-gray-700 mb-1"
-              >
-                {{ $t("email") }} *
-              </label>
-              <input
-                type="email"
-                id="email"
-                v-model="form.email"
-                required
-                placeholder="email@example.com"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                :class="{ 'border-red-500': errors.email }"
-              />
-              <p v-if="errors.email" class="mt-1 text-sm text-red-600">
-                {{ errors.email }}
-              </p>
-            </div>
-
-            <!-- Subject Input -->
-            <div>
-              <label
-                for="subject"
-                class="block text-sm font-medium text-gray-700 mb-1"
-              >
-                {{ $t("subject") }}
-              </label>
-              <input
-                type="text"
-                id="subject"
-                v-model="form.subject"
-                :placeholder="$t('subjectPlaceholder')"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-              />
-            </div>
-
-            <!-- Message Input -->
-            <div>
-              <label
-                for="message"
-                class="block text-sm font-medium text-gray-700 mb-1"
-              >
-                {{ $t("message") }} *
-              </label>
-              <textarea
-                id="message"
-                v-model="form.message"
-                required
-                rows="6"
-                :placeholder="$t('messagePlaceholder')"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                :class="{ 'border-red-500': errors.message }"
-              ></textarea>
-              <p v-if="errors.message" class="mt-1 text-sm text-red-600">
-                {{ errors.message }}
-              </p>
-            </div>
-
-            <!-- Submit Button -->
-            <div class="flex justify-end">
-              <button
-                type="submit"
-                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                :disabled="loading"
-              >
-                <span v-if="loading" class="flex items-center">
-                  <svg
-                    class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  {{ $t("sending") }}
-                </span>
-                <span v-else>{{ $t("send") }}</span>
-              </button>
-            </div>
-          </form>
-
-          <!-- Success Message -->
-          <div
-            v-if="submissionSuccess"
-            class="mt-6 p-4 bg-green-50 text-green-800 rounded-md"
-          >
-            <div class="flex items-center">
-              <svg
-                class="h-5 w-5 text-green-400 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M5 13l4 4L19 7"
-                ></path>
-              </svg>
-              <p>{{ $t("messageSentSuccess") }}</p>
             </div>
           </div>
         </div>
@@ -300,6 +358,31 @@ import { submitSupportMessage } from "@/services/supportService";
 const { t } = useI18n();
 const toast = useToast();
 const authStore = useAuthStore();
+
+// Input focus state and refs
+const activeInput = ref("");
+const emailInputRef = ref<HTMLInputElement | null>(null);
+const subjectInputRef = ref<HTMLInputElement | null>(null);
+const messageInputRef = ref<HTMLTextAreaElement | null>(null);
+
+// Focus input functions
+const focusEmailInput = () => {
+  if (emailInputRef.value) {
+    emailInputRef.value.focus();
+  }
+};
+
+const focusSubjectInput = () => {
+  if (subjectInputRef.value) {
+    subjectInputRef.value.focus();
+  }
+};
+
+const focusMessageInput = () => {
+  if (messageInputRef.value) {
+    messageInputRef.value.focus();
+  }
+};
 
 // State Management
 const form = reactive({
