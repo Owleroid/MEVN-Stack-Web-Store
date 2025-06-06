@@ -1,10 +1,12 @@
 {
   "newsAndUpdates": "News & Updates",
   "stayUpdated": "Stay updated with our latest announcements and articles",
-  "readMore": "Read more",
-  "noNewsAvailable": "No news articles available at the moment.",
-  "checkBackLater": "Please check back later for updates.",
+  "loading": "Loading...",
   "errorFetchingNews": "An error occurred while fetching news. Please try again later.",
+  "retry": "Try Again",
+  "readMore": "Read more",
   "previous": "Previous",
-  "next": "Next"
+  "next": "Next",
+  "noNewsAvailable": "No news articles available at the moment",
+  "checkBackLater": "Please check back later for updates"
 }

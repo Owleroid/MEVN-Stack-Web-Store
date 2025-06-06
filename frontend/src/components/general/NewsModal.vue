@@ -1,63 +1,95 @@
 <template>
-  <div
-    v-if="news"
-    class="fixed inset-0 bg-black/50 flex justify-center items-center z-50 overflow-y-auto py-4"
-    @click="close"
+  <Transition
+    enter-active-class="transition-opacity duration-300 ease-out"
+    enter-from-class="opacity-0"
+    enter-to-class="opacity-100"
+    leave-active-class="transition-opacity duration-300 ease-in"
+    leave-from-class="opacity-100"
+    leave-to-class="opacity-0"
   >
     <div
-      class="bg-white rounded-2xl w-11/12 max-w-3xl shadow-2xl border border-gray-200 my-4 max-h-[90vh] overflow-y-auto relative"
-      @click.stop
+      v-if="news"
+      class="fixed inset-0 bg-black/80 flex justify-center items-center z-50 overflow-y-auto py-4 px-2"
+      @click="close"
     >
-      <!-- Modal Header with Close Button -->
-      <div
-        class="p-6 border-b border-gray-100 bg-gradient-to-b from-gray-50 to-white rounded-t-2xl flex items-center justify-between sticky top-0 z-10"
+      <Transition
+        enter-active-class="transition-all duration-300 ease-out"
+        enter-from-class="opacity-0 transform scale-95"
+        enter-to-class="opacity-100 transform scale-100"
+        leave-active-class="transition-all duration-300 ease-in"
+        leave-from-class="opacity-100 transform scale-100"
+        leave-to-class="opacity-0 transform scale-95"
       >
-        <h2 class="text-2xl font-bold text-gray-800">{{ news.title }}</h2>
-        <button
-          @click="close"
-          class="absolute right-6 top-6 text-gray-400 hover:text-red-500 text-2xl font-bold focus:outline-none transition-colors duration-200"
-          aria-label="Close"
+        <div
+          class="w-full max-w-3xl bg-black bg-opacity-30 border border-white border-opacity-10 my-4 max-h-[90vh] overflow-y-auto relative"
+          @click.stop
         >
-          &times;
-        </button>
-      </div>
+          <!-- Modal Header with Close Button -->
+          <div
+            class="p-4 md:p-6 border-b border-white border-opacity-10 sticky top-0 z-10 backdrop-blur-sm bg-black bg-opacity-40 flex items-center justify-between"
+          >
+            <h2 class="text-xl md:text-2xl font-bold text-white pr-8">
+              {{ news.title }}
+            </h2>
+            <button
+              @click="close"
+              class="absolute right-4 md:right-6 top-4 md:top-6 text-main-gray-hover hover:text-main-red text-2xl font-bold focus:outline-none transition-colors duration-200"
+              aria-label="Close"
+            >
+              &times;
+            </button>
+          </div>
 
-      <!-- News Image -->
-      <div v-if="news.imageUrl" class="w-full h-64 md:h-80 overflow-hidden">
-        <img
-          :src="news.imageUrl"
-          :alt="news.title"
-          class="w-full h-full object-cover"
-        />
-      </div>
+          <!-- News Image -->
+          <div
+            v-if="news.imageUrl"
+            class="w-full h-48 md:h-80 overflow-hidden relative"
+          >
+            <img
+              :src="news.imageUrl"
+              :alt="news.title"
+              class="w-full h-full object-cover"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"
+            ></div>
+          </div>
 
-      <!-- News Content -->
-      <div class="p-6">
-        <p class="text-gray-600 text-sm mb-4">
-          {{ formatDate(news.createdAt) }}
-        </p>
-        <div class="prose max-w-none text-gray-700" v-html="news.text"></div>
-      </div>
+          <!-- News Content -->
+          <div class="p-4 md:p-6">
+            <p class="text-main-gray-hover text-sm mb-4">
+              {{ formatDate(news.createdAt) }}
+            </p>
+            <div
+              class="prose prose-invert max-w-none text-white/90"
+              v-html="news.text"
+            ></div>
+          </div>
 
-      <!-- Modal Footer -->
-      <div
-        class="flex justify-end p-6 border-t border-gray-100 bg-gradient-to-t from-gray-50 to-white rounded-b-2xl"
-      >
-        <button
-          type="button"
-          @click="close"
-          class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium shadow-sm"
-        >
-          Close
-        </button>
-      </div>
+          <!-- Modal Footer -->
+          <div
+            class="flex justify-end p-4 md:p-6 border-t border-white border-opacity-10 backdrop-blur-sm bg-black bg-opacity-40"
+          >
+            <button
+              type="button"
+              @click="close"
+              class="px-8 py-3 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] border border-[#240000] focus:outline-none transition-colors duration-300 hover:opacity-90"
+            >
+              {{ $t("close") }}
+            </button>
+          </div>
+        </div>
+      </Transition>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
 import { onUnmounted, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import type { News } from "@/types/news";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   news: News | null;
