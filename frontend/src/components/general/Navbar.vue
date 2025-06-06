@@ -1,27 +1,32 @@
 <template>
-  <nav v-if="!translationsLoading" class="px-4 py-3 shadow-md">
+  <nav v-if="!translationsLoading" class="px-4 py-5">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
       <!-- Logo -->
-      <router-link to="/" class="text-2xl"> IRBIS </router-link>
+      <router-link to="/" class="text-3xl font-medium"> IRBIS </router-link>
 
       <!-- Mobile Navigation -->
-      <div class="flex items-center space-x-5">
+      <div class="flex items-center space-x-6">
         <!-- Cart Icon with Badge -->
         <div class="relative group">
           <router-link
             to="/cart"
-            class="transition-colors duration-500 ease-in-out"
+            class="transition-colors duration-500 ease-in-out block"
             :class="{
-              'text-main-red': cartItemsCount > 0 && isMobile,
-              'text-main-gray-hover': !(cartItemsCount > 0 && isMobile),
+              'text-main-red':
+                (cartItemsCount > 0 && isMobile) || route.path === '/cart',
+              'text-main-gray-hover': !(
+                (cartItemsCount > 0 && isMobile) ||
+                route.path === '/cart'
+              ),
             }"
           >
             <svg
-              width="17"
-              height="14"
+              width="22"
+              height="22"
               viewBox="0 0 17 14"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              class="scale-125"
             >
               <path
                 fill-rule="evenodd"
@@ -63,10 +68,43 @@
           </div>
         </div>
 
+        <!-- Profile Icon (Mobile only) - Only visible when logged in -->
+        <router-link
+          v-if="authStore.isAuthenticated && isMobile"
+          to="/settings"
+          class="transition-colors duration-500 ease-in-out block"
+          :class="{
+            'text-main-red': route.path === '/settings',
+            'text-main-gray-hover': route.path !== '/settings',
+          }"
+        >
+          <svg
+            width="19.5"
+            height="19.5"
+            viewBox="0 0 15 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            class="scale-125"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M7.5147 7.85937L14.7981 11.2219L14.7981 13.7755L13.741 13.7755L13.741 11.8982L7.51649 9.02451L1.34421 11.8971L1.34421 13.7755L0.28712 13.7755L0.287109 11.2231L7.5147 7.85937Z"
+              fill="currentColor"
+            />
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M7.54244 1.2817C5.71138 1.2817 4.22702 2.76607 4.22702 4.59713C4.22702 6.42819 5.71138 7.91256 7.54244 7.91256C9.3735 7.91256 10.8579 6.42819 10.8579 4.59713C10.8579 2.76607 9.3735 1.2817 7.54244 1.2817ZM3.16992 4.59713C3.16992 2.18225 5.12757 0.224609 7.54244 0.224609C9.95732 0.224609 11.915 2.18225 11.915 4.59713C11.915 7.01201 9.95732 8.96965 7.54244 8.96965C5.12757 8.96965 3.16992 7.01201 3.16992 4.59713Z"
+              fill="currentColor"
+            />
+          </svg>
+        </router-link>
+
         <!-- Language Switcher -->
         <button
           @click="toggleLanguage"
-          class="px-2 py-1 rounded-[28px] text-main-red text-sm font-normal transition-colors duration-500 ease-in-out"
+          class="px-2 py-1 rounded-md text-main-red text-sm font-normal transition-colors duration-500 ease-in-out border border-main-red"
         >
           {{ currentLanguage }}
         </button>
@@ -74,7 +112,7 @@
         <!-- Hamburger Menu Button -->
         <button
           @click="toggleMobileMenu"
-          class="flex flex-col justify-center items-center w-6 h-10 p-1 space-y-1 transition-colors duration-500 ease-in-out"
+          class="flex flex-col justify-center items-center w-8 h-12 p-1 space-y-1.5 transition-colors duration-500 ease-in-out"
           :class="{
             'text-main-red': mobileMenuOpen,
             'text-main-gray': !mobileMenuOpen,
@@ -89,121 +127,143 @@
 
     <!-- Mobile Menu -->
     <transition
-      enter-active-class="transition ease-out duration-300"
-      enter-from-class="transform translate-x-full opacity-0"
-      enter-to-class="transform translate-x-0 opacity-100"
-      leave-active-class="transition ease-in duration-300"
-      leave-from-class="transform translate-x-0 opacity-100"
-      leave-to-class="transform translate-x-full opacity-0"
+      enter-active-class="transition-all ease-out duration-500"
+      enter-from-class="transform translate-x-full"
+      enter-to-class="transform translate-x-0"
+      leave-active-class="transition-all ease-in duration-500"
+      leave-from-class="transform translate-x-0"
+      leave-to-class="transform translate-x-full"
     >
       <div
         v-if="mobileMenuOpen"
-        class="fixed top-16 right-0 z-50 shadow-lg bg-gradient-to-l from-[#191919] to-[#0E0E0E] rounded-l-md w-auto min-w-[200px] h-[calc(100vh-56px)] overflow-y-auto"
+        class="fixed top-0 right-0 bottom-0 z-50 bg-gradient-to-l from-[#191919] to-[#0E0E0E] h-screen w-screen shadow-[-10px_0_15px_rgba(0,0,0,0.3)] flex flex-col justify-between overflow-hidden"
       >
-        <div class="flex flex-col p-4 space-y-4 items-center text-center">
-          <!-- Main Navigation Links -->
-          <router-link
-            to="/"
-            class="text-main-gray-hover transition-colors whitespace-nowrap duration-500 ease-in-out"
-            :class="{ 'text-main-red': route.path === '/' }"
-            @click="closeMobileMenu"
+        <!-- Close Button -->
+        <button
+          @click="closeMobileMenu"
+          class="absolute top-6 right-6 text-main-red p-3"
+          aria-label="Close menu"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-8 w-8"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2.5"
           >
-            {{ $t("mainPage") }}
-          </router-link>
-          <router-link
-            to="/collections"
-            class="text-main-gray-hover transition-colors whitespace-nowrap duration-500 ease-in-out"
-            :class="{ 'text-main-red': route.path.startsWith('/collections') }"
-            @click="closeMobileMenu"
-          >
-            {{ $t("collections") }}
-          </router-link>
-          <router-link
-            to="/news"
-            class="text-main-gray-hover transition-colors whitespace-nowrap duration-500 ease-in-out"
-            :class="{ 'text-main-red': route.path.startsWith('/news') }"
-            @click="closeMobileMenu"
-          >
-            {{ $t("news") }}
-          </router-link>
-          <router-link
-            to="/about"
-            class="text-main-gray-hover transition-colors whitespace-nowrap duration-500 ease-in-out"
-            :class="{ 'text-main-red': route.path === '/about' }"
-            @click="closeMobileMenu"
-          >
-            {{ $t("about") }}
-          </router-link>
-          <router-link
-            to="/contact"
-            class="text-main-gray-hover transition-colors whitespace-nowrap duration-500 ease-in-out"
-            :class="{ 'text-main-red': route.path === '/contact' }"
-            @click="closeMobileMenu"
-          >
-            {{ $t("contact") }}
-          </router-link>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
 
-          <!-- User Management Links -->
-          <div
-            v-if="!authStore.isAuthenticated"
-            class="pt-2 border-t border-main-red"
-          >
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col justify-center">
+          <div class="flex flex-col space-y-7 items-center text-center px-8">
+            <!-- Main Navigation Links -->
             <router-link
-              to="/login"
-              class="block py-2 text-main-gray-hover transition-colors whitespace-nowrap duration-500 ease-in-out"
-              :class="{ 'text-main-red': route.path === '/login' }"
+              to="/"
+              class="text-2xl text-gray-400 transition-colors duration-300 ease-in-out hover:text-gray-200"
+              :class="{ 'text-main-red': route.path === '/' }"
               @click="closeMobileMenu"
             >
-              {{ $t("login") }}
+              {{ $t("mainPage") }}
             </router-link>
             <router-link
-              to="/signup"
-              class="block py-2 text-main-gray-hover transition-colors whitespace-nowrap duration-500 ease-in-out"
-              :class="{ 'text-main-red': route.path === '/signup' }"
+              to="/collections"
+              class="text-2xl text-gray-400 transition-colors duration-300 ease-in-out hover:text-gray-200"
+              :class="{
+                'text-main-red': route.path.startsWith('/collections'),
+              }"
               @click="closeMobileMenu"
             >
-              {{ $t("signup") }}
+              {{ $t("collections") }}
             </router-link>
-          </div>
+            <router-link
+              to="/news"
+              class="text-2xl text-gray-400 transition-colors duration-300 ease-in-out hover:text-gray-200"
+              :class="{ 'text-main-red': route.path.startsWith('/news') }"
+              @click="closeMobileMenu"
+            >
+              {{ $t("news") }}
+            </router-link>
+            <router-link
+              to="/about"
+              class="text-2xl text-gray-400 transition-colors duration-300 ease-in-out hover:text-gray-200"
+              :class="{ 'text-main-red': route.path === '/about' }"
+              @click="closeMobileMenu"
+            >
+              {{ $t("about") }}
+            </router-link>
+            <router-link
+              to="/contact"
+              class="text-2xl text-gray-400 transition-colors duration-300 ease-in-out hover:text-gray-200"
+              :class="{ 'text-main-red': route.path === '/contact' }"
+              @click="closeMobileMenu"
+            >
+              {{ $t("contact") }}
+            </router-link>
 
-          <!-- User Options when logged in -->
-          <div
-            v-if="authStore.isAuthenticated"
-            class="pt-2 border-t border-gray-700"
-          >
-            <p class="text-gray-400">{{ authStore.userEmail }}</p>
-            <router-link
-              to="/settings"
-              class="block py-2 text-main-gray-hover transition-colors whitespace-nowrap duration-500 ease-in-out"
-              :class="{ 'text-main-red': route.path === '/settings' }"
-              @click="closeMobileMenu"
+            <!-- User Management Links (Only when not authenticated) -->
+            <div
+              v-if="!authStore.isAuthenticated"
+              class="pt-6 mt-4 border-t border-main-red w-36"
             >
-              {{ $t("settings") }}
-            </router-link>
-            <router-link
-              to="/orders"
-              class="block py-2 text-main-gray-hover transition-colors whitespace-nowrap duration-500 ease-in-out"
-              :class="{ 'text-main-red': route.path.startsWith('/orders') }"
-              @click="closeMobileMenu"
+              <router-link
+                to="/login"
+                class="block py-3 text-2xl text-gray-400 transition-colors duration-300 ease-in-out hover:text-gray-200"
+                :class="{ 'text-main-red': route.path === '/login' }"
+                @click="closeMobileMenu"
+              >
+                {{ $t("login") }}
+              </router-link>
+              <router-link
+                to="/signup"
+                class="block py-3 text-2xl text-gray-400 transition-colors duration-300 ease-in-out hover:text-gray-200"
+                :class="{ 'text-main-red': route.path === '/signup' }"
+                @click="closeMobileMenu"
+              >
+                {{ $t("signup") }}
+              </router-link>
+            </div>
+
+            <!-- Logout Button (Only when authenticated) -->
+            <div
+              v-if="authStore.isAuthenticated"
+              class="pt-6 mt-4 border-t border-main-red flex flex-col items-center w-36"
             >
-              {{ $t("orders") }}
-            </router-link>
-            <router-link
-              v-if="authStore.isAdmin"
-              to="/admin"
-              class="block py-2 text-main-gray-hover transition-colors whitespace-nowrap duration-500 ease-in-out"
-              :class="{ 'text-main-red': route.path.startsWith('/admin') }"
-              @click="closeMobileMenu"
-            >
-              {{ $t("adminPanel") }}
-            </router-link>
-            <button
-              @click="handleLogoutAndCloseMobileMenu"
-              class="block w-full text-left py-2 text-main-gray-hover hover:text-main-red transition-colors whitespace-nowrap duration-500 ease-in-out"
-            >
-              {{ $t("logout") }}
-            </button>
+              <p class="text-gray-500 mb-4 text-base">
+                {{ authStore.userEmail }}
+              </p>
+              <button
+                @click="handleLogoutAndCloseMobileMenu"
+                class="py-2 px-6 text-2xl text-gray-400 hover:text-main-red transition-colors duration-300 ease-in-out"
+              >
+                {{ $t("logout") }}
+              </button>
+            </div>
           </div>
+        </div>
+
+        <!-- Bottom Indicator Arrow -->
+        <div class="pb-6 flex justify-center">
+          <svg
+            class="w-6 h-6 text-gray-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            ></path>
+          </svg>
         </div>
       </div>
     </transition>
