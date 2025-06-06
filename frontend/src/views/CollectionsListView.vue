@@ -57,37 +57,87 @@
       <p class="mt-1 text-sm text-gray-500">{{ $t("underConstruction") }}</p>
     </div>
 
-    <!-- Categories Grid -->
-    <div
+    <!-- Categories Grid (Mobile-first, one collection per row) -->
+    <transition-group
+      name="fade-list"
+      tag="div"
+      class="flex flex-col space-y-8"
       v-else
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
     >
       <div
-        v-for="category in categories"
+        v-for="(category, index) in categories"
         :key="category._id"
-        class="group bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+        class="group cursor-pointer transition-transform duration-300 ease-in-out hover:-translate-y-1"
+        :style="{ '--i': index }"
         @click="goToCategory(category)"
       >
-        <!-- Category Image -->
-        <div class="aspect-w-16 aspect-h-9 w-full overflow-hidden bg-gray-200">
-          <img
-            :src="category.imageUrl"
-            :alt="category.name"
-            class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
-            loading="lazy"
-          />
-        </div>
+        <div
+          class="relative w-full mx-auto max-w-[300px] flex flex-col items-center"
+        >
+          <!-- Category Frame with Background and Stars -->
+          <div class="relative w-[300px] h-[401px] overflow-hidden mb-2.5">
+            <!-- Background Image -->
+            <div class="absolute inset-0 overflow-hidden">
+              <!-- Light gray shine/smoke effect with smoother transition -->
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div
+                  class="w-[70%] h-[70%] rounded-full bg-gray-200/20 blur-xl opacity-60"
+                ></div>
+                <div
+                  class="absolute w-[50%] h-[50%] rounded-full bg-gray-100/30 blur-lg opacity-60"
+                ></div>
+                <div
+                  class="absolute w-[30%] h-[30%] rounded-full bg-white/30 blur-md opacity-70"
+                ></div>
+              </div>
 
-        <!-- Category Name -->
-        <div class="p-6">
+              <img
+                :src="category.imageUrl"
+                :alt="category.name"
+                class="w-full h-full object-cover relative z-10"
+                loading="lazy"
+              />
+            </div>
+
+            <!-- Stars Overlay -->
+            <div class="absolute inset-0">
+              <img
+                src="@/assets/icons/star1.svg"
+                class="absolute"
+                style="top: 41px; left: 69px; width: 19px; height: 28px"
+              />
+              <img
+                src="@/assets/icons/star2.svg"
+                class="absolute"
+                style="top: 62px; left: 46px; width: 19px; height: 30px"
+              />
+              <img
+                src="@/assets/icons/star3.svg"
+                class="absolute"
+                style="top: 34px; left: 46px; width: 11px; height: 16px"
+              />
+              <img
+                src="@/assets/icons/star5.svg"
+                class="absolute"
+                style="top: 331px; left: 246px; width: 28px; height: 40px"
+              />
+              <img
+                src="@/assets/icons/star4.svg"
+                class="absolute"
+                style="bottom: 20px; right: 20px; width: 16px; height: 23px"
+              />
+            </div>
+          </div>
+
+          <!-- Category Name -->
           <h2
-            class="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-300"
+            class="text-2xl font-medium text-center uppercase font-display bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent"
           >
             {{ category.name }}
           </h2>
         </div>
       </div>
-    </div>
+    </transition-group>
   </div>
 </template>
 
@@ -152,3 +202,26 @@ onMounted(() => {
   fetchCategories();
 });
 </script>
+
+<style scoped>
+/* Transition styles for transition-group - these can't be done with Tailwind alone */
+.fade-list-enter-active,
+.fade-list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.fade-list-enter-from {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.fade-list-leave-to {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+
+/* Staggered entry effect - requires CSS custom property */
+.fade-list-enter-active {
+  transition-delay: calc(var(--i) * 0.1s);
+}
+</style>
