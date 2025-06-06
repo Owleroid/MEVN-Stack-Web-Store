@@ -74,8 +74,10 @@
           to="/settings"
           class="transition-colors duration-500 ease-in-out block"
           :class="{
-            'text-main-red': route.path === '/settings',
-            'text-main-gray-hover': route.path !== '/settings',
+            'text-main-red':
+              route.path === '/settings' || route.path === '/orders',
+            'text-main-gray-hover':
+              route.path !== '/settings' && route.path !== '/orders',
           }"
         >
           <svg

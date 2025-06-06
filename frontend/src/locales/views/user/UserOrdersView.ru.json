@@ -12,7 +12,12 @@
   "previous": "Назад",
   "next": "Вперед",
   "originalPrice": "Исходная цена",
-  "savedAmount": "Вы сэкономили",
+  "savedAmount": "Скидка",
+  "receipt": "ЧЕК",
+  "thankYou": "СПАСИБО!",
+  "totalAmount": "ИТОГО",
+  "showOrderDetails": "Показать детали заказа",
+  "hideOrderDetails": "Скрыть детали заказа",
   "statuses": {
     "waiting confirmation": "Ожидает подтверждения",
     "packing": "Упаковка",
@@ -39,5 +44,7 @@
   "notes": "Примечания к заказу",
   "trackingNumber": "Номер отслеживания",
   "noOrders": "У вас пока нет заказов.",
-  "startShopping": "Начать покупки"
+  "startShopping": "Начать покупки",
+  "settings": "Настройки",
+  "orders": "Заказы"
 }

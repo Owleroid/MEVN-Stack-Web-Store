@@ -12,7 +12,12 @@
   "previous": "Previous",
   "next": "Next",
   "originalPrice": "Original price",
-  "savedAmount": "You saved",
+  "savedAmount": "Discount",
+  "receipt": "RECEIPT",
+  "thankYou": "THANK YOU!",
+  "totalAmount": "TOTAL AMOUNT",
+  "showOrderDetails": "Show Order Details",
+  "hideOrderDetails": "Hide Order Details",
   "statuses": {
     "waiting confirmation": "Waiting Confirmation",
     "packing": "Packing",
@@ -39,5 +44,7 @@
   "notes": "Order Notes",
   "trackingNumber": "Tracking Number",
   "noOrders": "You haven't placed any orders yet.",
-  "startShopping": "Start Shopping"
+  "startShopping": "Start Shopping",
+  "settings": "Settings",
+  "orders": "Orders"
 }
