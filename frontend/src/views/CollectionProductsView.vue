@@ -313,7 +313,7 @@
                   <!-- Price -->
                   <div v-if="product.discount" class="mb-2">
                     <p
-                      class="text-xl font-medium bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent"
+                      class="text-2xl font-medium bg-gradient-to-b from-main-red to-[#818181] bg-clip-text text-transparent"
                     >
                       {{ formatPrice(product.price?.[currency] ?? 0) }}
                     </p>
@@ -333,7 +333,7 @@
                   </p>
 
                   <!-- Product Number -->
-                  <div class="flex items-center gap-2">
+                  <div class="flex gap-2">
                     <span class="text-main-gray-hover text-sm"
                       >{{ $t("productNumber") }}:</span
                     >
@@ -343,7 +343,7 @@
                   </div>
 
                   <!-- Artist Name -->
-                  <div v-if="product.artist" class="flex items-center gap-2">
+                  <div v-if="product.artist" class="flex gap-2">
                     <span class="text-main-gray-hover text-sm"
                       >{{ $t("artist") }}:</span
                     >
@@ -353,7 +353,7 @@
                   </div>
 
                   <!-- Product Size -->
-                  <div v-if="product.size" class="flex items-center gap-2">
+                  <div v-if="product.size" class="flex gap-2">
                     <span class="text-main-gray-hover text-sm"
                       >{{ $t("size") }}:</span
                     >
@@ -363,7 +363,7 @@
                   </div>
 
                   <!-- Product Material -->
-                  <div v-if="product.material" class="flex items-center gap-2">
+                  <div v-if="product.material" class="flex gap-2">
                     <span class="text-main-gray-hover text-sm"
                       >{{ $t("material") }}:</span
                     >
@@ -373,7 +373,7 @@
                   </div>
 
                   <!-- Product Box Art -->
-                  <div v-if="product.boxArt" class="flex items-center gap-2">
+                  <div v-if="product.boxArt" class="flex gap-2">
                     <span class="text-main-gray-hover text-sm"
                       >{{ $t("boxArt") }}:</span
                     >

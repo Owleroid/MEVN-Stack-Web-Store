@@ -1,21 +1,24 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="px-4 py-8 md:py-10 max-w-7xl mx-auto">
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center items-center py-12">
       <div
-        class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
+        class="w-14 h-14 border-4 border-white border-opacity-20 border-t-main-red rounded-full animate-spin"
       ></div>
+      <span class="ml-3 text-sm text-main-gray-hover">{{
+        $t("loadingProduct")
+      }}</span>
     </div>
 
     <!-- Error State -->
     <div
       v-else-if="error"
-      class="bg-red-50 border border-red-200 rounded-md p-4 mb-8"
+      class="bg-black bg-opacity-30 border border-red-600 rounded-md p-4 mb-8 text-center"
     >
-      <div class="flex">
+      <div class="flex items-center justify-center">
         <div class="flex-shrink-0">
           <svg
-            class="h-5 w-5 text-red-400"
+            class="h-6 w-6 text-red-500"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
@@ -28,28 +31,36 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-red-700">{{ error }}</p>
+          <p class="text-sm text-red-400">
+            {{ error }}
+          </p>
+          <button
+            @click="fetchProductData"
+            class="mt-2 px-4 py-1 bg-red-800 hover:bg-red-700 text-white text-sm rounded-md transition-colors duration-200"
+          >
+            {{ $t("retry") }}
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Product Detail -->
-    <div
-      v-else-if="product"
-      class="bg-white rounded-lg shadow-lg overflow-hidden"
-    >
+    <div v-else-if="product">
       <!-- Breadcrumb -->
-      <div class="px-6 pt-6 pb-3">
-        <nav class="flex" aria-label="Breadcrumb">
+      <div class="mb-6">
+        <nav class="flex flex-wrap" aria-label="Breadcrumb">
           <ol class="flex items-center space-x-2">
             <li>
-              <router-link to="/" class="text-gray-500 hover:text-gray-700">
+              <router-link
+                to="/"
+                class="text-main-gray-hover hover:text-white transition-colors"
+              >
                 {{ $t("home") }}
               </router-link>
             </li>
             <li class="flex items-center">
               <svg
-                class="h-4 w-4 text-gray-400"
+                class="h-4 w-4 text-main-gray-hover mx-1"
                 viewBox="0 0 24 24"
                 fill="none"
               >
@@ -63,14 +74,14 @@
               </svg>
               <router-link
                 :to="`/${categorySlug}`"
-                class="ml-2 text-gray-500 hover:text-gray-700"
+                class="text-main-gray-hover hover:text-white transition-colors"
               >
                 {{ $t("collections") }}
               </router-link>
             </li>
             <li class="flex items-center">
               <svg
-                class="h-4 w-4 text-gray-400"
+                class="h-4 w-4 text-main-gray-hover mx-1"
                 viewBox="0 0 24 24"
                 fill="none"
               >
@@ -82,29 +93,54 @@
                   stroke-linejoin="round"
                 />
               </svg>
-              <span class="ml-2 text-gray-900 font-medium">{{
-                product.name
-              }}</span>
+              <span
+                class="text-main-gray-hover font-medium truncate max-w-[180px] md:max-w-none"
+                >{{ product.name }}</span
+              >
             </li>
           </ol>
         </nav>
       </div>
 
+      <!-- Product Name (Centered) -->
+      <h1
+        class="text-3xl md:text-4xl font-medium uppercase font-display bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent mb-6 text-center"
+      >
+        {{ product.name }}
+      </h1>
+
       <!-- Product Content -->
-      <div class="px-6 py-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="flex flex-col md:flex-row gap-8">
         <!-- Image Gallery -->
-        <div class="space-y-4">
-          <!-- Main Image -->
+        <div class="w-full md:w-1/2 space-y-4">
+          <!-- Main Image with Light Background -->
           <div
-            class="bg-gray-100 rounded-lg overflow-hidden aspect-square cursor-pointer"
+            class="relative h-[300px] md:h-[400px] overflow-hidden cursor-pointer rounded-md"
             @click="openImageModal(currentImage)"
           >
-            <img
-              :src="currentImage"
-              :alt="product.name"
-              class="w-full h-full object-contain"
-              @error="handleImageError"
-            />
+            <!-- Background Effect -->
+            <div class="absolute inset-0 overflow-hidden">
+              <!-- Light gray shine/smoke effect -->
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div
+                  class="w-[50%] h-[50%] rounded-full bg-gray-200/20 blur-xl opacity-60"
+                ></div>
+                <div
+                  class="absolute w-[40%] h-[40%] rounded-full bg-gray-100/30 blur-lg opacity-60"
+                ></div>
+                <div
+                  class="absolute w-[20%] h-[20%] rounded-full bg-white/30 blur-md opacity-70"
+                ></div>
+              </div>
+
+              <!-- Product Image -->
+              <img
+                :src="currentImage"
+                :alt="product.name"
+                class="w-full h-full object-contain relative z-10"
+                @error="handleImageError"
+              />
+            </div>
           </div>
 
           <!-- Thumbnail Navigation - Only show if there are secondary images -->
@@ -115,9 +151,10 @@
             <button
               v-if="product.imageUrls && product.imageUrls.main"
               @click="setActiveImage(product.imageUrls.main)"
-              class="flex-shrink-0 w-20 h-20 rounded-md overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="flex-shrink-0 w-20 h-20 rounded-md overflow-hidden focus:outline-none border-2 transition-all duration-200"
               :class="{
-                'ring-2 ring-blue-500': currentImage === product.imageUrls.main,
+                'border-main-red': currentImage === product.imageUrls.main,
+                'border-transparent': currentImage !== product.imageUrls.main,
               }"
             >
               <img
@@ -131,8 +168,11 @@
               v-for="(image, index) in product.imageUrls.secondary"
               :key="index"
               @click="setActiveImage(image)"
-              class="flex-shrink-0 w-20 h-20 rounded-md overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500"
-              :class="{ 'ring-2 ring-blue-500': currentImage === image }"
+              class="flex-shrink-0 w-20 h-20 rounded-md overflow-hidden focus:outline-none border-2 transition-all duration-200"
+              :class="{
+                'border-main-red': currentImage === image,
+                'border-transparent': currentImage !== image,
+              }"
             >
               <img
                 :src="image"
@@ -145,166 +185,194 @@
         </div>
 
         <!-- Product Info -->
-        <div class="space-y-6">
-          <h1 class="text-3xl font-bold text-gray-900">{{ product.name }}</h1>
+        <div class="w-full md:w-1/2 space-y-6">
           <div v-if="product.productNumber" class="mt-1">
             <span
-              class="inline-block bg-blue-50 text-blue-700 text-xs font-semibold rounded px-2 py-1"
+              class="inline-block text-main-gray-hover text-sm rounded px-3 py-1 border border-main-red border-opacity-20"
               >#{{ product.productNumber }}</span
             >
           </div>
 
+          <!-- Price -->
           <div class="flex items-center space-x-4">
             <div v-if="product.discount" class="flex flex-col">
-              <p class="text-2xl font-bold text-gray-900">
+              <p
+                class="text-2xl font-medium bg-gradient-to-b from-main-red to-[#818181] bg-clip-text text-transparent"
+              >
                 {{ formatPrice(product.price[currency]) }}
               </p>
               <div class="flex items-center space-x-2">
-                <p class="text-lg line-through text-gray-500">
+                <p class="text-lg line-through text-main-gray-hover">
                   {{ formatPrice(product.discount.originalPrice[currency]) }}
                 </p>
               </div>
             </div>
-            <p v-else class="text-2xl font-bold text-gray-900">
+            <p
+              v-else
+              class="text-2xl font-medium bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent"
+            >
               {{ formatPrice(product.price[currency]) }}
             </p>
           </div>
 
-          <div class="space-y-4 border-t border-b border-gray-200 py-6">
-            <div v-if="product.artist" class="flex">
-              <span class="w-32 text-sm font-medium text-gray-600"
+          <div
+            class="space-y-4 border-t border-b border-main-gray-hover border-opacity-20 py-6"
+          >
+            <div v-if="product.artist" class="flex gap-2">
+              <span class="text-main-gray-hover text-sm"
                 >{{ $t("artist") }}:</span
               >
-              <span class="text-gray-800">{{ product.artist }}</span>
+              <span class="text-white/80 text-sm">{{ product.artist }}</span>
             </div>
-            <div class="flex">
-              <span class="w-32 text-sm font-medium text-gray-600"
+            <div class="flex gap-2">
+              <span class="text-main-gray-hover text-sm"
                 >{{ $t("size") }}:</span
               >
-              <span class="text-gray-800">{{ product.size }}</span>
+              <span class="text-white/80 text-sm">{{ product.size }}</span>
             </div>
-            <div class="flex">
-              <span class="w-32 text-sm font-medium text-gray-600"
+            <div class="flex gap-2">
+              <span class="text-main-gray-hover text-sm"
                 >{{ $t("material") }}:</span
               >
-              <span class="text-gray-800">{{ product.material }}</span>
+              <span class="text-white/80 text-sm">{{ product.material }}</span>
             </div>
-            <div v-if="product.parts" class="flex">
-              <span class="w-32 text-sm font-medium text-gray-600"
+            <div v-if="product.parts" class="flex gap-2">
+              <span class="text-main-gray-hover text-sm"
                 >{{ $t("parts") }}:</span
               >
-              <span class="text-gray-800">{{ product.parts }}</span>
+              <span class="text-white/80 text-sm">{{ product.parts }}</span>
             </div>
-            <div class="flex">
-              <span class="w-32 text-sm font-medium text-gray-600"
+            <div class="flex gap-2">
+              <span class="text-main-gray-hover text-sm"
                 >{{ $t("boxArt") }}:</span
               >
-              <span class="text-gray-800">{{ product.boxArt }}</span>
+              <span class="text-white/80 text-sm">{{ product.boxArt }}</span>
             </div>
           </div>
 
           <div v-if="product.description" class="space-y-3">
-            <h3 class="text-lg font-medium text-gray-900">
+            <h3
+              class="text-lg font-medium bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent"
+            >
               {{ $t("description") }}
             </h3>
-            <p class="text-gray-700 leading-relaxed">
+            <p class="text-white/80 leading-relaxed">
               {{ product.description }}
             </p>
           </div>
 
-          <!-- Add to Cart Button -->
-          <div class="mt-8">
-            <AddToCartButton
-              :product="product"
-              class="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-base font-medium"
-            />
+          <!-- Amount selector and Add to Cart Section -->
+          <div class="mt-8 flex items-center gap-4">
+            <div class="w-32" @click.stop>
+              <AmountSelector v-model:amount="quantity" />
+            </div>
+            <div class="flex-1" @click.stop>
+              <AddToCartButton :product="product" :quantity="quantity" />
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Image Modal -->
-    <div
-      v-if="showImageModal"
-      class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
-      @click="closeImageModal"
+    <Transition
+      enter-active-class="transition-all ease-out duration-300"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition-all ease-in duration-200"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
     >
-      <div class="relative max-w-4xl max-h-[90vh] p-2">
-        <button
-          @click.stop="closeImageModal"
-          class="absolute top-4 right-4 text-white bg-gray-800 rounded-full p-2 hover:bg-gray-700 transition-colors"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+      <div
+        v-if="showImageModal"
+        class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
+        @click="closeImageModal"
+      >
+        <div class="relative max-w-4xl max-h-[90vh] p-2">
+          <button
+            @click.stop="closeImageModal"
+            class="absolute top-4 right-4 text-white bg-black bg-opacity-60 rounded-full p-2 hover:bg-opacity-80 transition-colors"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <img
-          :src="modalImage"
-          :alt="product?.name || ''"
-          class="max-w-full max-h-[80vh] object-contain mx-auto"
-          @error="handleImageError"
-          @click.stop
-        />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
 
-        <!-- Navigation buttons only if there are multiple images -->
-        <div
-          v-if="hasSecondaryImages"
-          class="absolute left-0 right-0 bottom-4 flex justify-center space-x-4"
-        >
-          <button
-            v-if="product?.imageUrls?.main && hasMultipleImages"
-            @click.stop="navigateImages('prev')"
-            class="text-white bg-gray-800 rounded-full p-2 hover:bg-gray-700 transition-colors"
+          <Transition
+            enter-active-class="transition-all ease-out duration-300"
+            enter-from-class="opacity-0 scale-95"
+            enter-to-class="opacity-100 scale-100"
+            leave-active-class="transition-all ease-in duration-200"
+            leave-from-class="opacity-100 scale-100"
+            leave-to-class="opacity-0 scale-95"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </button>
-          <button
-            v-if="product?.imageUrls?.main && hasMultipleImages"
-            @click.stop="navigateImages('next')"
-            class="text-white bg-gray-800 rounded-full p-2 hover:bg-gray-700 transition-colors"
+            <img
+              :src="modalImage"
+              :alt="product?.name || ''"
+              class="max-w-full max-h-[80vh] object-contain mx-auto"
+              @error="handleImageError"
+              @click.stop
+            />
+          </Transition>
+
+          <!-- Navigation buttons only if there are multiple images -->
+          <div
+            v-if="hasMultipleImages"
+            class="absolute left-0 right-0 bottom-8 flex justify-center space-x-6"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+            <button
+              @click.stop="navigateImages('prev')"
+              class="text-white bg-black bg-opacity-60 rounded-full p-3 hover:bg-opacity-80 transition-colors"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+            <button
+              @click.stop="navigateImages('next')"
+              class="text-white bg-black bg-opacity-60 rounded-full p-3 hover:bg-opacity-80 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
 
@@ -318,6 +386,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { getProductBySlug } from "@/services/productService";
 
 import AddToCartButton from "@/components/general/AddToCartButton.vue";
+import AmountSelector from "@/components/general/AmountSelector.vue";
 
 import type { Product } from "@/types/products";
 
@@ -332,6 +401,7 @@ const product = ref<Product | null>(null);
 const loading = ref<boolean>(true);
 const error = ref<string>("");
 const currentImage = ref<string>("");
+const quantity = ref<number>(1);
 
 // URL params
 const categorySlug = computed(() => route.params.categorySlug as string);
@@ -411,12 +481,13 @@ const setActiveImage = (imageUrl: string): void => {
 const openImageModal = (imageUrl: string): void => {
   modalImage.value = imageUrl;
   showImageModal.value = true;
-
+  document.body.style.overflow = "hidden";
   document.addEventListener("keydown", handleEscapeKey);
 };
 
 const closeImageModal = (): void => {
   showImageModal.value = false;
+  document.body.style.overflow = "";
   document.removeEventListener("keydown", handleEscapeKey);
 };
 
@@ -493,6 +564,7 @@ const fetchProductData = async (): Promise<void> => {
 // Cleanup function
 const cleanup = (): void => {
   document.removeEventListener("keydown", handleEscapeKey);
+  document.body.style.overflow = "";
 };
 
 // Watchers
