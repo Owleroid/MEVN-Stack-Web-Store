@@ -1,7 +1,7 @@
 {
   "collections": "Коллекции",
   "categories": "Категории",
-  "noProductsForCategory": "Нет доступных товаров для {category}",
+  "noProductsForCategory": "Нет доступных товаров для этой категории",
   "checkBackLater": "Загляните позже для новых товаров",
   "noCategorySelected": "Категория не выбрана",
   "categoryNotFound": "Категория не найдена",
@@ -10,5 +10,7 @@
   "fetchProductsError": "Не удалось загрузить товары",
   "discount": "Скидка",
   "loadingProducts": "Загрузка товаров...",
-  "loadingCategories": "Загрузка категорий..."
+  "loadingCategories": "Загрузка категорий...",
+  "productNumber": "Артикул",
+  "artist": "Художник"
 }

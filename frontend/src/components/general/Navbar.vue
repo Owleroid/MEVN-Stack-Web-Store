@@ -117,7 +117,7 @@
           class="flex flex-col justify-center items-center w-8 h-12 p-1 space-y-1.5 transition-colors duration-500 ease-in-out"
           :class="{
             'text-main-red': mobileMenuOpen,
-            'text-main-gray': !mobileMenuOpen,
+            'text-main-gray-hover': !mobileMenuOpen,
           }"
         >
           <span class="block w-full h-0.5 bg-current"></span>
@@ -138,7 +138,7 @@
     >
       <div
         v-if="mobileMenuOpen"
-        class="fixed top-0 right-0 bottom-0 z-50 bg-gradient-to-l from-[#191919] to-[#0E0E0E] h-screen w-screen shadow-[-10px_0_15px_rgba(0,0,0,0.3)] flex flex-col justify-between overflow-hidden"
+        class="fixed top-0 right-0 bottom-0 z-50 bg-gradient-to-r from-[#191919] to-[#0E0E0E] h-screen w-screen shadow-[-10px_0_15px_rgba(0,0,0,0.3)] flex flex-col justify-between overflow-hidden"
       >
         <!-- Close Button -->
         <button
@@ -232,14 +232,27 @@
               </router-link>
             </div>
 
-            <!-- Logout Button (Only when authenticated) -->
+            <!-- User Account Section (Only when authenticated) -->
             <div
               v-if="authStore.isAuthenticated"
               class="pt-6 mt-4 border-t border-main-red flex flex-col items-center w-36"
             >
-              <p class="text-gray-500 mb-4 text-base">
+              <p class="text-gray-500 mb-2 text-base">
                 {{ authStore.userEmail }}
               </p>
+
+              <!-- Admin Panel Link (Only when user is admin) -->
+              <router-link
+                v-if="authStore.isAdmin"
+                to="/admin"
+                class="py-2 px-6 text-2xl text-gray-400 hover:text-main-red transition-colors duration-300 ease-in-out whitespace-nowrap"
+                :class="{ 'text-main-red': route.path.startsWith('/admin') }"
+                @click="closeMobileMenu"
+              >
+                {{ $t("adminPanel") }}
+              </router-link>
+
+              <!-- Logout Button -->
               <button
                 @click="handleLogoutAndCloseMobileMenu"
                 class="py-2 px-6 text-2xl text-gray-400 hover:text-main-red transition-colors duration-300 ease-in-out"

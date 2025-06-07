@@ -1,7 +1,7 @@
 {
   "collections": "Collections",
   "categories": "Categories",
-  "noProductsForCategory": "No products available for {category}",
+  "noProductsForCategory": "No products available for this category",
   "checkBackLater": "Check back later for new items",
   "noCategorySelected": "No category selected",
   "categoryNotFound": "Category not found",
@@ -10,5 +10,7 @@
   "fetchProductsError": "Failed to fetch products",
   "discount": "Discount",
   "loadingProducts": "Loading products...",
-  "loadingCategories": "Loading categories..."
+  "loadingCategories": "Loading categories...",
+  "productNumber": "Product Number",
+  "artist": "Artist"
 }

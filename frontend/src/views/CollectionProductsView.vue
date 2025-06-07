@@ -1,22 +1,11 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Page Title -->
-    <h1
-      v-if="category"
-      class="text-3xl font-bold text-gray-900 mb-8 text-center"
-    >
-      {{ category.name }}
-    </h1>
-    <h1 v-else class="text-3xl font-bold text-gray-900 mb-8 text-center">
-      {{ $t("collections") }}
-    </h1>
-
+  <div class="px-4 py-8 md:py-10 max-w-7xl mx-auto">
     <!-- Initial Page Loading State -->
     <div v-if="loading" class="flex justify-center items-center py-12">
       <div
-        class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
+        class="w-14 h-14 border-4 border-white border-opacity-20 border-t-main-red rounded-full animate-spin"
       ></div>
-      <span class="ml-3 text-sm text-gray-600">{{
+      <span class="ml-3 text-sm text-main-gray-hover">{{
         $t("loadingCategories")
       }}</span>
     </div>
@@ -24,12 +13,12 @@
     <!-- Error State -->
     <div
       v-else-if="error"
-      class="bg-red-50 border border-red-200 rounded-md p-4 mb-8"
+      class="bg-black bg-opacity-30 border border-red-600 rounded-md p-4 mb-8 text-center"
     >
-      <div class="flex">
+      <div class="flex items-center justify-center">
         <div class="flex-shrink-0">
           <svg
-            class="h-5 w-5 text-red-400"
+            class="h-6 w-6 text-red-500"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
@@ -42,55 +31,171 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-red-700">
+          <p class="text-sm text-red-400">
             {{ error }}
           </p>
+          <button
+            @click="retryFetch"
+            class="mt-2 px-4 py-1 bg-red-800 hover:bg-red-700 text-white text-sm rounded-md transition-colors duration-200"
+          >
+            {{ $t("retry") }}
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Main Content -->
     <div v-else class="flex flex-col md:flex-row gap-8">
-      <!-- Categories Sidebar -->
-      <div class="w-full md:w-64 shrink-0">
-        <div class="bg-white rounded-lg shadow-md p-4">
-          <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
-            {{ $t("categories") }}
-          </h2>
-          <div class="space-y-2">
-            <div
-              v-for="cat in categories"
-              :key="cat._id"
-              @click="changeCategory(cat)"
-              class="p-3 rounded-md cursor-pointer transition-colors duration-200 flex items-center gap-3"
-              :class="
-                cat._id === category?._id
-                  ? 'bg-blue-50 border border-blue-100'
-                  : 'hover:bg-gray-50 border border-transparent'
-              "
-            >
-              <div
-                class="w-10 h-10 rounded-md overflow-hidden bg-gray-100 shrink-0"
-              >
-                <img
-                  :src="cat.imageUrl"
-                  :alt="cat.name"
-                  class="w-full h-full object-cover"
-                  @error="handleImageError"
-                />
-              </div>
-              <span
-                class="text-sm font-medium"
-                :class="
-                  cat._id === category?._id ? 'text-blue-600' : 'text-gray-700'
-                "
-              >
-                {{ cat.name }}
-              </span>
-            </div>
+      <!-- Mobile Category Toggle Button -->
+      <div class="flex justify-between items-center md:hidden mb-0">
+        <div
+          @click="toggleMobileCategories($event)"
+          class="flex items-center w-full pb-3 cursor-pointer relative border-b-2 border-main-red border-opacity-40"
+          :class="{ 'border-opacity-100': isMobileCategoriesOpen }"
+        >
+          <div
+            class="absolute left-0 h-12 w-8 flex flex-col justify-center items-center space-y-1.5"
+            :class="{
+              'text-main-red': isMobileCategoriesOpen,
+              'text-main-gray-hover': !isMobileCategoriesOpen,
+            }"
+          >
+            <span
+              class="block w-full h-0.5 bg-current transition-all duration-300"
+              :class="{ 'rotate-45 translate-y-2': isMobileCategoriesOpen }"
+            ></span>
+            <span
+              class="block w-full h-0.5 bg-current transition-all duration-300"
+              :class="{ 'opacity-0': isMobileCategoriesOpen }"
+            ></span>
+            <span
+              class="block w-full h-0.5 bg-current transition-all duration-300"
+              :class="{ '-rotate-45 -translate-y-2': isMobileCategoriesOpen }"
+            ></span>
+          </div>
+          <div class="flex-1 text-center">
+            <h2 class="text-2xl font-semibold text-main-red px-8">
+              {{ category ? category.name : $t("collections") }}
+            </h2>
           </div>
         </div>
       </div>
+
+      <!-- Mobile Categories Overlay (Full Screen) -->
+      <Transition
+        enter-active-class="transition-all ease-out duration-500"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition-all ease-in duration-500"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="isMobileCategoriesOpen"
+          class="fixed inset-0 bg-gradient-to-r from-[#191919] to-[#0E0E0E] z-40 md:hidden"
+          @click.prevent="closeMobileCategories($event)"
+        ></div>
+      </Transition>
+
+      <!-- Categories Sidebar - Desktop and Mobile -->
+      <Transition
+        enter-active-class="transition-all ease-out duration-500"
+        enter-from-class="transform -translate-x-full"
+        enter-to-class="transform translate-x-0"
+        leave-active-class="transition-all ease-in duration-500"
+        leave-from-class="transform translate-x-0"
+        leave-to-class="transform -translate-x-full"
+      >
+        <div
+          v-if="!isMobile || isMobileCategoriesOpen"
+          :class="[
+            'overflow-y-auto z-50',
+            isMobile
+              ? 'fixed inset-0 w-full max-w-full bg-gradient-to-r from-[#191919] to-[#0E0E0E] flex flex-col'
+              : 'w-64 border border-white border-opacity-20 sticky top-4 self-start bg-black',
+          ]"
+        >
+          <!-- Categories List Container -->
+          <div :class="[isMobile ? 'p-4 flex-1 flex flex-col' : 'p-4']">
+            <!-- Mobile Header with Close Button -->
+            <div v-if="isMobile" class="flex justify-end items-center mb-6">
+              <button
+                @click="toggleMobileCategories($event)"
+                class="text-main-red p-2"
+                aria-label="Close menu"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Categories Content -->
+            <div
+              :class="[
+                isMobile ? 'flex-1 flex items-center justify-center' : '',
+              ]"
+            >
+              <div :class="[isMobile ? 'w-full max-w-md' : 'w-full']">
+                <h2
+                  v-if="!isMobile"
+                  class="text-lg font-semibold text-white mb-4 border-b border-white border-opacity-20 pb-2"
+                >
+                  {{ $t("collections") }}
+                </h2>
+                <div :class="[isMobile ? 'space-y-6' : 'space-y-4']">
+                  <div
+                    v-for="cat in categories"
+                    :key="cat._id"
+                    @click.stop="changeCategory(cat, $event)"
+                    :class="[
+                      'p-4 cursor-pointer transition-all duration-200',
+                      isMobile ? 'text-center' : 'flex items-center gap-3',
+                      cat._id === category?._id
+                        ? 'bg-gradient-to-r from-[#BA0913] to-[#530109] shadow-lg'
+                        : 'hover:bg-white hover:bg-opacity-10',
+                    ]"
+                  >
+                    <div
+                      v-if="!isMobile"
+                      class="w-10 h-10 overflow-hidden bg-black bg-opacity-40 shrink-0"
+                    >
+                      <img
+                        :src="cat.imageUrl"
+                        :alt="cat.name"
+                        class="w-full h-full object-cover"
+                        @error="handleImageError"
+                      />
+                    </div>
+                    <span
+                      :class="[
+                        'font-medium transition-colors duration-200',
+                        isMobile ? 'text-xl' : 'text-sm',
+                        cat._id === category?._id
+                          ? 'text-white'
+                          : 'text-main-gray-hover',
+                      ]"
+                    >
+                      {{ cat.name }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
 
       <!-- Products Section -->
       <div class="flex-1">
@@ -105,10 +210,10 @@
         >
           <div
             v-if="!loadingProducts && products.length === 0"
-            class="bg-white rounded-lg shadow-md p-8 text-center"
+            class="border border-main-gray border-opacity-20 p-8 text-center"
           >
             <svg
-              class="mx-auto h-12 w-12 text-gray-400"
+              class="mx-auto h-12 w-12 text-main-red"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -121,57 +226,98 @@
                 d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
               />
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">
-              {{ $t("noProductsForCategory", { category: category?.name }) }}
+            <h3 class="mt-2 text-sm font-medium text-white">
+              {{ $t("noProductsForCategory") }}
             </h3>
-            <p class="mt-1 text-sm text-gray-500">
+            <p class="mt-1 text-sm text-main-gray-hover">
               {{ $t("checkBackLater") }}
             </p>
           </div>
         </transition>
 
-        <transition
-          enter-active-class="transition-opacity ease-out duration-300"
-          enter-from-class="opacity-0"
-          enter-to-class="opacity-100"
-          leave-active-class="transition-opacity ease-in duration-200"
-          leave-from-class="opacity-100"
-          leave-to-class="opacity-0"
-          mode="out-in"
+        <!-- Products Loading State -->
+        <div
+          v-if="loadingProducts"
+          class="flex justify-center items-center py-12"
         >
           <div
-            v-if="products.length > 0"
-            :key="category?._id"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            class="w-12 h-12 border-4 border-white border-opacity-20 border-t-main-red rounded-full animate-spin"
+          ></div>
+          <span class="ml-3 text-sm text-main-gray-hover">{{
+            $t("loadingCategories")
+          }}</span>
+        </div>
+
+        <!-- Products Grid (Mobile-first, one product per row on mobile) -->
+        <transition-group
+          tag="div"
+          class="flex flex-col space-y-8 md:grid md:grid-cols-2 md:gap-6 md:space-y-0 lg:grid-cols-3 xl:grid-cols-4"
+          v-if="products.length > 0 && !loadingProducts"
+          :key="category?._id"
+          enter-active-class="transition-all duration-500 ease-out"
+          enter-from-class="opacity-0 transform translate-y-8"
+          enter-to-class="opacity-100 transform translate-y-0"
+          leave-active-class="transition-all duration-300 ease-in"
+          leave-from-class="opacity-100 transform translate-y-0"
+          leave-to-class="opacity-0 transform -translate-y-8"
+        >
+          <div
+            v-for="(product, index) in products"
+            :key="product._id"
+            class="group cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-1"
+            :style="{ 'transition-delay': `${index * 100}ms` }"
+            @click="goToProduct(product)"
           >
-            <div
-              v-for="product in products"
-              :key="product._id"
-              class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-            >
-              <router-link
-                :to="`/${category?.slug}/${product.slug}`"
-                class="block"
+            <div class="relative w-full mx-auto max-w-[350px] flex flex-col">
+              <!-- Product Name (Centered) -->
+              <h2
+                class="text-3xl font-medium uppercase font-display bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent mb-4 text-center line-clamp-2"
               >
-                <div class="aspect-w-1 aspect-h-1 w-full overflow-hidden">
-                  <img
-                    :src="product.imageUrls?.main"
-                    :alt="product.name"
-                    class="w-full h-full object-cover"
-                    @error="handleProductImageError"
-                  />
+                {{ product.name }}
+              </h2>
+
+              <!-- Product Info Section -->
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                <!-- Left side: Product Image with Light Background -->
+                <div class="relative h-[250px] overflow-hidden">
+                  <!-- Background Effect -->
+                  <div class="absolute inset-0 overflow-hidden">
+                    <!-- Light gray shine/smoke effect -->
+                    <div
+                      class="absolute inset-0 flex items-center justify-center"
+                    >
+                      <div
+                        class="w-[50%] h-[50%] rounded-full bg-gray-200/20 blur-xl opacity-60"
+                      ></div>
+                      <div
+                        class="absolute w-[40%] h-[40%] rounded-full bg-gray-100/30 blur-lg opacity-60"
+                      ></div>
+                      <div
+                        class="absolute w-[20%] h-[20%] rounded-full bg-white/30 blur-md opacity-70"
+                      ></div>
+                    </div>
+
+                    <!-- Product Image -->
+                    <img
+                      :src="product.imageUrls?.main"
+                      :alt="product.name"
+                      class="w-full h-full object-contain relative z-10"
+                      loading="lazy"
+                      @error="handleProductImageError"
+                    />
+                  </div>
                 </div>
-                <div class="p-4">
-                  <h3
-                    class="text-lg font-medium text-gray-900 mb-1 line-clamp-2"
-                  >
-                    {{ product.name }}
-                  </h3>
-                  <div v-if="product.discount" class="text-lg mb-3">
-                    <p class="font-bold text-gray-800">
+
+                <!-- Right side: Product Info -->
+                <div class="flex flex-col gap-2">
+                  <!-- Price -->
+                  <div v-if="product.discount" class="mb-2">
+                    <p
+                      class="text-xl font-medium bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent"
+                    >
                       {{ formatPrice(product.price?.[currency] ?? 0) }}
                     </p>
-                    <p class="text-sm line-through text-gray-500">
+                    <p class="text-sm line-through text-main-gray-hover">
                       {{
                         formatPrice(
                           product.discount.originalPrice?.[currency] ?? 0
@@ -179,27 +325,89 @@
                       }}
                     </p>
                   </div>
-                  <p v-else class="text-lg font-bold text-gray-800 mb-3">
+                  <p
+                    v-else
+                    class="text-2xl font-medium bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent mb-2"
+                  >
                     {{ formatPrice(product.price?.[currency] ?? 0) }}
                   </p>
+
+                  <!-- Product Number -->
+                  <div class="flex items-center gap-2">
+                    <span class="text-main-gray-hover text-sm"
+                      >{{ $t("productNumber") }}:</span
+                    >
+                    <span class="text-white/80 text-sm uppercase">{{
+                      product.productNumber
+                    }}</span>
+                  </div>
+
+                  <!-- Artist Name -->
+                  <div v-if="product.artist" class="flex items-center gap-2">
+                    <span class="text-main-gray-hover text-sm"
+                      >{{ $t("artist") }}:</span
+                    >
+                    <span class="text-white/80 text-sm">{{
+                      product.artist
+                    }}</span>
+                  </div>
+
+                  <!-- Product Size -->
+                  <div v-if="product.size" class="flex items-center gap-2">
+                    <span class="text-main-gray-hover text-sm"
+                      >{{ $t("size") }}:</span
+                    >
+                    <span class="text-white/80 text-sm">{{
+                      product.size
+                    }}</span>
+                  </div>
+
+                  <!-- Product Material -->
+                  <div v-if="product.material" class="flex items-center gap-2">
+                    <span class="text-main-gray-hover text-sm"
+                      >{{ $t("material") }}:</span
+                    >
+                    <span class="text-white/80 text-sm">{{
+                      product.material
+                    }}</span>
+                  </div>
+
+                  <!-- Product Box Art -->
+                  <div v-if="product.boxArt" class="flex items-center gap-2">
+                    <span class="text-main-gray-hover text-sm"
+                      >{{ $t("boxArt") }}:</span
+                    >
+                    <span class="text-white/80 text-sm">{{
+                      product.boxArt
+                    }}</span>
+                  </div>
                 </div>
-              </router-link>
-              <div class="px-4 pb-4">
-                <AddToCartButton
-                  :product="product"
-                  class="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors text-sm font-medium"
-                />
+              </div>
+
+              <!-- Amount selector and Add to Cart Section -->
+              <div class="mt-2 flex items-center gap-4">
+                <div class="w-32" @click.stop>
+                  <AmountSelector
+                    v-model:amount="productQuantities[product._id]"
+                  />
+                </div>
+                <div class="flex-1" @click.stop>
+                  <AddToCartButton
+                    :product="product"
+                    :quantity="productQuantities[product._id]"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </transition>
+        </transition-group>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed, onUnmounted, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 
@@ -213,6 +421,7 @@ import {
 } from "@/services/categoryService";
 
 import AddToCartButton from "@/components/general/AddToCartButton.vue";
+import AmountSelector from "@/components/general/AmountSelector.vue";
 
 import type { Product } from "@/types/products";
 import type { Category } from "@/types/category";
@@ -230,6 +439,33 @@ const categories = ref<Category[]>([]);
 const loading = ref<boolean>(true);
 const loadingProducts = ref<boolean>(false);
 const error = ref<string>("");
+const isMobileCategoriesOpen = ref<boolean>(false);
+const windowWidth = ref(window.innerWidth);
+const productQuantities = reactive<Record<string, number>>({});
+
+// Computed properties
+const isMobile = computed(() => windowWidth.value < 768);
+
+// Watch for window resize
+onMounted(() => {
+  window.addEventListener("resize", () => {
+    windowWidth.value = window.innerWidth;
+  });
+});
+
+// Clean up event listener
+onUnmounted(() => {
+  window.removeEventListener("resize", () => {
+    windowWidth.value = window.innerWidth;
+  });
+});
+
+// Watch for window size changes to handle category sidebar
+watch(isMobile, (newIsMobile) => {
+  if (!newIsMobile && isMobileCategoriesOpen.value) {
+    isMobileCategoriesOpen.value = false;
+  }
+});
 
 // Get user's preferred currency
 const currency = authStore.currency as "rubles" | "euros";
@@ -245,6 +481,31 @@ const formatPrice = (price: number): string => {
         style: "currency",
         currency: "EUR",
       }).format(price);
+};
+
+const toggleMobileCategories = (event?: Event): void => {
+  if (event) {
+    event.stopPropagation();
+  }
+
+  isMobileCategoriesOpen.value = !isMobileCategoriesOpen.value;
+
+  // Prevent scrolling when the mobile menu is open
+  if (isMobileCategoriesOpen.value) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "";
+  }
+};
+
+const closeMobileCategories = (event?: Event): void => {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  isMobileCategoriesOpen.value = false;
+  document.body.style.overflow = "";
 };
 
 const handleImageError = (event: Event): void => {
@@ -274,6 +535,13 @@ const fetchProducts = async (categoryId: string): Promise<void> => {
   try {
     const response = await getProductsByCategoryId(categoryId);
     products.value = response.products;
+
+    // Initialize quantity for each product
+    products.value.forEach((product) => {
+      if (!productQuantities[product._id]) {
+        productQuantities[product._id] = 1;
+      }
+    });
   } catch (err: unknown) {
     const axiosError = err as { response?: { status: number } };
     if (axiosError.response?.status === 404) {
@@ -311,6 +579,11 @@ const fetchCategoryData = async (): Promise<void> => {
       error.value = t("categoryNotFound");
     } else {
       await fetchProducts(category.value._id);
+
+      // Close mobile categories when a category is selected
+      if (isMobile.value) {
+        closeMobileCategories();
+      }
     }
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : String(err);
@@ -322,9 +595,35 @@ const fetchCategoryData = async (): Promise<void> => {
 };
 
 // Navigation
-const changeCategory = (cat: Category): void => {
+const changeCategory = (cat: Category, event?: Event): void => {
   if (!cat || !cat.slug) return;
+
+  // Prevent event propagation to avoid triggering parent clicks
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  // Close mobile menu after selection
+  if (isMobile.value) {
+    closeMobileCategories();
+  }
+
   router.push(`/${cat.slug}`);
+};
+
+// Retry functionality
+const retryFetch = async (): Promise<void> => {
+  error.value = "";
+  loading.value = true;
+  await fetchCategories();
+  await fetchCategoryData();
+};
+
+// Navigation to product detail page
+const goToProduct = (product: Product): void => {
+  if (!product || !product.slug || !category?.value?.slug) return;
+  router.push(`/${category.value.slug}/${product.slug}`);
 };
 
 // Watchers
@@ -343,3 +642,10 @@ onMounted(async () => {
   await fetchCategoryData();
 });
 </script>
+
+<style scoped>
+/* Prevent body scrolling when mobile menu is open */
+:deep(body.no-scroll) {
+  overflow: hidden;
+}
+</style>
