@@ -10,5 +10,8 @@
   "checkout": "Оформить заказ",
   "shippingCalculatedAtCheckout": "Стоимость доставки и налоги рассчитываются при оформлении заказа",
   "or": "или",
-  "continueShopping": "Продолжить покупки"
+  "continueShopping": "Продолжить покупки",
+  "article": "Артикул",
+  "itemsInCart": "Товаров в корзине",
+  "amount": "Сумма"
 }

@@ -10,5 +10,8 @@
   "checkout": "Checkout",
   "shippingCalculatedAtCheckout": "Shipping and taxes calculated at checkout",
   "or": "or",
-  "continueShopping": "Continue Shopping"
+  "continueShopping": "Continue Shopping",
+  "article": "Article",
+  "itemsInCart": "Items in Cart",
+  "amount": "Amount"
 }

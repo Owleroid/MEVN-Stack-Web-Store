@@ -472,15 +472,11 @@ const currency = authStore.currency as "rubles" | "euros";
 
 // Utilities
 const formatPrice = (price: number): string => {
-  return currency === "rubles"
-    ? new Intl.NumberFormat("ru-RU", {
-        style: "currency",
-        currency: "RUB",
-      }).format(price)
-    : new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "EUR",
-      }).format(price);
+  if (currency === "rubles") {
+    return `${price.toFixed(2)} ₽`;
+  } else {
+    return `${price.toFixed(2)} €`;
+  }
 };
 
 const toggleMobileCategories = (event?: Event): void => {

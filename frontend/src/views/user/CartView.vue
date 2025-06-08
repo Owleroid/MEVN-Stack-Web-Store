@@ -1,9 +1,11 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div
+    class="bg-gradient-to-r from-[#191919] to-[#0E0E0E] min-h-screen text-gray-300 py-6"
+  >
     <!-- Empty Cart State -->
     <div
       v-if="cart.length === 0"
-      class="text-center py-16 bg-gray-50 rounded-lg border border-gray-200"
+      class="text-center py-16 mx-5 bg-gray-900 bg-opacity-50 rounded-lg border border-gray-800"
     >
       <svg
         class="mx-auto h-12 w-12 text-gray-400"
@@ -19,143 +21,163 @@
           d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
         />
       </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-900">
+      <h3 class="mt-2 text-sm font-medium text-gray-400">
         {{ $t("emptyCart") }}
       </h3>
       <button
         @click="redirectToStore"
-        class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-b from-red-700 to-red-900 hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
       >
         {{ $t("goToStore") }}
       </button>
     </div>
 
     <!-- Cart Items -->
-    <div v-else class="bg-white shadow overflow-hidden sm:rounded-lg">
-      <!-- Cart Items List -->
-      <ul class="divide-y divide-gray-200">
-        <li
-          v-for="item in cart"
-          :key="item.product._id"
-          class="px-4 py-6 sm:px-6 flex items-center gap-4"
-        >
-          <!-- Product Image -->
-          <div
-            class="flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32 bg-gray-200 rounded-md overflow-hidden"
-          >
-            <img
-              :src="item.product.imageUrls?.main || '/placeholder-image.jpg'"
-              :alt="item.product.name"
-              class="w-full h-full object-cover"
-              @error="handleImageError"
-            />
-          </div>
+    <transition name="fade" appear>
+      <div v-if="cart.length > 0" class="px-4">
+        <!-- Cart Items List -->
+        <div class="space-y-5">
+          <transition-group name="fade" appear>
+            <div
+              v-for="item in cart"
+              :key="item.product._id"
+              class="relative p-[1px]"
+            >
+              <!-- Gradient border -->
+              <div
+                class="absolute inset-0 bg-gradient-to-br from-white via-white/50 to-transparent opacity-80"
+              ></div>
 
-          <!-- Product Details -->
-          <div class="flex-grow">
-            <h3 class="text-lg font-medium text-gray-900">
-              {{ item.product.name }}
-            </h3>
-            <div v-if="item.product.discount" class="mt-1">
-              <p class="text-sm font-medium text-gray-700">
-                {{ formatPrice(item.product.price[currency]) }}
-              </p>
-              <div class="flex items-center space-x-2">
-                <p class="text-sm line-through text-gray-500">
-                  {{
-                    formatPrice(item.product.discount.originalPrice[currency])
-                  }}
-                </p>
+              <!-- Content with background -->
+              <div class="relative bg-[#0E0E0E] p-2 pb-3">
+                <div class="flex gap-2">
+                  <!-- Product Image -->
+                  <div
+                    class="w-[124px] h-[130px] overflow-hidden flex items-center justify-center"
+                  >
+                    <img
+                      :src="
+                        item.product.imageUrls?.main || '/placeholder-image.jpg'
+                      "
+                      :alt="item.product.name"
+                      class="max-w-full max-h-full object-contain"
+                      @error="handleImageError"
+                    />
+                  </div>
+
+                  <!-- Product Details -->
+                  <div class="flex-1 flex flex-col justify-center min-w-0">
+                    <h3
+                      class="text-3xl font-bold font-oswald uppercase bg-gradient-to-b from-gray-100 to-gray-500 text-transparent bg-clip-text truncate"
+                    >
+                      {{ item.product.name }}
+                    </h3>
+                    <div class="flex items-center mt-2">
+                      <span class="text-gray-500 text-sm"
+                        >{{ $t("article") }}:</span
+                      >
+                      <span class="text-gray-300 text-sm ml-1 uppercase">{{
+                        item.product._id.substring(0, 7)
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex justify-between items-center mt-5">
+                  <!-- Left side: Quantity Controls and Delete Button -->
+                  <div class="flex items-center">
+                    <!-- Using AmountSelector component -->
+                    <div class="w-[110px]">
+                      <AmountSelector
+                        :initial-amount="item.quantity"
+                        @update:amount="
+                          updateQuantity(item.product._id, $event)
+                        "
+                      />
+                    </div>
+
+                    <!-- Delete Button -->
+                    <button
+                      @click="deleteFromCart(item.product._id)"
+                      class="relative ml-2 p-[1px] h-[48px] flex items-center"
+                    >
+                      <div
+                        class="absolute inset-0 bg-gradient-to-br from-white via-white/50 to-transparent opacity-80"
+                      ></div>
+                      <div class="absolute inset-[1px] bg-[#0E0E0E]"></div>
+                      <div
+                        class="relative px-3 z-10 flex items-center justify-center h-full"
+                      >
+                        <img
+                          src="@/assets/icons/bin-icon.svg"
+                          alt="Delete"
+                          width="20"
+                          height="24"
+                        />
+                      </div>
+                    </button>
+                  </div>
+
+                  <!-- Right side: Price -->
+                  <div
+                    class="text-3xl font-medium font-oswald uppercase bg-gradient-to-b from-gray-100 to-gray-500 text-transparent bg-clip-text"
+                  >
+                    {{ formatPrice(item.product.price[currency]) }}
+                  </div>
+                </div>
               </div>
             </div>
-            <p v-else class="mt-1 text-sm text-gray-500">
-              {{ formatPrice(item.product.price[currency]) }}
-            </p>
-          </div>
+          </transition-group>
+        </div>
 
-          <!-- Quantity Input -->
-          <div class="flex items-center">
-            <label for="quantity" class="sr-only">{{ $t("quantity") }}</label>
-            <div class="flex rounded-md shadow-sm">
-              <input
-                type="number"
-                id="quantity"
-                v-model.number="item.quantity"
-                min="1"
-                @change="updateQuantity(item.product._id, item.quantity)"
-                class="w-16 focus:ring-blue-500 focus:border-blue-500 block px-4 py-2 sm:text-sm border-gray-300 rounded-md"
-              />
+        <!-- Cart Summary -->
+        <div class="mt-8 space-y-2">
+          <div class="flex flex-col space-y-2">
+            <!-- Items Count -->
+            <div class="relative py-2 px-5">
+              <div
+                class="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent to-gray-500"
+              ></div>
+              <div class="flex items-center gap-1">
+                <span class="text-xl font-oswald text-gray-500"
+                  >{{ $t("itemsInCart") }}:</span
+                >
+                <span class="text-xl font-medium font-oswald text-gray-300">
+                  {{ totalItems }}</span
+                >
+              </div>
+            </div>
+
+            <!-- Total Amount -->
+            <div class="relative py-2 px-5">
+              <div
+                class="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent to-gray-500"
+              ></div>
+              <div class="flex items-center gap-1">
+                <span class="text-xl font-oswald text-gray-500"
+                  >{{ $t("amount") }}:</span
+                >
+                <span class="text-xl font-medium font-oswald text-gray-300">{{
+                  formatPrice(totalPrice)
+                }}</span>
+              </div>
             </div>
           </div>
 
-          <!-- Remove Button -->
-          <div>
+          <!-- Checkout Button -->
+          <div class="flex justify-center py-4">
             <button
-              type="button"
-              @click="deleteFromCart(item.product._id)"
-              class="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              @click="checkout"
+              class="px-12 h-[48px] uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none"
             >
-              <svg
-                class="h-5 w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              <span class="sr-only">{{ $t("remove") }}</span>
+              <span class="flex items-center justify-center gap-2">
+                {{ $t("checkout") }}
+              </span>
             </button>
           </div>
-        </li>
-      </ul>
-
-      <!-- Cart Summary -->
-      <div class="px-4 py-6 sm:px-6 bg-gray-50">
-        <div class="flex justify-between text-base font-medium text-gray-900">
-          <p>{{ $t("total") }}</p>
-          <p>{{ formatPrice(totalPrice) }}</p>
-        </div>
-
-        <div
-          v-if="totalSavings > 0"
-          class="flex justify-between text-sm text-green-600 mt-2"
-        >
-          <p>{{ $t("totalSavings") }}</p>
-          <p>{{ formatPrice(totalSavings) }}</p>
-        </div>
-
-        <p class="mt-0.5 text-sm text-gray-500">
-          {{ $t("shippingCalculatedAtCheckout") }}
-        </p>
-
-        <div class="mt-6 flex justify-center">
-          <button
-            @click="checkout"
-            class="px-8 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            {{ $t("checkout") }}
-          </button>
-        </div>
-
-        <div class="mt-6 flex justify-center text-sm text-center text-gray-500">
-          <p>
-            {{ $t("or") }}
-            <button
-              @click="redirectToStore"
-              class="text-blue-600 font-medium hover:text-blue-500 ml-1"
-            >
-              {{ $t("continueShopping") }}
-              <span aria-hidden="true"> &rarr;</span>
-            </button>
-          </p>
         </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -164,8 +186,8 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 import { useAuthStore } from "@/stores/authStore";
-
 import { useEventBus } from "@/utils/eventBus";
+import AmountSelector from "@/components/general/AmountSelector.vue";
 
 import type { CartItem } from "@/types/cart";
 import type { Currency } from "@/types/orders";
@@ -189,6 +211,10 @@ const currency = computed<Currency>(
 );
 
 // Computed Properties
+const totalItems = computed<number>(() => {
+  return cart.value.reduce((total, item) => total + item.quantity, 0);
+});
+
 const totalPrice = computed<number>(() => {
   return cart.value.reduce(
     (total, item) => total + item.product.price[currency.value] * item.quantity,
@@ -211,15 +237,11 @@ const totalSavings = computed<number>(() => {
 
 // Utility Functions
 const formatPrice = (price: number): string => {
-  return currency.value === "rubles"
-    ? new Intl.NumberFormat("ru-RU", {
-        style: "currency",
-        currency: "RUB",
-      }).format(price)
-    : new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "EUR",
-      }).format(price);
+  if (currency.value === "rubles") {
+    return `${price.toFixed(2)} ₽`;
+  } else {
+    return `${price.toFixed(2)} €`;
+  }
 };
 
 const handleImageError = (event: Event): void => {
