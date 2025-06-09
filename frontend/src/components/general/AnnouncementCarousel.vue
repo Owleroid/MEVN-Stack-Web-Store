@@ -1,8 +1,11 @@
 <template>
-  <div class="w-full bg-white rounded-lg shadow overflow-hidden my-8">
-    <div class="p-6 relative">
+  <div class="w-full my-8">
+    <div class="relative">
       <!-- Loading State -->
-      <div v-if="loading" class="py-12 flex justify-center items-center">
+      <div
+        v-if="loading"
+        class="py-12 flex justify-center items-center min-h-[400px]"
+      >
         <div class="flex flex-col items-center">
           <div
             class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-3"
@@ -12,7 +15,10 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="announcements.length === 0" class="py-12 text-center">
+      <div
+        v-else-if="announcements.length === 0"
+        class="py-12 text-center min-h-[400px] flex items-center justify-center"
+      >
         <p class="text-gray-500">{{ $t("noAnnouncements") }}</p>
       </div>
 
@@ -22,11 +28,11 @@
         <button
           v-if="announcements.length > 1"
           @click="prevSlide"
-          class="absolute z-10 left-3 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
+          class="absolute z-10 left-1 md:left-0 top-1/2 -translate-y-1/2 p-2 transition-all"
           aria-label="Previous slide"
         >
           <svg
-            class="w-5 h-5 text-gray-700"
+            class="w-6 h-6 text-[#BA0913]"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -41,44 +47,60 @@
         </button>
 
         <!-- Carousel Content -->
-        <div class="overflow-hidden">
+        <div class="overflow-hidden rounded-lg shadow min-h-[400px]">
           <div
-            class="flex transition-transform duration-300 ease-in-out"
+            class="flex transition-transform duration-300 ease-in-out h-full"
             :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
           >
             <div
               v-for="announcement in announcements"
               :key="announcement._id"
-              class="w-full flex-shrink-0 px-4"
+              class="w-full flex-shrink-0 min-h-[400px]"
             >
-              <div class="flex flex-col md:flex-row gap-6 items-center">
-                <!-- Product Image -->
-                <div class="w-full md:w-1/3 flex justify-center">
+              <div class="relative h-full">
+                <!-- NEW! Text with gradient -->
+                <transition name="fade">
+                  <div class="absolute top-[10%] right-[10%] z-10">
+                    <div class="font-bold text-4xl md:text-6xl drop-shadow-md">
+                      <span
+                        class="bg-clip-text text-transparent bg-gradient-to-b from-[#BA0913] to-[#530109]"
+                        >NEW!</span
+                      >
+                    </div>
+                  </div>
+                </transition>
+
+                <!-- Product Image with Buttons Overlay -->
+                <div
+                  class="relative w-full h-full min-h-[400px] flex flex-col justify-center"
+                >
                   <img
                     :src="announcement.imageUrl"
                     :alt="announcement.product.name"
-                    class="w-64 h-64 object-contain rounded-md"
+                    class="w-full max-w-4xl mx-auto h-auto object-contain rounded-md flex-grow py-4 px-2"
+                    style="min-height: 320px"
                   />
-                </div>
 
-                <!-- Product Name and Buttons -->
-                <div class="w-full md:w-2/3 flex flex-col">
-                  <h3 class="text-xl font-semibold text-gray-800 mb-6">
-                    {{ announcement.product.name }}
-                  </h3>
-                  <div class="flex gap-4">
-                    <router-link
-                      :to="`/${announcement.product.category.slug}/${announcement.product.slug}`"
-                      class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                      {{ $t("viewProduct") }}
-                    </router-link>
-                    <router-link
-                      to="/collections"
-                      class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
-                    >
-                      {{ $t("viewAllCollections") }}
-                    </router-link>
+                  <!-- Buttons directly on the image - no gradient -->
+                  <div
+                    class="absolute bottom-0 left-0 right-0 flex justify-center gap-6 p-4"
+                  >
+                    <transition-group name="fade">
+                      <router-link
+                        :key="'view-product'"
+                        :to="`/${announcement.product.category.slug}/${announcement.product.slug}`"
+                        class="h-[48px] px-12 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none flex items-center justify-center whitespace-nowrap"
+                      >
+                        {{ $t("buyNow") }}
+                      </router-link>
+                      <router-link
+                        :key="'view-collections'"
+                        to="/collections"
+                        class="h-[48px] px-12 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none flex items-center justify-center whitespace-nowrap"
+                      >
+                        {{ $t("collections") }}
+                      </router-link>
+                    </transition-group>
                   </div>
                 </div>
               </div>
@@ -89,11 +111,11 @@
         <button
           v-if="announcements.length > 1"
           @click="nextSlide"
-          class="absolute z-10 right-3 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
+          class="absolute z-10 right-1 md:right-0 top-1/2 -translate-y-1/2 p-2 transition-all"
           aria-label="Next slide"
         >
           <svg
-            class="w-5 h-5 text-gray-700"
+            class="w-6 h-6 text-[#BA0913]"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -110,14 +132,14 @@
         <!-- Indicators -->
         <div
           v-if="announcements.length > 1"
-          class="flex justify-center mt-6 gap-2"
+          class="flex justify-center mt-4 gap-2"
         >
           <button
             v-for="(_, index) in announcements"
             :key="index"
             @click="goToSlide(index)"
-            class="w-3 h-3 rounded-full"
-            :class="currentIndex === index ? 'bg-blue-600' : 'bg-gray-300'"
+            class="w-3 h-3 rounded-full transition-colors"
+            :class="currentIndex === index ? 'bg-[#BA0913]' : 'bg-main-gray'"
             :aria-label="`Go to slide ${index + 1}`"
           ></button>
         </div>

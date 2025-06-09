@@ -6,7 +6,6 @@
   "dontHaveAccount": "Don't have an account?",
   "signupHere": "Sign up here",
   "processing": "Processing...",
-  "loginSuccess": "Login successful!",
   "loginFailed": "Login failed. Please check your credentials and try again.",
   "emailRequired": "Email address is required",
   "emailInvalid": "Please enter a valid email address",

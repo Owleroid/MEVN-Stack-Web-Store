@@ -2,6 +2,6 @@
   "newProducts": "Новые товары",
   "loadingAnnouncements": "Загрузка объявлений...",
   "noAnnouncements": "Объявления не найдены",
-  "viewProduct": "Посмотреть товар",
-  "viewAllCollections": "Все коллекции"
+  "buyNow": "Купить",
+  "collections": "Коллекции"
 }

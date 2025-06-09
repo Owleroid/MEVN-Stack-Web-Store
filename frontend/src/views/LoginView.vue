@@ -118,7 +118,7 @@
       <div class="flex justify-center mt-8">
         <button
           type="submit"
-          class="h-[48px] px-12 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none"
+          class="h-[48px] px-12 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
           :disabled="loading"
         >
           <span v-if="loading" class="flex items-center justify-center">
@@ -245,7 +245,6 @@ const handleLogin = async (): Promise<void> => {
 
     if (response.success) {
       router.push("/");
-      toast.success(t("loginSuccess"));
     } else {
       toast.error(response.message || t("loginFailed"));
     }
