@@ -7,54 +7,57 @@
 
     <form @submit.prevent="handlePasswordReset" class="space-y-6">
       <!-- Email Input -->
-      <div class="space-y-1">
+      <div class="space-y-1 group">
         <label
           for="email"
+          class="block text-base font-medium transition-colors duration-200"
           :class="[
-            'block text-base transition-colors duration-500 ease-in-out',
-            activeInput === 'email' || form.email
-              ? 'text-white'
-              : 'text-main-gray-hover',
+            activeInput === 'email'
+              ? 'text-[#BA0913]'
+              : 'text-gray-400 group-hover:text-gray-300',
           ]"
         >
           {{ $t("email") }}
         </label>
-        <div
-          :class="[
-            'border p-3 bg-transparent transition-colors duration-500 ease-in-out',
-            activeInput === 'email' || form.email
-              ? 'border-main-red'
-              : 'border-white border-opacity-50',
-          ]"
-          @click="focusEmailInput"
-        >
-          <input
-            v-model="form.email"
-            type="email"
-            id="email"
-            required
-            placeholder="example@mail.com"
-            class="w-full bg-transparent font-medium text-white focus:outline-none"
-            @focus="activeInput = 'email'"
-            @blur="activeInput = ''"
-            ref="emailInputRef"
-          />
+        <div class="relative p-[1px] mt-1">
+          <!-- Gradient border -->
+          <div
+            class="absolute inset-0 transition-colors duration-500 ease-in-out"
+            :class="[
+              activeInput === 'email'
+                ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+            ]"
+          ></div>
+          <div class="relative bg-[#0E0E0E]">
+            <input
+              v-model="form.email"
+              type="email"
+              id="email"
+              required
+              placeholder="example@mail.com"
+              class="block w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+              @focus="activeInput = 'email'"
+              @blur="activeInput = ''"
+              ref="emailInputRef"
+            />
+          </div>
         </div>
-        <p v-if="error" class="text-sm text-red-500">
+        <p v-if="error" class="text-sm text-[#BA0913]">
           {{ error }}
         </p>
       </div>
 
       <!-- Password Reset Instructions -->
-      <div class="text-sm text-main-gray-hover text-center">
+      <div class="text-sm text-gray-400 text-center">
         {{ $t("passwordResetInstructions") }}
       </div>
 
       <!-- Submit Button -->
-      <div class="flex justify-center mt-6">
+      <div class="flex justify-center mt-8">
         <button
           type="submit"
-          class="px-8 py-3 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] border border-[#240000] focus:outline-none"
+          class="h-[48px] px-12 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none"
           :disabled="loading"
         >
           <span v-if="loading" class="flex items-center justify-center">
@@ -89,7 +92,7 @@
     <div class="mt-8 text-center">
       <router-link
         to="/login"
-        class="text-main-gray-hover text-base underline hover:text-main-red transition-colors duration-500 ease-in-out"
+        class="text-gray-400 text-base underline hover:text-gray-300 transition-colors duration-200"
       >
         {{ $t("backToLogin") }}
       </router-link>

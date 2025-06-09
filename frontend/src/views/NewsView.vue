@@ -9,25 +9,38 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="flex flex-col items-center py-16">
+    <div v-if="loading" class="relative p-[1px]">
+      <!-- Gradient border -->
       <div
-        class="w-14 h-14 border-4 border-white border-opacity-20 border-t-main-red rounded-full animate-spin mb-6"
+        class="absolute inset-0 bg-gradient-to-br from-white via-white/50 to-transparent opacity-80"
       ></div>
-      <p class="text-white text-lg">{{ $t("loading") }}</p>
+
+      <!-- Content with background -->
+      <div class="relative bg-[#0E0E0E] flex flex-col items-center py-16">
+        <div
+          class="w-14 h-14 border-4 border-white border-opacity-20 border-t-main-red rounded-full animate-spin mb-6"
+        ></div>
+        <p class="text-white text-lg">{{ $t("loading") }}</p>
+      </div>
     </div>
 
     <!-- Error State -->
-    <div
-      v-else-if="error"
-      class="text-center p-8 bg-black bg-opacity-30 text-red-400 border border-red-800 my-4"
-    >
-      <p class="text-lg">{{ errorMessage }}</p>
-      <button
-        @click="fetchNews(currentPage)"
-        class="mt-6 px-8 py-3 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] border border-[#240000] focus:outline-none transition-colors duration-300 ease-in-out"
-      >
-        {{ $t("retry") }}
-      </button>
+    <div v-else-if="error" class="relative p-[1px]">
+      <!-- Gradient border -->
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-white via-white/50 to-transparent opacity-80"
+      ></div>
+
+      <!-- Content with background -->
+      <div class="relative bg-[#0E0E0E] text-center p-8 text-red-400">
+        <p class="text-lg">{{ errorMessage }}</p>
+        <button
+          @click="fetchNews(currentPage)"
+          class="mt-6 px-8 py-3 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none"
+        >
+          {{ $t("retry") }}
+        </button>
+      </div>
     </div>
 
     <!-- News List -->
@@ -40,9 +53,15 @@
       <div
         v-for="newsItem in newsItems"
         :key="newsItem._id"
-        class="bg-black bg-opacity-30 border border-white border-opacity-10 overflow-hidden transition-all duration-300 hover:border-opacity-30"
+        class="relative p-[1px] overflow-hidden"
       >
-        <div class="p-5 md:p-6">
+        <!-- Gradient border -->
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-white via-white/50 to-transparent opacity-80"
+        ></div>
+
+        <!-- Content with background -->
+        <div class="relative bg-[#0E0E0E] p-5 md:p-6">
           <div class="flex flex-col md:flex-row gap-6">
             <!-- News Image (if available) -->
             <div v-if="newsItem.imageUrl" class="md:w-1/3">
@@ -116,91 +135,101 @@
     >
       <div
         v-if="pagination && pagination.totalPages > 1"
-        class="flex justify-center items-center mt-10 bg-black bg-opacity-30 p-4 border border-white border-opacity-10"
+        class="flex justify-center items-center mt-10 relative p-[1px]"
       >
-        <button
-          @click="changePage(currentPage - 1)"
-          :disabled="currentPage === 1"
-          :class="[
-            'px-4 py-2 border flex items-center transition-all duration-300 ease-in-out',
-            currentPage === 1
-              ? 'bg-black bg-opacity-30 text-main-gray-hover cursor-not-allowed border-white border-opacity-10'
-              : 'bg-transparent text-white hover:border-main-red border-white border-opacity-30',
-          ]"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 mr-1"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          {{ $t("previous") }}
-        </button>
+        <!-- Gradient border -->
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-white via-white/50 to-transparent opacity-80"
+        ></div>
 
-        <div class="flex space-x-2 mx-4">
-          <TransitionGroup
-            tag="div"
-            class="flex space-x-2"
-            enter-active-class="transition-all duration-300 ease-out"
-            enter-from-class="opacity-0 transform scale-50"
-            enter-to-class="opacity-100 transform scale-100"
-            leave-active-class="transition-all duration-300 ease-in"
-            leave-from-class="opacity-100 transform scale-100"
-            leave-to-class="opacity-0 transform scale-50"
-            move-class="transition-transform duration-300"
+        <!-- Content with background -->
+        <div
+          class="relative bg-[#0E0E0E] p-4 w-full flex justify-center items-center"
+        >
+          <button
+            @click="changePage(currentPage - 1)"
+            :disabled="currentPage === 1"
+            :class="[
+              'px-4 py-2 border flex items-center transition-all duration-300 ease-in-out',
+              currentPage === 1
+                ? 'bg-black bg-opacity-30 text-main-gray-hover cursor-not-allowed border-white border-opacity-10'
+                : 'bg-transparent text-white hover:border-main-red border-white border-opacity-30',
+            ]"
           >
-            <button
-              v-for="page in displayedPageNumbers"
-              :key="page"
-              @click="typeof page === 'number' ? changePage(page) : null"
-              :class="[
-                'w-10 h-10 border flex items-center justify-center transition-all duration-300 ease-in-out',
-                typeof page === 'number'
-                  ? page === currentPage
-                    ? 'bg-main-red text-white border-main-red transform scale-110'
-                    : 'bg-transparent text-white border-white border-opacity-30 hover:border-main-red'
-                  : 'bg-transparent text-white border-none cursor-default',
-              ]"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 mr-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              {{ page }}
-            </button>
-          </TransitionGroup>
-        </div>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            {{ $t("previous") }}
+          </button>
 
-        <button
-          @click="changePage(currentPage + 1)"
-          :disabled="pagination && currentPage === pagination.totalPages"
-          :class="[
-            'px-4 py-2 border flex items-center transition-all duration-300 ease-in-out',
-            pagination && currentPage === pagination.totalPages
-              ? 'bg-black bg-opacity-30 text-main-gray-hover cursor-not-allowed border-white border-opacity-10'
-              : 'bg-transparent text-white hover:border-main-red border-white border-opacity-30',
-          ]"
-        >
-          {{ $t("next") }}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 ml-1"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+          <div class="flex space-x-2 mx-4">
+            <TransitionGroup
+              tag="div"
+              class="flex space-x-2"
+              enter-active-class="transition-all duration-300 ease-out"
+              enter-from-class="opacity-0 transform scale-50"
+              enter-to-class="opacity-100 transform scale-100"
+              leave-active-class="transition-all duration-300 ease-in"
+              leave-from-class="opacity-100 transform scale-100"
+              leave-to-class="opacity-0 transform scale-50"
+              move-class="transition-transform duration-300"
+            >
+              <button
+                v-for="page in displayedPageNumbers"
+                :key="page"
+                @click="typeof page === 'number' ? changePage(page) : null"
+                :class="[
+                  'w-10 h-10 border flex items-center justify-center transition-all duration-300 ease-in-out',
+                  typeof page === 'number'
+                    ? page === currentPage
+                      ? 'bg-main-red text-white border-main-red transform scale-110'
+                      : 'bg-transparent text-white border-white border-opacity-30 hover:border-main-red'
+                    : 'bg-transparent text-white border-none cursor-default',
+                ]"
+              >
+                {{ page }}
+              </button>
+            </TransitionGroup>
+          </div>
+
+          <button
+            @click="changePage(currentPage + 1)"
+            :disabled="pagination && currentPage === pagination.totalPages"
+            :class="[
+              'px-4 py-2 border flex items-center transition-all duration-300 ease-in-out',
+              pagination && currentPage === pagination.totalPages
+                ? 'bg-black bg-opacity-30 text-main-gray-hover cursor-not-allowed border-white border-opacity-10'
+                : 'bg-transparent text-white hover:border-main-red border-white border-opacity-30',
+            ]"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
+            {{ $t("next") }}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 ml-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
     </Transition>
 
@@ -213,26 +242,31 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div
-        v-if="!loading && newsItems.length === 0"
-        class="text-center py-16 bg-black bg-opacity-30 border border-white border-opacity-10"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-20 w-20 mx-auto text-main-gray-hover mb-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="1.5"
-            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
-          />
-        </svg>
-        <p class="text-xl text-white mb-4">{{ $t("noNewsAvailable") }}</p>
-        <p class="text-main-gray-hover">{{ $t("checkBackLater") }}</p>
+      <div v-if="!loading && newsItems.length === 0" class="relative p-[1px]">
+        <!-- Gradient border -->
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-white via-white/50 to-transparent opacity-80"
+        ></div>
+
+        <!-- Content with background -->
+        <div class="relative bg-[#0E0E0E] text-center py-16">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-20 w-20 mx-auto text-main-gray-hover mb-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+            />
+          </svg>
+          <p class="text-xl text-white mb-4">{{ $t("noNewsAvailable") }}</p>
+          <p class="text-main-gray-hover">{{ $t("checkBackLater") }}</p>
+        </div>
       </div>
     </Transition>
 
@@ -356,15 +390,19 @@ const textExceedsLimit = (text: string): boolean => {
 };
 
 const getPreviewText = (html: string): string => {
+  // Always truncate HTML content for consistency
   const plainText = stripHtml(html);
 
+  // Create a DOM element to manipulate the HTML
+  const tempElement = document.createElement("div");
+  tempElement.innerHTML = html;
+
+  // If text is already short enough, just return it
   if (plainText.length <= TEXT_LIMIT) {
     return html;
   }
 
-  const tempElement = document.createElement("div");
-  tempElement.innerHTML = html;
-
+  // Get all text nodes recursively
   const textNodes: Node[] = [];
   const getTextNodes = (node: Node) => {
     if (node.nodeType === Node.TEXT_NODE) {
@@ -376,6 +414,7 @@ const getPreviewText = (html: string): string => {
 
   getTextNodes(tempElement);
 
+  // Truncate text
   let currentLength = 0;
   let truncated = false;
 
@@ -388,14 +427,51 @@ const getPreviewText = (html: string): string => {
 
       node.textContent = text.substring(0, cutPoint) + "...";
       truncated = true;
+
+      // Find the nearest parent element that's a direct child of tempElement or its significant child
+      let currentNode: Node | null = node;
+      let foundContainer = false;
+
+      while (currentNode && !foundContainer) {
+        // Go up until we find a direct child of the temp element or a significant element (p, div, etc.)
+        const parent: Node | null = currentNode.parentNode;
+        if (!parent || parent === tempElement) {
+          foundContainer = true;
+        } else {
+          // Keep nodes we've processed so far and remove siblings
+          const nodeName = (parent as Element).nodeName.toLowerCase();
+          if (
+            nodeName === "p" ||
+            nodeName === "div" ||
+            nodeName === "h1" ||
+            nodeName === "h2" ||
+            nodeName === "h3" ||
+            nodeName === "h4" ||
+            nodeName === "h5" ||
+            nodeName === "h6" ||
+            nodeName === "li"
+          ) {
+            foundContainer = true;
+          }
+        }
+        currentNode = parent;
+      }
+
+      // Remove all siblings that come after current node
+      if (currentNode && currentNode.parentNode) {
+        const parent = currentNode.parentNode;
+        let nextSibling = currentNode.nextSibling;
+
+        while (nextSibling) {
+          const siblingToRemove = nextSibling;
+          nextSibling = nextSibling.nextSibling;
+          parent.removeChild(siblingToRemove);
+        }
+      }
+
       break;
     }
     currentLength += text.length;
-  }
-
-  if (!truncated && textNodes.length > 0) {
-    const lastNode = textNodes[textNodes.length - 1];
-    lastNode.textContent = (lastNode.textContent || "") + "...";
   }
 
   return tempElement.innerHTML;
