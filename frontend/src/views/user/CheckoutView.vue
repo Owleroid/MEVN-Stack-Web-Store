@@ -1,362 +1,645 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <transition name="fade" appear>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- Order Summary -->
-        <div class="md:col-span-1">
-          <div
-            class="bg-white shadow-lg rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl"
-          >
-            <div class="px-5 py-6 bg-gradient-to-r from-blue-50 to-blue-100">
-              <h2 class="text-xl font-semibold text-gray-900">
-                {{ $t("orderSummary") }}
-              </h2>
-            </div>
-            <div class="border-t border-gray-200">
-              <transition-group
-                name="list"
-                tag="ul"
-                class="divide-y divide-gray-200"
-              >
-                <li
-                  v-for="item in cart"
-                  :key="item.product._id"
-                  class="px-5 py-4 hover:bg-gray-50 transition-colors duration-200"
-                >
-                  <div class="flex justify-between">
-                    <div class="flex-grow">
-                      <p class="font-medium text-gray-800">
-                        {{ item.product.name }}
+  <div
+    class="bg-gradient-to-r from-[#191919] to-[#0E0E0E] min-h-screen text-gray-300 py-6"
+  >
+    <transition
+      enter-active-class="transition-opacity duration-500 ease-in-out"
+      leave-active-class="transition-opacity duration-500 ease-in-out"
+      enter-from-class="opacity-0"
+      leave-to-class="opacity-0"
+      appear
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Order Summary -->
+          <div class="md:col-span-1">
+            <div class="relative p-[1px] mb-4">
+              <!-- Gradient border -->
+              <div
+                class="absolute inset-0 bg-gradient-to-br from-white via-white/50 to-transparent opacity-80"
+              ></div>
+
+              <!-- Content with background -->
+              <div class="relative bg-[#0E0E0E] p-4">
+                <div class="px-4 py-3 border-b border-main-gray">
+                  <h2
+                    class="text-2xl font-bold font-oswald uppercase bg-gradient-to-b from-gray-100 to-gray-500 text-transparent bg-clip-text"
+                  >
+                    {{ $t("orderSummary") }}
+                  </h2>
+                </div>
+                <div>
+                  <transition-group
+                    enter-active-class="transition-all duration-500 ease-in-out"
+                    leave-active-class="transition-all duration-500 ease-in-out"
+                    enter-from-class="opacity-0 -translate-x-2"
+                    leave-to-class="opacity-0 -translate-x-2"
+                    tag="ul"
+                    class="divide-y divide-main-gray"
+                  >
+                    <li
+                      v-for="item in cart"
+                      :key="item.product._id"
+                      class="px-4 py-3 hover:bg-gray-900 transition-colors duration-200"
+                    >
+                      <div class="flex justify-between">
+                        <div class="flex-grow">
+                          <p class="font-medium text-gray-300">
+                            {{ item.product.name }}
+                          </p>
+                          <p class="text-sm text-gray-500">
+                            {{ $t("quantity") }}: {{ item.quantity }}
+                          </p>
+                        </div>
+                        <div class="text-right">
+                          <p class="font-medium text-gray-300">
+                            {{
+                              formatPrice(
+                                item.product.price[currency] * item.quantity
+                              )
+                            }}
+                          </p>
+                          <p
+                            v-if="item.product.discount"
+                            class="text-sm line-through text-gray-500"
+                          >
+                            {{
+                              formatPrice(
+                                item.product.discount.originalPrice[currency] *
+                                  item.quantity
+                              )
+                            }}
+                          </p>
+                        </div>
+                      </div>
+                    </li>
+                  </transition-group>
+
+                  <div class="relative py-3 px-4">
+                    <div
+                      class="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent to-gray-500"
+                    ></div>
+                    <div class="flex justify-between">
+                      <p class="text-xl font-oswald text-gray-500">
+                        {{ $t("total") }}
                       </p>
-                      <p class="text-sm text-gray-500">
-                        {{ $t("quantity") }}: {{ item.quantity }}
-                      </p>
-                    </div>
-                    <div class="text-right">
-                      <p class="font-medium text-gray-800">
-                        {{
-                          formatPrice(
-                            item.product.price[currency] * item.quantity
-                          )
-                        }}
-                      </p>
-                      <p
-                        v-if="item.product.discount"
-                        class="text-sm line-through text-gray-500"
-                      >
-                        {{
-                          formatPrice(
-                            item.product.discount.originalPrice[currency] *
-                              item.quantity
-                          )
-                        }}
+                      <p class="text-xl font-medium font-oswald text-gray-300">
+                        {{ formatPrice(totalPrice) }}
                       </p>
                     </div>
                   </div>
-                </li>
-              </transition-group>
-              <div
-                class="bg-gradient-to-r from-blue-50 to-blue-100 px-5 py-6 flex justify-between"
-              >
-                <p class="font-semibold text-gray-900 text-lg">
-                  {{ $t("total") }}
-                </p>
-                <p class="font-semibold text-gray-900 text-lg">
-                  {{ formatPrice(totalPrice) }}
-                </p>
-              </div>
-              <transition name="fade">
-                <div
-                  v-if="totalSavings > 0"
-                  class="bg-green-50 px-5 py-3 flex justify-between border-t"
-                >
-                  <p class="text-sm font-medium text-green-600">
-                    {{ $t("totalSavings") }}
-                  </p>
-                  <p class="text-sm font-medium text-green-600">
-                    {{ formatPrice(totalSavings) }}
-                  </p>
+
+                  <transition
+                    enter-active-class="transition-opacity duration-500 ease-in-out"
+                    leave-active-class="transition-opacity duration-500 ease-in-out"
+                    enter-from-class="opacity-0"
+                    leave-to-class="opacity-0"
+                  >
+                    <div v-if="totalSavings > 0" class="relative py-3 px-4">
+                      <div
+                        class="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent to-gray-500"
+                      ></div>
+                      <div class="flex justify-between">
+                        <p class="text-sm font-medium text-green-500">
+                          {{ $t("totalSavings") }}
+                        </p>
+                        <p class="text-sm font-medium text-green-500">
+                          {{ formatPrice(totalSavings) }}
+                        </p>
+                      </div>
+                    </div>
+                  </transition>
                 </div>
-              </transition>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Delivery Information Form -->
-        <div class="md:col-span-2">
-          <div
-            class="bg-white shadow-lg rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl"
-          >
-            <div class="px-5 py-6 bg-gradient-to-r from-blue-50 to-blue-100">
-              <h2 class="text-xl font-semibold text-gray-900">
-                {{ $t("deliveryInfo") }}
-              </h2>
-              <p class="mt-1 text-sm text-gray-600">
-                {{ $t("pleaseEnterDeliveryDetails") }}
-              </p>
-            </div>
-            <div class="px-5 py-6">
-              <form @submit.prevent="handleCheckout" class="space-y-6">
-                <!-- Recipient Information -->
-                <div
-                  class="bg-white p-5 rounded-lg border border-gray-100 shadow-sm"
-                >
-                  <h3 class="text-md font-semibold text-gray-800 mb-4">
-                    {{ $t("recipientInformation") }}
-                  </h3>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                    <div class="group">
-                      <label
-                        for="name"
-                        class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-200"
+          <!-- Delivery Information Form -->
+          <div class="md:col-span-2">
+            <div class="relative p-[1px]">
+              <!-- Gradient border -->
+              <div
+                class="absolute inset-0 bg-gradient-to-br from-white via-white/50 to-transparent opacity-80"
+              ></div>
+
+              <!-- Content with background -->
+              <div class="relative bg-[#0E0E0E] p-4">
+                <div class="px-4 py-3 border-b border-main-gray">
+                  <h2
+                    class="text-2xl font-bold font-oswald uppercase bg-gradient-to-b from-gray-100 to-gray-500 text-transparent bg-clip-text"
+                  >
+                    {{ $t("deliveryInfo") }}
+                  </h2>
+                  <p class="mt-1 text-sm text-gray-400">
+                    {{ $t("pleaseEnterDeliveryDetails") }}
+                  </p>
+                </div>
+                <div class="px-4 py-6">
+                  <form @submit.prevent="handleCheckout" class="space-y-5">
+                    <!-- Recipient Information -->
+                    <div class="border-b border-main-gray pb-5">
+                      <h3
+                        class="text-xl font-oswald uppercase text-gray-300 mb-3"
                       >
-                        {{ $t("name") }} *
-                      </label>
-                      <input
-                        v-model="recipient.name"
-                        type="text"
-                        id="name"
-                        required
-                        class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm text-base border-gray-300 rounded-lg px-4 py-3 transition-all duration-200"
-                      />
+                        {{ $t("recipientInformation") }}
+                      </h3>
+                      <div
+                        class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4"
+                      >
+                        <div class="group">
+                          <label
+                            for="name"
+                            class="block text-sm font-medium transition-colors duration-200"
+                            :class="[
+                              focusStates.name
+                                ? 'text-[#BA0913]'
+                                : 'text-gray-400 group-hover:text-gray-300',
+                            ]"
+                          >
+                            {{ $t("name") }}
+                            <span class="text-[#BA0913]">*</span>
+                          </label>
+                          <div class="relative p-[1px] mt-1">
+                            <!-- Gradient border -->
+                            <div
+                              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                              :class="[
+                                focusStates.name
+                                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                              ]"
+                            ></div>
+                            <div class="relative bg-[#0E0E0E]">
+                              <input
+                                v-model="recipient.name"
+                                type="text"
+                                id="name"
+                                required
+                                class="block w-full shadow-sm text-sm bg-[#0E0E0E] text-gray-300 px-3 py-2 border-0 focus:ring-0 focus:outline-none"
+                                @focus="setFocus('name', true)"
+                                @blur="setFocus('name', false)"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="group">
+                          <label
+                            for="surname"
+                            class="block text-sm font-medium transition-colors duration-200"
+                            :class="[
+                              focusStates.surname
+                                ? 'text-[#BA0913]'
+                                : 'text-gray-400 group-hover:text-gray-300',
+                            ]"
+                          >
+                            {{ $t("surname") }}
+                            <span class="text-[#BA0913]">*</span>
+                          </label>
+                          <div class="relative p-[1px] mt-1">
+                            <!-- Gradient border -->
+                            <div
+                              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                              :class="[
+                                focusStates.surname
+                                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                              ]"
+                            ></div>
+                            <div class="relative bg-[#0E0E0E]">
+                              <input
+                                v-model="recipient.surname"
+                                type="text"
+                                id="surname"
+                                required
+                                class="block w-full shadow-sm text-sm bg-[#0E0E0E] text-gray-300 px-3 py-2 border-0 focus:ring-0 focus:outline-none"
+                                @focus="setFocus('surname', true)"
+                                @blur="setFocus('surname', false)"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="group">
+                          <label
+                            for="phone"
+                            class="block text-sm font-medium transition-colors duration-200"
+                            :class="[
+                              focusStates.phone
+                                ? 'text-[#BA0913]'
+                                : 'text-gray-400 group-hover:text-gray-300',
+                            ]"
+                          >
+                            {{ $t("phone") }}
+                            <span class="text-[#BA0913]">*</span>
+                          </label>
+                          <div class="relative p-[1px] mt-1">
+                            <!-- Gradient border -->
+                            <div
+                              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                              :class="[
+                                focusStates.phone
+                                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                              ]"
+                            ></div>
+                            <div class="relative bg-[#0E0E0E]">
+                              <input
+                                v-model="recipient.phone"
+                                type="tel"
+                                id="phone"
+                                required
+                                class="block w-full shadow-sm text-sm bg-[#0E0E0E] text-gray-300 px-3 py-2 border-0 focus:ring-0 focus:outline-none"
+                                @focus="setFocus('phone', true)"
+                                @blur="setFocus('phone', false)"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="group">
+                          <label
+                            for="email"
+                            class="block text-sm font-medium transition-colors duration-200"
+                            :class="[
+                              focusStates.email
+                                ? 'text-[#BA0913]'
+                                : 'text-gray-400 group-hover:text-gray-300',
+                            ]"
+                          >
+                            {{ $t("email") }}
+                            <span class="text-[#BA0913]">*</span>
+                          </label>
+                          <div class="relative p-[1px] mt-1">
+                            <!-- Gradient border -->
+                            <div
+                              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                              :class="[
+                                focusStates.email
+                                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                              ]"
+                            ></div>
+                            <div class="relative bg-[#0E0E0E]">
+                              <input
+                                v-model="recipient.email"
+                                type="email"
+                                id="email"
+                                required
+                                class="block w-full shadow-sm text-sm bg-[#0E0E0E] text-gray-300 px-3 py-2 border-0 focus:ring-0 focus:outline-none"
+                                @focus="setFocus('email', true)"
+                                @blur="setFocus('email', false)"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
-                    <div class="group">
-                      <label
-                        for="surname"
-                        class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-200"
+                    <!-- Shipping Address -->
+                    <div class="border-b border-main-gray pb-5">
+                      <h3
+                        class="text-xl font-oswald uppercase text-gray-300 mb-3"
                       >
-                        {{ $t("surname") }} *
-                      </label>
-                      <input
-                        v-model="recipient.surname"
-                        type="text"
-                        id="surname"
-                        required
-                        class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm text-base border-gray-300 rounded-lg px-4 py-3 transition-all duration-200"
-                      />
-                    </div>
+                        {{ $t("shippingAddress") }}
+                      </h3>
 
-                    <div class="group transition-all duration-300">
-                      <label
-                        for="phone"
-                        class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-200"
-                      >
-                        {{ $t("phone") }} *
-                      </label>
-                      <vue-tel-input
-                        v-model="recipient.phone"
-                        :inputOptions="{
-                          id: 'phone',
-                          required: true,
-                          class: 'h-11 text-base',
-                        }"
-                        :dropdownOptions="{
-                          showDialCodeInSelection: true,
-                          showFlags: true,
-                          showSearchBox: true,
-                        }"
-                        :inputClasses="'px-4 py-3'"
-                        :wrapperClasses="'mt-1 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-all duration-200'"
-                        mode="international"
-                        :validCharactersOnly="true"
-                        autoFormat
-                        @validate="validatePhone"
-                      ></vue-tel-input>
-                      <transition name="fade">
-                        <p v-if="phoneError" class="mt-1 text-xs text-red-600">
-                          {{ phoneError }}
+                      <!-- Address Autocomplete -->
+                      <div class="mb-4">
+                        <label
+                          for="addressAutocomplete"
+                          class="block text-sm font-medium transition-colors duration-200"
+                          :class="[
+                            focusStates.searchAddress
+                              ? 'text-[#BA0913]'
+                              : 'text-gray-400 hover:text-gray-300',
+                          ]"
+                        >
+                          {{ $t("searchAddress") }}
+                          <span class="text-[#BA0913]">*</span>
+                        </label>
+                        <div class="relative p-[1px] mt-1">
+                          <!-- Gradient border -->
+                          <div
+                            class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                            :class="[
+                              focusStates.searchAddress
+                                ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                                : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                            ]"
+                          ></div>
+                          <div class="relative bg-[#0E0E0E]">
+                            <AddressAutocomplete
+                              :placeholder="$t('enterAddress')"
+                              @address-components="handleAddressSelect"
+                              @focus="setFocus('searchAddress', true)"
+                              @blur="setFocus('searchAddress', false)"
+                            />
+                          </div>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">
+                          {{ $t("searchAddressHint") }}
                         </p>
+                      </div>
+
+                      <div
+                        class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4"
+                      >
+                        <div class="group">
+                          <label
+                            for="country"
+                            class="block text-sm font-medium transition-colors duration-200"
+                            :class="[
+                              focusStates.country
+                                ? 'text-[#BA0913]'
+                                : 'text-gray-400 group-hover:text-gray-300',
+                            ]"
+                          >
+                            {{ $t("country") }}
+                            <span class="text-[#BA0913]">*</span>
+                          </label>
+                          <div class="relative p-[1px] mt-1">
+                            <!-- Gradient border -->
+                            <div
+                              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                              :class="[
+                                focusStates.country
+                                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                              ]"
+                            ></div>
+                            <div class="relative bg-[#0E0E0E]">
+                              <input
+                                v-model="shippingAddress.country"
+                                type="text"
+                                id="country"
+                                required
+                                class="block w-full shadow-sm text-sm bg-[#0E0E0E] text-gray-300 px-3 py-2 border-0 focus:ring-0 focus:outline-none"
+                                @focus="setFocus('country', true)"
+                                @blur="setFocus('country', false)"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="group">
+                          <label
+                            for="city"
+                            class="block text-sm font-medium transition-colors duration-200"
+                            :class="[
+                              focusStates.city
+                                ? 'text-[#BA0913]'
+                                : 'text-gray-400 group-hover:text-gray-300',
+                            ]"
+                          >
+                            {{ $t("city") }}
+                            <span class="text-[#BA0913]">*</span>
+                          </label>
+                          <div class="relative p-[1px] mt-1">
+                            <!-- Gradient border -->
+                            <div
+                              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                              :class="[
+                                focusStates.city
+                                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                              ]"
+                            ></div>
+                            <div class="relative bg-[#0E0E0E]">
+                              <input
+                                v-model="shippingAddress.city"
+                                type="text"
+                                id="city"
+                                required
+                                class="block w-full shadow-sm text-sm bg-[#0E0E0E] text-gray-300 px-3 py-2 border-0 focus:ring-0 focus:outline-none"
+                                @focus="setFocus('city', true)"
+                                @blur="setFocus('city', false)"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="group">
+                          <label
+                            for="street"
+                            class="block text-sm font-medium transition-colors duration-200"
+                            :class="[
+                              focusStates.street
+                                ? 'text-[#BA0913]'
+                                : 'text-gray-400 group-hover:text-gray-300',
+                            ]"
+                          >
+                            {{ $t("street") }}
+                            <span class="text-[#BA0913]">*</span>
+                          </label>
+                          <div class="relative p-[1px] mt-1">
+                            <!-- Gradient border -->
+                            <div
+                              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                              :class="[
+                                focusStates.street
+                                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                              ]"
+                            ></div>
+                            <div class="relative bg-[#0E0E0E]">
+                              <input
+                                v-model="shippingAddress.street"
+                                type="text"
+                                id="street"
+                                required
+                                class="block w-full shadow-sm text-sm bg-[#0E0E0E] text-gray-300 px-3 py-2 border-0 focus:ring-0 focus:outline-none"
+                                @focus="setFocus('street', true)"
+                                @blur="setFocus('street', false)"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="group">
+                          <label
+                            for="buildingNumber"
+                            class="block text-sm font-medium transition-colors duration-200"
+                            :class="[
+                              focusStates.buildingNumber
+                                ? 'text-[#BA0913]'
+                                : 'text-gray-400 group-hover:text-gray-300',
+                            ]"
+                          >
+                            {{ $t("buildingNumber") }}
+                            <span class="text-[#BA0913]">*</span>
+                          </label>
+                          <div class="relative p-[1px] mt-1">
+                            <!-- Gradient border -->
+                            <div
+                              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                              :class="[
+                                focusStates.buildingNumber
+                                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                              ]"
+                            ></div>
+                            <div class="relative bg-[#0E0E0E]">
+                              <input
+                                v-model="shippingAddress.buildingNumber"
+                                type="text"
+                                id="buildingNumber"
+                                required
+                                class="block w-full shadow-sm text-sm bg-[#0E0E0E] text-gray-300 px-3 py-2 border-0 focus:ring-0 focus:outline-none"
+                                @focus="setFocus('buildingNumber', true)"
+                                @blur="setFocus('buildingNumber', false)"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="group">
+                          <label
+                            for="apartment"
+                            class="block text-sm font-medium transition-colors duration-200"
+                            :class="[
+                              focusStates.apartment
+                                ? 'text-[#BA0913]'
+                                : 'text-gray-400 group-hover:text-gray-300',
+                            ]"
+                          >
+                            {{ $t("apartment") }}
+                          </label>
+                          <div class="relative p-[1px] mt-1">
+                            <!-- Gradient border -->
+                            <div
+                              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                              :class="[
+                                focusStates.apartment
+                                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                              ]"
+                            ></div>
+                            <div class="relative bg-[#0E0E0E]">
+                              <input
+                                v-model="shippingAddress.apartment"
+                                type="text"
+                                id="apartment"
+                                class="block w-full shadow-sm text-sm bg-[#0E0E0E] text-gray-300 px-3 py-2 border-0 focus:ring-0 focus:outline-none"
+                                @focus="setFocus('apartment', true)"
+                                @blur="setFocus('apartment', false)"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="group">
+                          <label
+                            for="postalCode"
+                            class="block text-sm font-medium transition-colors duration-200"
+                            :class="[
+                              focusStates.postalCode
+                                ? 'text-[#BA0913]'
+                                : 'text-gray-400 group-hover:text-gray-300',
+                            ]"
+                          >
+                            {{ $t("postalCode") }}
+                            <span class="text-[#BA0913]">*</span>
+                          </label>
+                          <div class="relative p-[1px] mt-1">
+                            <!-- Gradient border -->
+                            <div
+                              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                              :class="[
+                                focusStates.postalCode
+                                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                              ]"
+                            ></div>
+                            <div class="relative bg-[#0E0E0E]">
+                              <input
+                                v-model="shippingAddress.postalCode"
+                                type="text"
+                                id="postalCode"
+                                required
+                                class="block w-full shadow-sm text-sm bg-[#0E0E0E] text-gray-300 px-3 py-2 border-0 focus:ring-0 focus:outline-none"
+                                @focus="setFocus('postalCode', true)"
+                                @blur="setFocus('postalCode', false)"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Order Notes -->
+                    <div class="pb-5">
+                      <div class="group">
+                        <label
+                          for="orderNotes"
+                          class="block text-sm font-medium transition-colors duration-200"
+                          :class="[
+                            focusStates.orderNotes
+                              ? 'text-[#BA0913]'
+                              : 'text-gray-400 group-hover:text-gray-300',
+                          ]"
+                        >
+                          {{ $t("orderNotes") }}
+                        </label>
+                        <div class="relative p-[1px] mt-1">
+                          <!-- Gradient border -->
+                          <div
+                            class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                            :class="[
+                              focusStates.orderNotes
+                                ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                                : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                            ]"
+                          ></div>
+                          <div class="relative bg-[#0E0E0E]">
+                            <textarea
+                              v-model="orderNotes"
+                              id="orderNotes"
+                              rows="3"
+                              class="block w-full shadow-sm text-sm bg-[#0E0E0E] text-gray-300 px-3 py-2 border-0 focus:ring-0 focus:outline-none"
+                              placeholder="Add any special instructions or notes about your order here..."
+                              @focus="setFocus('orderNotes', true)"
+                              @blur="setFocus('orderNotes', false)"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col items-center space-y-3 pt-2">
+                      <transition
+                        enter-active-class="transition-opacity duration-500 ease-in-out"
+                        leave-active-class="transition-opacity duration-500 ease-in-out"
+                        enter-from-class="opacity-0"
+                        leave-to-class="opacity-0"
+                      >
+                        <button
+                          type="submit"
+                          :disabled="!isPhoneValid"
+                          class="h-[48px] px-12 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {{ $t("placeOrder") }}
+                        </button>
+                      </transition>
+                      <transition
+                        enter-active-class="transition-opacity duration-500 ease-in-out"
+                        leave-active-class="transition-opacity duration-500 ease-in-out"
+                        enter-from-class="opacity-0"
+                        leave-to-class="opacity-0"
+                      >
+                        <button
+                          type="button"
+                          @click="router.push('/cart')"
+                          class="h-[48px] px-12 uppercase font-semibold text-white border border-main-gray hover:bg-gray-800 transition-colors duration-200 focus:outline-none"
+                        >
+                          {{ $t("backToCart") }}
+                        </button>
                       </transition>
                     </div>
-
-                    <div class="group">
-                      <label
-                        for="email"
-                        class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-200"
-                      >
-                        {{ $t("email") }} *
-                      </label>
-                      <input
-                        v-model="recipient.email"
-                        type="email"
-                        id="email"
-                        required
-                        class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm text-base border-gray-300 rounded-lg px-4 py-3 transition-all duration-200"
-                      />
-                    </div>
-                  </div>
+                  </form>
                 </div>
-
-                <!-- Shipping Address -->
-                <div
-                  class="bg-white p-5 rounded-lg border border-gray-100 shadow-sm"
-                >
-                  <h3 class="text-md font-semibold text-gray-800 mb-4">
-                    {{ $t("shippingAddress") }}
-                  </h3>
-
-                  <!-- Address Autocomplete -->
-                  <div class="mb-4">
-                    <label
-                      for="addressAutocomplete"
-                      class="block text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-                    >
-                      {{ $t("searchAddress") }} *
-                    </label>
-                    <div class="mt-1 relative">
-                      <AddressAutocomplete
-                        class="shadow-sm"
-                        :placeholder="$t('enterAddress')"
-                        @address-components="handleAddressSelect"
-                      />
-                      <p class="mt-1 text-xs text-gray-500">
-                        {{ $t("searchAddressHint") }}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                    <div class="group">
-                      <label
-                        for="country"
-                        class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-200"
-                      >
-                        {{ $t("country") }} *
-                      </label>
-                      <input
-                        v-model="shippingAddress.country"
-                        type="text"
-                        id="country"
-                        required
-                        class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm text-base border-gray-300 rounded-lg px-4 py-3 transition-all duration-200"
-                      />
-                    </div>
-
-                    <div class="group">
-                      <label
-                        for="city"
-                        class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-200"
-                      >
-                        {{ $t("city") }} *
-                      </label>
-                      <input
-                        v-model="shippingAddress.city"
-                        type="text"
-                        id="city"
-                        required
-                        class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm text-base border-gray-300 rounded-lg px-4 py-3 transition-all duration-200"
-                      />
-                    </div>
-
-                    <div class="group">
-                      <label
-                        for="street"
-                        class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-200"
-                      >
-                        {{ $t("street") }} *
-                      </label>
-                      <input
-                        v-model="shippingAddress.street"
-                        type="text"
-                        id="street"
-                        required
-                        class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm text-base border-gray-300 rounded-lg px-4 py-3 transition-all duration-200"
-                      />
-                    </div>
-
-                    <div class="group">
-                      <label
-                        for="buildingNumber"
-                        class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-200"
-                      >
-                        {{ $t("buildingNumber") }} *
-                      </label>
-                      <input
-                        v-model="shippingAddress.buildingNumber"
-                        type="text"
-                        id="buildingNumber"
-                        required
-                        class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm text-base border-gray-300 rounded-lg px-4 py-3 transition-all duration-200"
-                      />
-                    </div>
-
-                    <div class="group">
-                      <label
-                        for="apartment"
-                        class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-200"
-                      >
-                        {{ $t("apartment") }}
-                      </label>
-                      <input
-                        v-model="shippingAddress.apartment"
-                        type="text"
-                        id="apartment"
-                        class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm text-base border-gray-300 rounded-lg px-4 py-3 transition-all duration-200"
-                      />
-                    </div>
-
-                    <div class="group">
-                      <label
-                        for="postalCode"
-                        class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-200"
-                      >
-                        {{ $t("postalCode") }} *
-                      </label>
-                      <input
-                        v-model="shippingAddress.postalCode"
-                        type="text"
-                        id="postalCode"
-                        required
-                        class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm text-base border-gray-300 rounded-lg px-4 py-3 transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Order Notes -->
-                <div
-                  class="bg-white p-5 rounded-lg border border-gray-100 shadow-sm"
-                >
-                  <div class="group">
-                    <label
-                      for="orderNotes"
-                      class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-200"
-                    >
-                      {{ $t("orderNotes") }}
-                    </label>
-                    <textarea
-                      v-model="orderNotes"
-                      id="orderNotes"
-                      rows="3"
-                      class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm text-base border-gray-300 rounded-lg px-4 py-3 transition-all duration-200"
-                      placeholder="Add any special instructions or notes about your order here..."
-                    ></textarea>
-                  </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex flex-col space-y-4">
-                  <transition name="scale">
-                    <button
-                      type="submit"
-                      :disabled="!isPhoneValid"
-                      class="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:from-blue-300 disabled:to-blue-400 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99]"
-                    >
-                      {{ $t("placeOrder") }}
-                    </button>
-                  </transition>
-                  <transition name="scale">
-                    <button
-                      type="button"
-                      @click="router.push('/cart')"
-                      class="w-full py-4 px-6 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-lg shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99]"
-                    >
-                      {{ $t("backToCart") }}
-                    </button>
-                  </transition>
-                </div>
-              </form>
+              </div>
             </div>
           </div>
         </div>
@@ -366,12 +649,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, reactive } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-import { VueTelInput } from "vue-tel-input";
-import "vue-tel-input/vue-tel-input.css";
 
 import type { CartItem } from "@/types/cart";
 import type {
@@ -397,6 +678,27 @@ const { t } = useI18n();
 const toast = useToast();
 const { emit } = useEventBus();
 
+// Focus states for inputs
+const focusStates = reactive({
+  name: false,
+  surname: false,
+  phone: false,
+  email: false,
+  country: false,
+  city: false,
+  street: false,
+  buildingNumber: false,
+  apartment: false,
+  postalCode: false,
+  orderNotes: false,
+  searchAddress: false,
+});
+
+// Set focus state
+const setFocus = (field: string, value: boolean) => {
+  focusStates[field as keyof typeof focusStates] = value;
+};
+
 // State Management
 const isAuthenticated = computed(() => authStore.isAuthenticated);
 const cart = ref<CartItem[]>([]);
@@ -411,23 +713,8 @@ const recipient = ref<Recipient>({
   email: "",
 });
 
-// Phone validation
-const isPhoneValid = ref<boolean>(false);
-const phoneError = ref<string>("");
-
-const validatePhone = (validation: {
-  valid: boolean;
-  number: string;
-  country: any;
-}) => {
-  isPhoneValid.value = validation.valid;
-  if (!validation.valid) {
-    phoneError.value = t("invalidPhoneNumber");
-  } else {
-    phoneError.value = "";
-    recipient.value.phone = validation.number;
-  }
-};
+// Phone always considered valid since we removed validation
+const isPhoneValid = ref<boolean>(true);
 
 const shippingAddress = ref<Address>({
   country: "",
@@ -502,10 +789,7 @@ const handleCheckout = async (): Promise<void> => {
     return;
   }
 
-  if (!isPhoneValid.value) {
-    toast.error(t("invalidPhoneNumber"));
-    return;
-  }
+  // Phone validation removed
 
   if (!isAuthenticated.value) {
     try {
@@ -611,41 +895,3 @@ onMounted(async () => {
   }
 });
 </script>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.4s ease;
-}
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(-20px);
-}
-
-.scale-enter-active,
-.scale-leave-active {
-  transition: all 0.3s ease;
-}
-.scale-enter-from,
-.scale-leave-to {
-  opacity: 0;
-  transform: scale(0.95);
-}
-
-/* Additional styling for form elements focus state */
-input:focus,
-textarea:focus {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-}
-</style>
