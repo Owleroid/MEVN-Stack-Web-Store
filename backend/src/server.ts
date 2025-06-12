@@ -16,7 +16,7 @@ const startServer = async () => {
     await initializeWarehouses();
     console.log("Warehouses initialized successfully");
 
-    app.listen(PORT, () => {
+    app.listen(3000, "0.0.0.0", () => {
       console.log(`Server running on port ${PORT}.`);
     });
   } catch (error) {

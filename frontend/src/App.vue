@@ -46,14 +46,3 @@ const onRegionSelected = () => {
   showRegionSelector.value = false;
 };
 </script>
-
-<style>
-:root {
-  --Background: linear-gradient(90deg, #191919 0%, #0e0e0e 100%);
-}
-
-#app {
-  background: var(--Background);
-  min-height: 100vh;
-}
-</style>

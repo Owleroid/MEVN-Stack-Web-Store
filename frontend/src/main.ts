@@ -32,6 +32,13 @@ const vueTelInputOptions = {
   },
 };
 
+// Fix for Safari browsers (always show scrollbar to prevent layout shifts)
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+if (isSafari) {
+  // Add 'safari' class to the html element for Safari-specific styles
+  document.documentElement.classList.add("safari");
+}
+
 const app = createApp(App);
 
 app.use(createPinia());

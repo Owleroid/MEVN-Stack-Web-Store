@@ -7,3 +7,59 @@
   --color-main-red: #C80103;
   --font-display: "Oswald";
 }
+
+/* Always reserve space for scrollbar to prevent layout shifts */
+html {
+  overflow-y: scroll;
+}
+
+/* Hide scrollbar visually while keeping functionality */
+/* For Webkit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* For Firefox */
+html {
+  scrollbar-width: none;
+}
+
+/* For IE and Edge */
+body {
+  -ms-overflow-style: none;
+}
+
+/* Safari-specific fixes */
+html.safari {
+  /* Fix z-index stacking issues in Safari */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  
+  /* Fix for potential cursor issues */
+  cursor: default;
+}
+
+/* Safari-specific fixes for buttons and interactive elements */
+html.safari button,
+html.safari [role="button"],
+html.safari a {
+  cursor: pointer;
+}
+
+/* Fix for Safari z-index stacking context issues */
+html.safari .user-dropdown-menu,
+html.safari .cart-hover-panel {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Safari specific fix for dropdown menus */
+@media not all and (min-resolution:.001dpcm) { 
+  @supports (-webkit-appearance:none) {
+    .user-dropdown-menu, 
+    .cart-hover-panel {
+      z-index: 9999 !important;
+    }
+  }
+}
