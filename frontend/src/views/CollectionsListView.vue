@@ -72,7 +72,7 @@
     <!-- Categories Grid (Mobile-first, responsive layout) -->
     <transition-group
       tag="div"
-      class="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 lg:gap-8 space-y-8 md:space-y-0"
+      class="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 lg:gap-8 space-y-8 sm:space-y-0"
       v-else
       enter-active-class="transition-all duration-500 ease-out"
       enter-from-class="opacity-0 translate-y-8"
@@ -85,15 +85,17 @@
       <div
         v-for="(category, index) in categories"
         :key="category._id"
-        class="group cursor-pointer transition-transform duration-300 ease-in-out hover:-translate-y-1 md:flex md:justify-center"
+        class="group cursor-pointer transition-transform duration-300 ease-in-out hover:-translate-y-1 sm:flex sm:justify-center"
         :style="{ 'transition-delay': getAnimationDelay(index) }"
         @click="goToCategory(category)"
       >
         <div
-          class="relative w-full mx-auto max-w-[300px] flex flex-col items-center"
+          class="relative w-full mx-auto max-w-[300px] sm:max-w-[250px] lg:max-w-[300px] flex flex-col items-center"
         >
           <!-- Category Frame with Background and Stars -->
-          <div class="relative w-[300px] h-[401px] overflow-hidden mb-2.5">
+          <div
+            class="relative w-full sm:w-[250px] lg:w-[300px] aspect-[300/401] overflow-hidden mb-2.5"
+          >
             <!-- Background Image -->
             <div class="absolute inset-0 overflow-hidden">
               <!-- Light gray shine/smoke effect with smoother transition -->

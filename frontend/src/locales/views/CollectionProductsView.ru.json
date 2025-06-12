@@ -12,5 +12,9 @@
   "loadingProducts": "Загрузка товаров...",
   "loadingCategories": "Загрузка категорий...",
   "productNumber": "Артикул",
-  "artist": "Художник"
+  "artist": "Художник",
+  "size": "Размер",
+  "material": "Материал",
+  "boxArt": "Упаковка",
+  "retry": "Повторить"
 }

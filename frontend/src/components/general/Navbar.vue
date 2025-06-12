@@ -196,7 +196,9 @@
               to="/collections"
               class="text-2xl text-gray-400 transition-colors duration-300 ease-in-out hover:text-gray-200"
               :class="{
-                'text-main-red': route.path.startsWith('/collections'),
+                'text-main-red':
+                  route.path.startsWith('/collections') ||
+                  route.path === '/' + route.params.slug,
               }"
               @click="closeMobileMenu"
             >
@@ -329,7 +331,8 @@
             class="text-main-gray-hover transition-colors duration-500 ease-in-out text-lg relative pb-1 border-b-2 border-main-gray-hover hover:border-main-red hover:text-main-red px-4"
             :class="{
               'text-main-red border-main-red':
-                route.path.startsWith('/collections'),
+                route.path.startsWith('/collections') ||
+                route.path === '/' + route.params.slug,
             }"
           >
             {{ $t("collections") }}
