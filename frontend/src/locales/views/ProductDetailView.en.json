@@ -11,5 +11,6 @@
   "discountEndsAt": "Discount valid until",
   "noProductSelected": "No product selected",
   "productNotFound": "Product not found",
-  "fetchProductError": "Failed to fetch product"
+  "fetchProductError": "Failed to fetch product",
+  "loadingProduct": "Loading product..."
 }

@@ -196,9 +196,7 @@
           <!-- Price -->
           <div class="flex items-center space-x-4">
             <div v-if="product.discount" class="flex flex-col">
-              <p
-                class="text-2xl font-medium bg-gradient-to-b from-main-red to-[#818181] bg-clip-text text-transparent"
-              >
+              <p class="text-2xl font-medium text-main-red">
                 {{ formatPrice(product.price[currency]) }}
               </p>
               <div class="flex items-center space-x-2">
@@ -262,11 +260,11 @@
           </div>
 
           <!-- Amount selector and Add to Cart Section -->
-          <div class="mt-8 flex items-center gap-4">
+          <div class="mt-8 flex items-center justify-center gap-4">
             <div class="w-32" @click.stop>
               <AmountSelector v-model:amount="quantity" />
             </div>
-            <div class="flex-1" @click.stop>
+            <div class="w-auto" @click.stop>
               <AddToCartButton :product="product" :quantity="quantity" />
             </div>
           </div>

@@ -11,5 +11,6 @@
   "discountEndsAt": "Скидка действует до",
   "noProductSelected": "Товар не выбран",
   "productNotFound": "Товар не найден",
-  "fetchProductError": "Ошибка при загрузке товара"
+  "fetchProductError": "Ошибка при загрузке товара",
+  "loadingProduct": "Загрузка товара..."
 }

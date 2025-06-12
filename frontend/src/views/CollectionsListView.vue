@@ -3,19 +3,20 @@
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center items-center py-12">
       <div
-        class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
+        class="w-14 h-14 border-4 border-white border-opacity-20 border-t-main-red rounded-full animate-spin"
       ></div>
+      <span class="ml-3 text-sm text-main-gray-hover">{{ $t("loading") }}</span>
     </div>
 
     <!-- Error State -->
     <div
       v-else-if="error"
-      class="bg-red-50 border border-red-200 rounded-md p-4 mb-8"
+      class="bg-black bg-opacity-30 border border-red-600 rounded-md p-4 mb-8 text-center"
     >
-      <div class="flex">
+      <div class="flex items-center justify-center">
         <div class="flex-shrink-0">
           <svg
-            class="h-5 w-5 text-red-400"
+            class="h-6 w-6 text-red-500"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
@@ -28,17 +29,26 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-red-700">
+          <p class="text-sm text-red-400">
             {{ error }}
           </p>
+          <button
+            @click="fetchCategories"
+            class="mt-2 px-4 py-1 bg-red-800 hover:bg-red-700 text-white text-sm rounded-md transition-colors duration-200"
+          >
+            {{ $t("retry") }}
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="categories.length === 0" class="text-center py-16">
+    <div
+      v-else-if="categories.length === 0"
+      class="border border-main-gray border-opacity-20 p-8 text-center"
+    >
       <svg
-        class="mx-auto h-12 w-12 text-gray-400"
+        class="mx-auto h-12 w-12 text-main-red"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -48,27 +58,35 @@
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
-          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+          d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
         />
       </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-900">
+      <h3 class="mt-2 text-sm font-medium text-white">
         {{ $t("noCollections") }}
       </h3>
-      <p class="mt-1 text-sm text-gray-500">{{ $t("underConstruction") }}</p>
+      <p class="mt-1 text-sm text-main-gray-hover">
+        {{ $t("underConstruction") }}
+      </p>
     </div>
 
-    <!-- Categories Grid (Mobile-first, one collection per row) -->
+    <!-- Categories Grid (Mobile-first, responsive layout) -->
     <transition-group
-      name="fade-list"
       tag="div"
-      class="flex flex-col space-y-8"
+      class="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 lg:gap-8 space-y-8 md:space-y-0"
       v-else
+      enter-active-class="transition-all duration-500 ease-out"
+      enter-from-class="opacity-0 translate-y-8"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition-all duration-300 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 -translate-y-8"
+      move-class="transition-transform duration-500 ease-out"
     >
       <div
         v-for="(category, index) in categories"
         :key="category._id"
-        class="group cursor-pointer transition-transform duration-300 ease-in-out hover:-translate-y-1"
-        :style="{ '--i': index }"
+        class="group cursor-pointer transition-transform duration-300 ease-in-out hover:-translate-y-1 md:flex md:justify-center"
+        :style="{ 'transition-delay': getAnimationDelay(index) }"
         @click="goToCategory(category)"
       >
         <div
@@ -142,7 +160,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 
@@ -158,6 +176,11 @@ const router = useRouter();
 const categories = ref<Category[]>([]);
 const loading = ref<boolean>(true);
 const error = ref<string>("");
+
+// Helper function to calculate animation delay based on index
+const getAnimationDelay = (index: number): string => {
+  return `${index * 100}ms`;
+};
 
 // Data Fetching
 const fetchCategories = async (): Promise<void> => {
@@ -202,26 +225,3 @@ onMounted(() => {
   fetchCategories();
 });
 </script>
-
-<style scoped>
-/* Transition styles for transition-group - these can't be done with Tailwind alone */
-.fade-list-enter-active,
-.fade-list-leave-active {
-  transition: all 0.5s ease;
-}
-
-.fade-list-enter-from {
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-.fade-list-leave-to {
-  opacity: 0;
-  transform: translateY(-30px);
-}
-
-/* Staggered entry effect - requires CSS custom property */
-.fade-list-enter-active {
-  transition-delay: calc(var(--i) * 0.1s);
-}
-</style>

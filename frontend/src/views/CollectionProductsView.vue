@@ -144,7 +144,7 @@
             <!-- Categories Content -->
             <div
               :class="[
-                isMobile ? 'flex-1 flex items-center justify-center' : '',
+                isMobile ? 'flex-1 flex justify-center items-center -mt-8' : '',
               ]"
             >
               <div :class="[isMobile ? 'w-full max-w-md' : 'w-full']">
@@ -244,7 +244,7 @@
             class="w-12 h-12 border-4 border-white border-opacity-20 border-t-main-red rounded-full animate-spin"
           ></div>
           <span class="ml-3 text-sm text-main-gray-hover">{{
-            $t("loadingCategories")
+            $t("loadingProducts")
           }}</span>
         </div>
 
@@ -312,9 +312,7 @@
                 <div class="flex flex-col gap-2">
                   <!-- Price -->
                   <div v-if="product.discount" class="mb-2">
-                    <p
-                      class="text-2xl font-medium bg-gradient-to-b from-main-red to-[#818181] bg-clip-text text-transparent"
-                    >
+                    <p class="text-2xl font-medium text-main-red">
                       {{ formatPrice(product.price?.[currency] ?? 0) }}
                     </p>
                     <p class="text-sm line-through text-main-gray-hover">
@@ -385,13 +383,15 @@
               </div>
 
               <!-- Amount selector and Add to Cart Section -->
-              <div class="mt-2 flex items-center gap-4">
+              <div
+                class="mt-2 flex items-center justify-center md:justify-start gap-4"
+              >
                 <div class="w-32" @click.stop>
                   <AmountSelector
                     v-model:amount="productQuantities[product._id]"
                   />
                 </div>
-                <div class="flex-1" @click.stop>
+                <div class="w-auto" @click.stop>
                   <AddToCartButton
                     :product="product"
                     :quantity="productQuantities[product._id]"

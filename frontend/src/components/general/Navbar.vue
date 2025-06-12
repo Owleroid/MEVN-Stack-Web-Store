@@ -56,13 +56,22 @@
                 fill="currentColor"
               />
             </svg>
-            <!-- Cart Badge - Only visible on desktop devices -->
-            <span
-              v-if="cartItemsCount > 0 && !isMobileOrTablet"
-              class="absolute top-1 right-2.5 -mt-1 -mr-1 px-1 py-0 bg-red-500 text-white text-[0.6rem] font-bold rounded-full leading-none min-w-[0.9rem] h-[0.9rem] flex items-center justify-center"
+            <!-- Cart Badge - Mobile version -->
+            <transition
+              enter-active-class="transition-all duration-300 ease-out"
+              enter-from-class="transform scale-0 opacity-0"
+              enter-to-class="transform scale-100 opacity-100"
+              leave-active-class="transition-all duration-200 ease-in"
+              leave-from-class="transform scale-100 opacity-100"
+              leave-to-class="transform scale-0 opacity-0"
             >
-              {{ cartItemsCount }}
-            </span>
+              <span
+                v-if="cartItemsCount > 0 && isMobileOrTablet"
+                class="absolute top-1 right-3 -mt-1 -mr-1.5 px-1 py-0 bg-main-red text-white text-[0.6rem] font-bold rounded-full leading-none min-w-[0.9rem] h-[0.9rem] flex items-center justify-center"
+              >
+                {{ cartItemsCount }}
+              </span>
+            </transition>
           </router-link>
 
           <!-- Transparent bridge for cart dropdown -->
@@ -398,12 +407,22 @@
                 fill="currentColor"
               />
             </svg>
-            <span
-              v-if="cartItemsCount > 0 && !isMobileOrTablet"
-              class="absolute top-1 right-2.5 -mt-1 -mr-1 px-1 py-0 bg-red-500 text-white text-[0.6rem] font-bold rounded-full leading-none min-w-[0.9rem] h-[0.9rem] flex items-center justify-center"
+            <!-- Cart Badge - Desktop version -->
+            <transition
+              enter-active-class="transition-all duration-300 ease-out"
+              enter-from-class="transform scale-0 opacity-0"
+              enter-to-class="transform scale-100 opacity-100"
+              leave-active-class="transition-all duration-200 ease-in"
+              leave-from-class="transform scale-100 opacity-100"
+              leave-to-class="transform scale-0 opacity-0"
             >
-              {{ cartItemsCount }}
-            </span>
+              <span
+                v-if="cartItemsCount > 0 && !isMobileOrTablet"
+                class="absolute top-1 right-2.5 -mt-1 -mr-1 px-1 py-0 bg-red-500 text-white text-[0.6rem] font-bold rounded-full leading-none min-w-[0.9rem] h-[0.9rem] flex items-center justify-center"
+              >
+                {{ cartItemsCount }}
+              </span>
+            </transition>
           </router-link>
         </div>
 
