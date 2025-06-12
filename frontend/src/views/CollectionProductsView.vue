@@ -45,7 +45,7 @@
     </div>
 
     <!-- Main Content -->
-    <div v-else class="flex flex-col md:flex-row gap-8">
+    <div v-else class="flex flex-col md:flex-row gap-4 md:gap-6">
       <!-- Mobile Category Toggle Button -->
       <div class="flex justify-between items-center md:hidden mb-0">
         <div
@@ -112,7 +112,7 @@
             'overflow-y-auto z-50',
             isMobile
               ? 'fixed inset-0 w-full max-w-full bg-gradient-to-r from-[#191919] to-[#0E0E0E] flex flex-col'
-              : 'w-64 border border-white border-opacity-20 sticky top-4 self-start bg-black',
+              : 'w-64 sticky top-4 self-start bg-[#181818]',
           ]"
         >
           <!-- Categories List Container -->
@@ -148,40 +148,90 @@
               ]"
             >
               <div :class="[isMobile ? 'w-full max-w-md' : 'w-full']">
-                <h2
-                  v-if="!isMobile"
-                  class="text-lg font-semibold text-white mb-4 border-b border-white border-opacity-20 pb-2"
-                >
-                  {{ $t("collections") }}
-                </h2>
-                <div :class="[isMobile ? 'space-y-6' : 'space-y-4']">
+                <div :class="[isMobile ? 'space-y-6' : 'space-y-0']">
                   <div
                     v-for="cat in categories"
                     :key="cat._id"
                     @click.stop="changeCategory(cat, $event)"
-                    :class="[
-                      'p-4 cursor-pointer transition-all duration-200',
-                      isMobile ? 'text-center' : 'flex items-center gap-3',
-                      cat._id === category?._id
-                        ? 'bg-gradient-to-r from-[#BA0913] to-[#530109] shadow-lg'
-                        : 'hover:bg-white hover:bg-opacity-10',
-                    ]"
+                    class="cursor-pointer transition-all duration-200 relative group"
+                    :class="[isMobile ? 'p-4 text-center' : 'py-3 px-4']"
                   >
+                    <!-- Background gradient for active/hover states - positioned behind the content (PC only) -->
                     <div
                       v-if="!isMobile"
-                      class="w-10 h-10 overflow-hidden bg-black bg-opacity-40 shrink-0"
-                    >
-                      <img
-                        :src="cat.imageUrl"
-                        :alt="cat.name"
-                        class="w-full h-full object-cover"
-                        @error="handleImageError"
-                      />
-                    </div>
-                    <span
+                      class="absolute inset-0 z-0 transition-opacity duration-200"
                       :class="[
-                        'font-medium transition-colors duration-200',
-                        isMobile ? 'text-xl' : 'text-sm',
+                        cat._id === category?._id
+                          ? 'bg-gradient-to-b from-[#BA0913] to-[#530109] opacity-100'
+                          : 'bg-gradient-to-b from-[#BA0913] to-[#530109] opacity-0 group-hover:opacity-100',
+                      ]"
+                    ></div>
+
+                    <!-- Mobile background -->
+                    <div
+                      v-if="isMobile && cat._id === category?._id"
+                      class="absolute inset-0 bg-gradient-to-r from-[#BA0913] to-[#530109] shadow-lg"
+                    ></div>
+
+                    <!-- PC layout with arrow -->
+                    <div
+                      v-if="!isMobile"
+                      class="flex items-center justify-between w-full relative z-10"
+                    >
+                      <span
+                        :class="[
+                          'font-medium uppercase transition-colors duration-200 text-sm',
+                          cat._id === category?._id
+                            ? 'text-white'
+                            : 'text-main-gray-hover group-hover:text-white',
+                        ]"
+                      >
+                        {{ cat.name }}
+                      </span>
+
+                      <!-- Right arrow (PC only) -->
+                      <svg
+                        width="9"
+                        height="15"
+                        viewBox="0 0 9 15"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        :class="[
+                          'transition-opacity duration-200',
+                          cat._id === category?._id
+                            ? 'opacity-100'
+                            : 'opacity-50 group-hover:opacity-100',
+                        ]"
+                      >
+                        <path
+                          d="M1.28711 0.787109L8.00024 7.50024L1.28711 14.2134"
+                          stroke="url(#paint0_linear_884_456)"
+                        />
+                        <defs>
+                          <linearGradient
+                            id="paint0_linear_884_456"
+                            x1="7.77967"
+                            y1="7.27967"
+                            x2="-4.9757"
+                            y2="9.22113"
+                            gradientUnits="userSpaceOnUse"
+                          >
+                            <stop stop-color="white" />
+                            <stop
+                              offset="1"
+                              stop-color="white"
+                              stop-opacity="0"
+                            />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                    </div>
+
+                    <!-- Mobile/tablet layout (original style) -->
+                    <span
+                      v-if="isMobile"
+                      class="relative z-10 text-xl font-medium uppercase transition-colors duration-200"
+                      :class="[
                         cat._id === category?._id
                           ? 'text-white'
                           : 'text-main-gray-hover',
@@ -189,6 +239,17 @@
                     >
                       {{ cat.name }}
                     </span>
+
+                    <!-- Bottom border line - always visible with consistent styling -->
+                    <div
+                      v-if="!isMobile"
+                      class="absolute bottom-0 left-0 right-0 h-[2px] z-20 bg-gradient-to-r from-transparent to-gray-500 transition-opacity duration-200"
+                      :class="[
+                        cat._id === category?._id
+                          ? ''
+                          : 'group-hover:opacity-0',
+                      ]"
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -198,7 +259,7 @@
       </Transition>
 
       <!-- Products Section -->
-      <div class="flex-1">
+      <div class="flex-1 md:pl-8">
         <!-- Empty State -->
         <transition
           enter-active-class="transition ease-out duration-200"
@@ -248,10 +309,10 @@
           }}</span>
         </div>
 
-        <!-- Products Grid (Mobile-first, one product per row on mobile) -->
+        <!-- Products Grid (responsive columns based on screen size) -->
         <transition-group
           tag="div"
-          class="flex flex-col space-y-8 md:grid md:grid-cols-2 md:gap-6 md:space-y-0 lg:grid-cols-3 xl:grid-cols-4"
+          class="flex flex-col space-y-8 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0 md:gap-8"
           v-if="products.length > 0 && !loadingProducts"
           :key="category?._id"
           enter-active-class="transition-all duration-500 ease-out"
@@ -264,11 +325,13 @@
           <div
             v-for="(product, index) in products"
             :key="product._id"
-            class="group cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-1"
+            class="group cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-1 sm:flex sm:justify-center"
             :style="{ 'transition-delay': `${index * 100}ms` }"
             @click="goToProduct(product)"
           >
-            <div class="relative w-full mx-auto max-w-[350px] flex flex-col">
+            <div
+              class="relative w-full mx-auto max-w-[350px] sm:max-w-[95%] flex flex-col"
+            >
               <!-- Product Name (Centered) -->
               <h2
                 class="text-3xl font-medium uppercase font-display bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent mb-4 text-center line-clamp-2"
@@ -383,9 +446,7 @@
               </div>
 
               <!-- Amount selector and Add to Cart Section -->
-              <div
-                class="mt-2 flex items-center justify-center md:justify-start gap-4"
-              >
+              <div class="mt-2 flex items-center justify-center gap-4">
                 <div class="w-32" @click.stop>
                   <AmountSelector
                     v-model:amount="productQuantities[product._id]"
