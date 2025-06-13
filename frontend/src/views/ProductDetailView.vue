@@ -1,14 +1,7 @@
 <template>
   <div class="px-4 py-8 md:py-10 max-w-7xl mx-auto">
     <!-- Loading State -->
-    <div v-if="loading" class="flex justify-center items-center py-12">
-      <div
-        class="w-14 h-14 border-4 border-white border-opacity-20 border-t-main-red rounded-full animate-spin"
-      ></div>
-      <span class="ml-3 text-sm text-main-gray-hover">{{
-        $t("loadingProduct")
-      }}</span>
-    </div>
+    <Loader v-if="loading" :text="$t('loadingProduct')" />
 
     <!-- Error State -->
     <div
@@ -385,6 +378,7 @@ import { getProductBySlug } from "@/services/productService";
 
 import AddToCartButton from "@/components/general/AddToCartButton.vue";
 import AmountSelector from "@/components/general/AmountSelector.vue";
+import Loader from "@/components/general/Loader.vue";
 
 import type { Product } from "@/types/products";
 

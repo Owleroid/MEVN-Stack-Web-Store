@@ -2,17 +2,7 @@
   <div class="w-full my-8">
     <div class="relative">
       <!-- Loading State -->
-      <div
-        v-if="loading"
-        class="py-12 flex justify-center items-center min-h-[400px]"
-      >
-        <div class="flex flex-col items-center">
-          <div
-            class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-3"
-          ></div>
-          <p class="text-gray-500">{{ $t("loadingAnnouncements") }}</p>
-        </div>
-      </div>
+      <Loader v-if="loading" :text="$t('loadingAnnouncements')" />
 
       <!-- Empty State -->
       <div
@@ -150,7 +140,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
+
+import Loader from "@/components/general/Loader.vue";
+
 import { getActiveAnnouncements } from "@/services/announcementService";
+
 import type { Announcement } from "@/types/announcement";
 
 const announcements = ref<Announcement[]>([]);

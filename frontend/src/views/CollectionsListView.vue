@@ -1,12 +1,7 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <!-- Loading State -->
-    <div v-if="loading" class="flex justify-center items-center py-12">
-      <div
-        class="w-14 h-14 border-4 border-white border-opacity-20 border-t-main-red rounded-full animate-spin"
-      ></div>
-      <span class="ml-3 text-sm text-main-gray-hover">{{ $t("loading") }}</span>
-    </div>
+    <Loader v-if="loading" :text="$t('loading')" />
 
     <!-- Error State -->
     <div
@@ -165,6 +160,7 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import Loader from "@/components/general/Loader.vue";
 
 import type { Category } from "@/types/category";
 

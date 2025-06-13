@@ -9,20 +9,7 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="relative p-[1px]">
-      <!-- Gradient border -->
-      <div
-        class="absolute inset-0 bg-gradient-to-br from-white via-white/50 to-transparent opacity-80"
-      ></div>
-
-      <!-- Content with background -->
-      <div class="relative bg-[#0E0E0E] flex flex-col items-center py-16">
-        <div
-          class="w-14 h-14 border-4 border-white border-opacity-20 border-t-main-red rounded-full animate-spin mb-6"
-        ></div>
-        <p class="text-white text-lg">{{ $t("loading") }}</p>
-      </div>
-    </div>
+    <Loader v-if="loading" :text="$t('loading')" />
 
     <!-- Error State -->
     <div v-else-if="error" class="relative p-[1px]">
@@ -278,6 +265,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
+import Loader from "@/components/general/Loader.vue";
 
 import { getPaginatedActiveNews } from "@/services/newsService";
 
