@@ -1,21 +1,27 @@
 <template>
   <div class="px-4 py-10 md:max-w-md md:mx-auto">
     <!-- Login/Signup Toggle -->
-    <div class="flex justify-between items-center mb-8">
-      <div
-        class="flex-1 py-2 flex justify-center border-r border-main-gray-hover"
+    <div class="flex justify-center items-center mb-8">
+      <router-link
+        to="/login"
+        class="text-3xl px-10 border-r border-main-gray-hover"
+        :class="{
+          'text-main-red': $route.path === '/login',
+          'text-main-gray-hover': $route.path !== '/login',
+        }"
       >
-        <router-link to="/login" class="text-main-red text-3xl">
-          {{ $t("login") }}
-        </router-link>
-      </div>
-      <div
-        class="flex-1 py-2 flex justify-center border-l border-main-gray-hover"
+        {{ $t("login") }}
+      </router-link>
+      <router-link
+        to="/signup"
+        class="text-3xl px-10 border-l border-main-gray-hover"
+        :class="{
+          'text-main-red': $route.path === '/signup',
+          'text-main-gray-hover': $route.path !== '/signup',
+        }"
       >
-        <router-link to="/signup" class="text-3xl text-main-gray-hover">
-          {{ $t("signup") }}
-        </router-link>
-      </div>
+        {{ $t("signup") }}
+      </router-link>
     </div>
 
     <form @submit.prevent="handleLogin" class="space-y-6">

@@ -71,12 +71,9 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async logout(): Promise<void> {
-      const router = useRouter();
       try {
         await authService.logout();
-
         this.clearAuthState();
-        router.push("/");
       } catch (error) {
         console.error("Logout failed:", error);
         throw error;

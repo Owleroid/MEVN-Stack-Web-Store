@@ -1,29 +1,24 @@
 <template>
-  <div class="px-4 py-8 md:py-10 max-w-5xl mx-auto">
+  <div class="px-8 md:px-12 py-8 md:py-10 max-w-5xl mx-auto">
     <!-- Settings/Orders Toggle -->
-    <div class="flex justify-between items-center mb-8">
-      <div
-        class="flex-1 py-2 flex justify-center border-r border-main-gray-hover"
+    <div class="flex justify-center items-center mb-8 lg:hidden">
+      <router-link
+        to="/settings"
+        class="text-3xl text-main-gray-hover px-10 border-r border-main-gray-hover"
       >
-        <router-link to="/settings" class="text-3xl text-main-gray-hover">
-          {{ $t("settings") }}
-        </router-link>
-      </div>
-      <div
-        class="flex-1 py-2 flex justify-center border-l border-main-gray-hover"
+        {{ $t("settings") }}
+      </router-link>
+      <router-link
+        to="/orders"
+        class="text-main-red text-3xl px-10 border-l border-main-gray-hover"
       >
-        <router-link to="/orders" class="text-main-red text-3xl">
-          {{ $t("orders") }}
-        </router-link>
-      </div>
+        {{ $t("orders") }}
+      </router-link>
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="flex flex-col items-center py-16">
-      <div
-        class="w-14 h-14 border-4 border-white border-opacity-20 border-t-main-red rounded-full animate-spin mb-6"
-      ></div>
-      <p class="text-white text-lg">{{ $t("loading") }}</p>
+    <div v-if="loading">
+      <Loader :text="$t('loading')" />
     </div>
 
     <!-- Error State -->
@@ -43,7 +38,7 @@
     <!-- Orders List -->
     <div v-else-if="orders.length > 0" class="space-y-8">
       <!-- Sort Controls -->
-      <div class="flex justify-end mb-4">
+      <div class="flex justify-center mb-10">
         <button
           @click="toggleSortOrder"
           class="flex items-center gap-2 px-4 py-2 bg-black bg-opacity-60 border border-white border-opacity-50 hover:border-opacity-70 text-white text-sm transition-all duration-300 ease-in-out"
@@ -553,6 +548,7 @@ import { ref, onMounted, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 import { useRoute, useRouter } from "vue-router";
+import Loader from "@/components/general/Loader.vue";
 
 import type {
   OrderData,

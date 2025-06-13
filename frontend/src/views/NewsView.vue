@@ -33,9 +33,16 @@
     <!-- News List -->
     <TransitionGroup
       v-if="!loading && newsItems.length > 0"
-      name="list"
+      name=""
       tag="div"
       class="space-y-8"
+      enter-active-class="transition-all duration-500 ease-in-out"
+      leave-active-class="transition-all duration-500 ease-in-out"
+      enter-from-class="opacity-0 translate-y-8"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 translate-y-8"
+      move-class="transition-transform duration-500 ease-in-out"
     >
       <div
         v-for="newsItem in newsItems"
@@ -86,7 +93,7 @@
               <div v-if="textExceedsLimit(newsItem.text)" class="mt-auto pt-2">
                 <button
                   @click="openNewsDetail(newsItem)"
-                  class="text-main-red hover:text-main-red-hover transition-colors duration-300 flex items-center text-sm font-medium"
+                  class="text-main-red hover:text-main-red-hover transition-colors duration-300 flex items-center text-sm font-medium cursor-pointer"
                 >
                   {{ $t("readMore") }}
                   <svg
@@ -483,21 +490,3 @@ onMounted(() => {
   on("language-changed", refreshNews);
 });
 </script>
-
-<style>
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-/* Make sure each item animates independently */
-.list-move {
-  transition: transform 0.5s ease;
-}
-</style>

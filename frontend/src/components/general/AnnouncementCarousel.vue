@@ -50,8 +50,12 @@
               <div class="relative h-full">
                 <!-- NEW! Text with gradient -->
                 <transition name="fade">
-                  <div class="absolute top-[10%] right-[10%] z-10">
-                    <div class="font-bold text-4xl md:text-6xl drop-shadow-md">
+                  <div
+                    class="absolute top-[10%] right-[10%] md:right-[8%] lg:right-[25%] z-10"
+                  >
+                    <div
+                      class="font-bold text-3xl md:text-4xl lg:text-5xl drop-shadow-md"
+                    >
                       <span
                         class="bg-clip-text text-transparent bg-gradient-to-b from-[#BA0913] to-[#530109]"
                         >NEW!</span
@@ -67,30 +71,27 @@
                   <img
                     :src="announcement.imageUrl"
                     :alt="announcement.product.name"
-                    class="w-full max-w-4xl mx-auto h-auto object-contain rounded-md flex-grow py-4 px-2"
-                    style="min-height: 320px"
+                    class="mx-auto object-contain rounded-md flex-grow py-4 px-2 max-w-[400px] md:max-w-[600px] lg:max-w-[700px] max-h-[320px] md:max-h-[400px] lg:max-h-[500px]"
+                    style="min-height: 200px"
                   />
 
-                  <!-- Buttons directly on the image - no gradient -->
-                  <div
-                    class="absolute bottom-0 left-0 right-0 flex justify-center gap-6 p-4"
-                  >
-                    <transition-group name="fade">
-                      <router-link
-                        :key="'view-product'"
-                        :to="`/${announcement.product.category.slug}/${announcement.product.slug}`"
-                        class="h-[48px] px-12 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none flex items-center justify-center whitespace-nowrap"
-                      >
-                        {{ $t("buyNow") }}
-                      </router-link>
-                      <router-link
-                        :key="'view-collections'"
-                        to="/collections"
-                        class="h-[48px] px-12 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none flex items-center justify-center whitespace-nowrap"
-                      >
-                        {{ $t("collections") }}
-                      </router-link>
-                    </transition-group>
+                  <!-- Buttons directly under the image, centered with gap always centered -->
+                  <div class="flex justify-center items-center p-4 w-auto">
+                    <router-link
+                      :key="'view-product'"
+                      :to="`/${announcement.product.category.slug}/${announcement.product.slug}`"
+                      class="w-36 h-[48px] uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none flex items-center justify-center whitespace-nowrap"
+                    >
+                      {{ $t("buyNow") }}
+                    </router-link>
+                    <div class="w-6"></div>
+                    <router-link
+                      :key="'view-collections'"
+                      to="/collections"
+                      class="w-36 h-[48px] uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none flex items-center justify-center whitespace-nowrap"
+                    >
+                      {{ $t("collections") }}
+                    </router-link>
                   </div>
                 </div>
               </div>

@@ -43,12 +43,12 @@
               </h2>
               <button
                 @click="close"
-                class="absolute right-6 top-4 p-1 text-main-red focus:outline-none transition-colors duration-200"
+                class="absolute right-6 top-4 p-1 text-main-red focus:outline-none transition-colors duration-200 cursor-pointer group"
                 aria-label="Close"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
+                  class="h-6 w-6 transition-transform duration-300 group-hover:rotate-180"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >

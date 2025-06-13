@@ -76,14 +76,6 @@
 
           <!-- Transparent bridge for cart dropdown -->
           <div class="absolute w-full h-2 top-full left-0 bg-transparent"></div>
-
-          <!-- Cart Hover Panel -->
-          <div
-            v-if="!isCartPage && cartItemsCount > 0"
-            class="hidden group-hover:block absolute right-0 mt-0 w-80 bg-white rounded-md shadow-lg z-50 cart-hover-panel"
-          >
-            <CartHoover />
-          </div>
         </div>
 
         <!-- Profile Icon (Mobile & Tablet only) - Only visible when logged in -->
@@ -549,14 +541,16 @@
             >
               <router-link
                 to="/settings"
-                class="block px-4 py-2 text-main-gray-hover hover:text-main-red transition-colors duration-200 text-base"
+                class="block px-4 py-2 text-base transition-colors duration-200 text-main-gray-hover hover:text-main-red"
+                :class="{ 'text-main-red': route.path === '/settings' }"
                 @click="userDropdownOpen = false"
               >
                 {{ $t("settings") }}
               </router-link>
               <router-link
                 to="/orders"
-                class="block px-4 py-2 text-main-gray-hover hover:text-main-red transition-colors duration-200 text-base"
+                class="block px-4 py-2 text-base transition-colors duration-200 text-main-gray-hover hover:text-main-red"
+                :class="{ 'text-main-red': route.path === '/orders' }"
                 @click="userDropdownOpen = false"
               >
                 {{ $t("orders") }}
@@ -583,14 +577,6 @@
     </div>
   </nav>
 
-  <!-- Loading State -->
-  <div v-else class="bg-gray-800 p-4 text-center">
-    <div
-      class="inline-block animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"
-    ></div>
-    <span>{{ $t("loadingTranslations") }}</span>
-  </div>
-
   <!-- Spacer to prevent content from being hidden under fixed navbar on mobile/tablet -->
   <div v-if="isMobileOrTablet && !translationsLoading" class="h-[73px]"></div>
 </template>
@@ -598,7 +584,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, watch, onUnmounted } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import i18n from "@/i18n";
 import { translationsLoaded, loadLocaleMessages } from "@/i18n";
 
@@ -611,6 +597,7 @@ import { useEventBus } from "@/utils/eventBus";
 // Composables Setup
 const authStore = useAuthStore();
 const route = useRoute();
+const router = useRouter();
 const { locale } = useI18n();
 const { on, emit } = useEventBus();
 
@@ -680,6 +667,7 @@ const handleLogout = async (): Promise<void> => {
   try {
     await authStore.logout();
     updateCartCount();
+    router.push("/login");
   } catch (error) {
     console.error("Logout failed:", error);
   }
