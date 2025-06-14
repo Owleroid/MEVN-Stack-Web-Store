@@ -80,7 +80,7 @@
       <div
         v-for="(category, index) in categories"
         :key="category._id"
-        class="group cursor-pointer transition-transform duration-300 ease-in-out hover:-translate-y-1 sm:flex sm:justify-center"
+        class="group cursor-pointer transition-transform duration-300 ease-in-out sm:flex sm:justify-center"
         :style="{ 'transition-delay': getAnimationDelay(index) }"
         @click="goToCategory(category)"
       >
@@ -96,13 +96,13 @@
               <!-- Light gray shine/smoke effect with smoother transition -->
               <div class="absolute inset-0 flex items-center justify-center">
                 <div
-                  class="w-[70%] h-[70%] rounded-full bg-gray-200/20 blur-xl opacity-60"
+                  class="w-[70%] h-[70%] rounded-full bg-gray-200/20 blur-xl opacity-60 transition-opacity duration-600 group-hover:bg-red-900/40 group-hover:opacity-95"
                 ></div>
                 <div
-                  class="absolute w-[50%] h-[50%] rounded-full bg-gray-100/30 blur-lg opacity-60"
+                  class="absolute w-[50%] h-[50%] rounded-full bg-gray-100/30 blur-lg opacity-60 transition-opacity duration-600 group-hover:bg-red-800/50 group-hover:opacity-90"
                 ></div>
                 <div
-                  class="absolute w-[30%] h-[30%] rounded-full bg-white/30 blur-md opacity-70"
+                  class="absolute w-[30%] h-[30%] rounded-full bg-white/30 blur-md opacity-70 transition-opacity duration-600 group-hover:bg-red-700/60 group-hover:opacity-95"
                 ></div>
               </div>
 
@@ -146,7 +146,7 @@
 
           <!-- Category Name -->
           <h2
-            class="text-2xl font-medium text-center uppercase font-display bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent"
+            class="text-2xl font-medium text-center uppercase font-display bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent transition-all duration-300 group-hover:bg-gradient-to-b group-hover:from-main-red group-hover:to-red-700"
           >
             {{ category.name }}
           </h2>

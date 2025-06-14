@@ -112,7 +112,7 @@
             'overflow-y-auto z-50',
             isMobile
               ? 'fixed inset-0 w-full max-w-full bg-gradient-to-r from-[#191919] to-[#0E0E0E] flex flex-col'
-              : 'w-64 sticky top-4 self-start bg-[#181818]',
+              : 'w-64 sticky top-4 self-start ',
           ]"
         >
           <!-- Categories List Container -->
@@ -262,10 +262,10 @@
       <div class="flex-1 md:pl-8">
         <!-- Empty State -->
         <transition
-          enter-active-class="transition ease-out duration-200"
+          enter-active-class="transition ease-out duration-300"
           enter-from-class="opacity-0 transform scale-95"
           enter-to-class="opacity-100 transform scale-100"
-          leave-active-class="transition ease-in duration-100"
+          leave-active-class="transition ease-in duration-300"
           leave-from-class="opacity-100 transform scale-100"
           leave-to-class="opacity-0 transform scale-95"
         >
@@ -298,7 +298,7 @@
 
         <!-- Products Loading State -->
         <div
-          v-if="loadingProducts"
+          v-if="loadingProducts && products.length === 0"
           class="flex justify-center items-center py-12"
         >
           <div
@@ -309,159 +309,166 @@
           }}</span>
         </div>
 
-        <!-- Products Grid (responsive columns based on screen size) -->
-        <transition-group
-          tag="div"
-          class="flex flex-col space-y-8 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0 md:gap-8"
-          v-if="products.length > 0 && !loadingProducts"
-          :key="category?._id"
-          enter-active-class="transition-all duration-500 ease-out"
-          enter-from-class="opacity-0 transform translate-y-8"
-          enter-to-class="opacity-100 transform translate-y-0"
-          leave-active-class="transition-all duration-300 ease-in"
-          leave-from-class="opacity-100 transform translate-y-0"
-          leave-to-class="opacity-0 transform -translate-y-8"
+        <!-- Products Grid with Transition Wrapper -->
+        <transition
+          enter-active-class="transition-opacity duration-300"
+          enter-from-class="opacity-0"
+          enter-to-class="opacity-100"
+          leave-active-class="transition-opacity duration-300"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0"
+          mode="out-in"
         >
+          <!-- Dynamic content with a different key for each category -->
           <div
-            v-for="(product, index) in products"
-            :key="product._id"
-            class="group cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-1 sm:flex sm:justify-center"
-            :style="{ 'transition-delay': `${index * 100}ms` }"
-            @click="goToProduct(product)"
+            v-if="products.length > 0 && !loadingProducts"
+            :key="`products-for-${category?._id}`"
+            class="flex flex-col space-y-8 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0 md:gap-8"
           >
             <div
-              class="relative w-full mx-auto max-w-[350px] sm:max-w-[95%] flex flex-col"
+              v-for="(product, index) in products"
+              :key="product._id"
+              class="group cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-1 sm:flex sm:justify-center"
+              :style="{
+                'transition-delay': `${isMobile ? index * 50 : index * 100}ms`,
+              }"
+              @click="goToProduct(product)"
             >
-              <!-- Product Name (Centered) -->
-              <h2
-                class="text-3xl font-medium uppercase font-display bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent mb-4 text-center line-clamp-2"
+              <div
+                class="relative w-full mx-auto max-w-[350px] sm:max-w-[95%] flex flex-col"
               >
-                {{ product.name }}
-              </h2>
+                <!-- Product Name (Centered) -->
+                <h2
+                  class="text-3xl font-medium uppercase font-display bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent mb-4 text-center line-clamp-2"
+                  :title="product.name"
+                >
+                  {{ isTablet ? truncateText(product.name, 21) : product.name }}
+                </h2>
 
-              <!-- Product Info Section -->
-              <div class="grid grid-cols-2 gap-4 mb-4">
-                <!-- Left side: Product Image with Light Background -->
-                <div class="relative h-[250px] overflow-hidden">
-                  <!-- Background Effect -->
-                  <div class="absolute inset-0 overflow-hidden">
-                    <!-- Light gray shine/smoke effect -->
-                    <div
-                      class="absolute inset-0 flex items-center justify-center"
-                    >
+                <!-- Product Info Section -->
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                  <!-- Left side: Product Image with Light Background -->
+                  <div class="relative h-[250px] overflow-hidden">
+                    <!-- Background Effect -->
+                    <div class="absolute inset-0 overflow-hidden">
+                      <!-- Light gray shine/smoke effect -->
                       <div
-                        class="w-[50%] h-[50%] rounded-full bg-gray-200/20 blur-xl opacity-60"
-                      ></div>
-                      <div
-                        class="absolute w-[40%] h-[40%] rounded-full bg-gray-100/30 blur-lg opacity-60"
-                      ></div>
-                      <div
-                        class="absolute w-[20%] h-[20%] rounded-full bg-white/30 blur-md opacity-70"
-                      ></div>
+                        class="absolute inset-0 flex items-center justify-center"
+                      >
+                        <div
+                          class="w-[50%] h-[50%] rounded-full bg-gray-200/20 blur-xl opacity-60"
+                        ></div>
+                        <div
+                          class="absolute w-[40%] h-[40%] rounded-full bg-gray-100/30 blur-lg opacity-60"
+                        ></div>
+                        <div
+                          class="absolute w-[20%] h-[20%] rounded-full bg-white/30 blur-md opacity-70"
+                        ></div>
+                      </div>
+
+                      <!-- Product Image -->
+                      <img
+                        :src="product.imageUrls?.main"
+                        :alt="product.name"
+                        class="w-full h-full object-contain relative z-10"
+                        loading="lazy"
+                        @error="handleProductImageError"
+                      />
                     </div>
-
-                    <!-- Product Image -->
-                    <img
-                      :src="product.imageUrls?.main"
-                      :alt="product.name"
-                      class="w-full h-full object-contain relative z-10"
-                      loading="lazy"
-                      @error="handleProductImageError"
-                    />
                   </div>
-                </div>
 
-                <!-- Right side: Product Info -->
-                <div class="flex flex-col gap-2">
-                  <!-- Price -->
-                  <div v-if="product.discount" class="mb-2">
-                    <p class="text-2xl font-medium text-main-red">
+                  <!-- Right side: Product Info -->
+                  <div class="flex flex-col gap-2">
+                    <!-- Price -->
+                    <div v-if="product.discount" class="mb-2">
+                      <p class="text-2xl font-medium text-main-red">
+                        {{ formatPrice(product.price?.[currency] ?? 0) }}
+                      </p>
+                      <p class="text-sm line-through text-main-gray-hover">
+                        {{
+                          formatPrice(
+                            product.discount.originalPrice?.[currency] ?? 0
+                          )
+                        }}
+                      </p>
+                    </div>
+                    <p
+                      v-else
+                      class="text-2xl font-medium bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent mb-2"
+                    >
                       {{ formatPrice(product.price?.[currency] ?? 0) }}
                     </p>
-                    <p class="text-sm line-through text-main-gray-hover">
-                      {{
-                        formatPrice(
-                          product.discount.originalPrice?.[currency] ?? 0
-                        )
-                      }}
-                    </p>
-                  </div>
-                  <p
-                    v-else
-                    class="text-2xl font-medium bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent mb-2"
-                  >
-                    {{ formatPrice(product.price?.[currency] ?? 0) }}
-                  </p>
 
-                  <!-- Product Number -->
-                  <div class="flex gap-2">
-                    <span class="text-main-gray-hover text-sm"
-                      >{{ $t("productNumber") }}:</span
-                    >
-                    <span class="text-white/80 text-sm uppercase">{{
-                      product.productNumber
-                    }}</span>
-                  </div>
+                    <!-- Product Number -->
+                    <div class="flex gap-2">
+                      <span class="text-main-gray-hover text-sm"
+                        >{{ $t("productNumber") }}:</span
+                      >
+                      <span class="text-white/80 text-sm uppercase">{{
+                        product.productNumber
+                      }}</span>
+                    </div>
 
-                  <!-- Artist Name -->
-                  <div v-if="product.artist" class="flex gap-2">
-                    <span class="text-main-gray-hover text-sm"
-                      >{{ $t("artist") }}:</span
-                    >
-                    <span class="text-white/80 text-sm">{{
-                      product.artist
-                    }}</span>
-                  </div>
+                    <!-- Artist Name -->
+                    <div v-if="product.artist" class="flex gap-2">
+                      <span class="text-main-gray-hover text-sm"
+                        >{{ $t("artist") }}:</span
+                      >
+                      <span class="text-white/80 text-sm">{{
+                        product.artist
+                      }}</span>
+                    </div>
 
-                  <!-- Product Size -->
-                  <div v-if="product.size" class="flex gap-2">
-                    <span class="text-main-gray-hover text-sm"
-                      >{{ $t("size") }}:</span
-                    >
-                    <span class="text-white/80 text-sm">{{
-                      product.size
-                    }}</span>
-                  </div>
+                    <!-- Product Size -->
+                    <div v-if="product.size" class="flex gap-2">
+                      <span class="text-main-gray-hover text-sm"
+                        >{{ $t("size") }}:</span
+                      >
+                      <span class="text-white/80 text-sm">{{
+                        product.size
+                      }}</span>
+                    </div>
 
-                  <!-- Product Material -->
-                  <div v-if="product.material" class="flex gap-2">
-                    <span class="text-main-gray-hover text-sm"
-                      >{{ $t("material") }}:</span
-                    >
-                    <span class="text-white/80 text-sm">{{
-                      product.material
-                    }}</span>
-                  </div>
+                    <!-- Product Material -->
+                    <div v-if="product.material" class="flex gap-2">
+                      <span class="text-main-gray-hover text-sm"
+                        >{{ $t("material") }}:</span
+                      >
+                      <span class="text-white/80 text-sm">{{
+                        product.material
+                      }}</span>
+                    </div>
 
-                  <!-- Product Box Art -->
-                  <div v-if="product.boxArt" class="flex gap-2">
-                    <span class="text-main-gray-hover text-sm"
-                      >{{ $t("boxArt") }}:</span
-                    >
-                    <span class="text-white/80 text-sm">{{
-                      product.boxArt
-                    }}</span>
+                    <!-- Product Box Art -->
+                    <div v-if="product.boxArt" class="flex gap-2">
+                      <span class="text-main-gray-hover text-sm"
+                        >{{ $t("boxArt") }}:</span
+                      >
+                      <span class="text-white/80 text-sm">{{
+                        product.boxArt
+                      }}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- Amount selector and Add to Cart Section -->
-              <div class="mt-2 flex items-center justify-center gap-4">
-                <div class="w-32" @click.stop>
-                  <AmountSelector
-                    v-model:amount="productQuantities[product._id]"
-                  />
-                </div>
-                <div class="w-auto" @click.stop>
-                  <AddToCartButton
-                    :product="product"
-                    :quantity="productQuantities[product._id]"
-                  />
+                <!-- Amount selector and Add to Cart Section -->
+                <div class="mt-2 flex items-center justify-center gap-4">
+                  <div class="w-32" @click.stop>
+                    <AmountSelector
+                      v-model:amount="productQuantities[product._id]"
+                    />
+                  </div>
+                  <div class="w-auto" @click.stop>
+                    <AddToCartButton
+                      :product="product"
+                      :quantity="productQuantities[product._id]"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </transition-group>
+        </transition>
       </div>
     </div>
   </div>
@@ -506,6 +513,9 @@ const productQuantities = reactive<Record<string, number>>({});
 
 // Computed properties
 const isMobile = computed(() => windowWidth.value < 768);
+const isTablet = computed(
+  () => windowWidth.value >= 640 && windowWidth.value < 1024
+);
 
 // Watch for window resize
 onMounted(() => {
@@ -588,9 +598,21 @@ const fetchCategories = async (): Promise<void> => {
 };
 
 const fetchProducts = async (categoryId: string): Promise<void> => {
-  loadingProducts.value = true;
+  // Don't clear error immediately to avoid flashing
+
+  // Start a timer to track loading time - use a shorter delay on mobile
+  const loadingDelay = isMobile ? 100 : 200;
+  const loadingTimer = setTimeout(() => {
+    loadingProducts.value = true;
+  }, loadingDelay); // Show loading state faster on mobile
+
   try {
+    // Clear error before fetching new data
+    error.value = "";
+
     const response = await getProductsByCategoryId(categoryId);
+
+    // Clear products only after we have new data
     products.value = response.products;
 
     // Initialize quantity for each product
@@ -610,6 +632,8 @@ const fetchProducts = async (categoryId: string): Promise<void> => {
       products.value = [];
     }
   } finally {
+    // Clear the timer and loading state
+    clearTimeout(loadingTimer);
     loadingProducts.value = false;
   }
 };
@@ -618,7 +642,7 @@ const fetchCategoryData = async (): Promise<void> => {
   if (categories.value.length === 0) {
     loading.value = true;
   }
-  error.value = "";
+  // Don't clear error here to avoid flashing
 
   const slug = route.params.slug as string;
 
@@ -629,12 +653,17 @@ const fetchCategoryData = async (): Promise<void> => {
   }
 
   try {
+    // Clear error before fetching new data
+    error.value = "";
+
     const response = await getCategoryBySlug(slug);
     category.value = response.category;
 
     if (!category.value) {
       error.value = t("categoryNotFound");
     } else {
+      // Fetch products without clearing the current products first
+      // This allows the transition to happen smoothly
       await fetchProducts(category.value._id);
 
       // Close mobile categories when a category is selected
@@ -660,6 +689,9 @@ const changeCategory = (cat: Category, event?: Event): void => {
     event.preventDefault();
     event.stopPropagation();
   }
+
+  // Clear any existing errors
+  error.value = "";
 
   // Close mobile menu after selection
   if (isMobile.value) {
@@ -698,6 +730,29 @@ onMounted(async () => {
   await fetchCategories();
   await fetchCategoryData();
 });
+
+// Helper functions
+const truncateText = (text: string, maxLength: number): string => {
+  if (text.length <= maxLength) return text;
+
+  // Try to find a space to truncate at
+  let truncateIndex = maxLength;
+  while (
+    truncateIndex > 0 &&
+    text[truncateIndex] !== " " &&
+    text[truncateIndex - 1] !== " "
+  ) {
+    truncateIndex--;
+  }
+
+  // If we couldn't find a good breaking point, just use the max length
+  if (truncateIndex <= maxLength / 2) {
+    truncateIndex = maxLength;
+  }
+
+  // Trim any trailing spaces before adding ellipsis
+  return text.substring(0, truncateIndex).trim() + "...";
+};
 </script>
 
 <style scoped>
