@@ -1,21 +1,27 @@
 <template>
   <div class="px-4 py-10 md:max-w-md md:mx-auto">
     <!-- Login/Signup Toggle -->
-    <div class="flex justify-between items-center mb-8">
-      <div
-        class="flex-1 py-2 flex justify-center border-r border-main-gray-hover"
+    <div class="flex justify-center items-center mb-8">
+      <router-link
+        to="/login"
+        class="text-3xl px-10 border-r border-main-gray-hover"
+        :class="{
+          'text-main-red': $route.path === '/login',
+          'text-main-gray-hover': $route.path !== '/login',
+        }"
       >
-        <router-link to="/login" class="text-3xl text-main-gray-hover">
-          {{ $t("login") }}
-        </router-link>
-      </div>
-      <div
-        class="flex-1 py-2 flex justify-center border-l border-main-gray-hover"
+        {{ $t("login") }}
+      </router-link>
+      <router-link
+        to="/signup"
+        class="text-3xl px-10 border-l border-main-gray-hover"
+        :class="{
+          'text-main-red': $route.path === '/signup',
+          'text-main-gray-hover': $route.path !== '/signup',
+        }"
       >
-        <router-link to="/signup" class="text-3xl text-main-red">
-          {{ $t("signup") }}
-        </router-link>
-      </div>
+        {{ $t("signup") }}
+      </router-link>
     </div>
 
     <form @submit.prevent="handleSignup" class="space-y-6">
@@ -203,25 +209,6 @@ const activeInput = ref("");
 const emailInputRef = ref<HTMLInputElement | null>(null);
 const passwordInputRef = ref<HTMLInputElement | null>(null);
 const confirmPasswordInputRef = ref<HTMLInputElement | null>(null);
-
-// Focus input functions
-const focusEmailInput = () => {
-  if (emailInputRef.value) {
-    emailInputRef.value.focus();
-  }
-};
-
-const focusPasswordInput = () => {
-  if (passwordInputRef.value) {
-    passwordInputRef.value.focus();
-  }
-};
-
-const focusConfirmPasswordInput = () => {
-  if (confirmPasswordInputRef.value) {
-    confirmPasswordInputRef.value.focus();
-  }
-};
 
 // Form State
 interface SignupForm {

@@ -12,5 +12,9 @@
   "loadingProducts": "Loading products...",
   "loadingCategories": "Loading categories...",
   "productNumber": "Product Number",
-  "artist": "Artist"
+  "artist": "Artist",
+  "size": "Size",
+  "material": "Material",
+  "boxArt": "Box Art",
+  "retry": "Try Again"
 }

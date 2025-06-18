@@ -1,7 +1,9 @@
 <template>
   <div class="px-4 py-8 md:py-10 max-w-5xl mx-auto">
     <!-- Main Content Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div
+      class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-x-16 max-w-lg mx-auto lg:max-w-3xl"
+    >
       <!-- Contact Form - Shown first on mobile for better user experience -->
       <div class="order-1 md:order-2">
         <h2 class="text-2xl text-main-red mb-4">
@@ -26,26 +28,28 @@
             >
               {{ $t("email") }} *
             </label>
-            <div
-              :class="[
-                'border p-3 bg-transparent transition-colors duration-500 ease-in-out',
-                activeInput === 'email' || form.email
-                  ? 'border-main-red'
-                  : 'border-white border-opacity-50',
-              ]"
-              @click="focusEmailInput"
-            >
-              <input
-                type="email"
-                id="email"
-                v-model="form.email"
-                required
-                placeholder="email@example.com"
-                class="w-full bg-transparent font-medium text-white focus:outline-none"
-                @focus="activeInput = 'email'"
-                @blur="activeInput = ''"
-                ref="emailInputRef"
-              />
+            <div class="relative p-[1px] mt-1">
+              <div
+                class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                :class="[
+                  activeInput === 'email' || form.email
+                    ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                    : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                ]"
+              ></div>
+              <div class="relative bg-[#0E0E0E]">
+                <input
+                  type="email"
+                  id="email"
+                  v-model="form.email"
+                  required
+                  placeholder="email@example.com"
+                  class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                  @focus="activeInput = 'email'"
+                  @blur="activeInput = ''"
+                  ref="emailInputRef"
+                />
+              </div>
             </div>
             <p v-if="errors.email" class="text-sm text-red-500">
               {{ errors.email }}
@@ -65,25 +69,27 @@
             >
               {{ $t("subject") }}
             </label>
-            <div
-              :class="[
-                'border p-3 bg-transparent transition-colors duration-500 ease-in-out',
-                activeInput === 'subject' || form.subject
-                  ? 'border-main-red'
-                  : 'border-white border-opacity-50',
-              ]"
-              @click="focusSubjectInput"
-            >
-              <input
-                type="text"
-                id="subject"
-                v-model="form.subject"
-                :placeholder="$t('subjectPlaceholder')"
-                class="w-full bg-transparent font-medium text-white focus:outline-none"
-                @focus="activeInput = 'subject'"
-                @blur="activeInput = ''"
-                ref="subjectInputRef"
-              />
+            <div class="relative p-[1px] mt-1">
+              <div
+                class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                :class="[
+                  activeInput === 'subject' || form.subject
+                    ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                    : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                ]"
+              ></div>
+              <div class="relative bg-[#0E0E0E]">
+                <input
+                  type="text"
+                  id="subject"
+                  v-model="form.subject"
+                  :placeholder="$t('subjectPlaceholder')"
+                  class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                  @focus="activeInput = 'subject'"
+                  @blur="activeInput = ''"
+                  ref="subjectInputRef"
+                />
+              </div>
             </div>
           </div>
 
@@ -100,26 +106,28 @@
             >
               {{ $t("message") }} *
             </label>
-            <div
-              :class="[
-                'border p-3 bg-transparent transition-colors duration-500 ease-in-out',
-                activeInput === 'message' || form.message
-                  ? 'border-main-red'
-                  : 'border-white border-opacity-50',
-              ]"
-              @click="focusMessageInput"
-            >
-              <textarea
-                id="message"
-                v-model="form.message"
-                required
-                rows="5"
-                :placeholder="$t('messagePlaceholder')"
-                class="w-full bg-transparent font-medium text-white focus:outline-none"
-                @focus="activeInput = 'message'"
-                @blur="activeInput = ''"
-                ref="messageInputRef"
-              ></textarea>
+            <div class="relative p-[1px] mt-1">
+              <div
+                class="absolute inset-0 transition-colors duration-500 ease-in-out"
+                :class="[
+                  activeInput === 'message' || form.message
+                    ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                    : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+                ]"
+              ></div>
+              <div class="relative bg-[#0E0E0E]">
+                <textarea
+                  id="message"
+                  v-model="form.message"
+                  required
+                  rows="5"
+                  :placeholder="$t('messagePlaceholder')"
+                  class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                  @focus="activeInput = 'message'"
+                  @blur="activeInput = ''"
+                  ref="messageInputRef"
+                ></textarea>
+              </div>
             </div>
             <p v-if="errors.message" class="text-sm text-red-500">
               {{ errors.message }}
@@ -213,8 +221,19 @@
               <h3 class="text-lg font-medium text-white">
                 {{ $t("email") }}
               </h3>
-              <p class="mt-1 text-main-gray-hover">
-                contact@irbis-miniatures.com
+              <p class="mt-1">
+                <span
+                  ref="emailSpanRef"
+                  class="text-main-gray-hover hover:text-main-red active:text-main-red cursor-pointer transition-colors"
+                  @click="
+                    copyToClipboard(
+                      'contact@irbis-miniatures.com',
+                      emailSpanRef
+                    )
+                  "
+                >
+                  contact@irbis-miniatures.com
+                </span>
               </p>
             </div>
           </div>
@@ -240,7 +259,15 @@
               <h3 class="text-lg font-medium text-white">
                 {{ $t("phone") }}
               </h3>
-              <p class="mt-1 text-main-gray-hover">+1 (555) 123-4567</p>
+              <p class="mt-1">
+                <span
+                  ref="phoneSpanRef"
+                  class="text-main-gray-hover hover:text-main-red active:text-main-red cursor-pointer transition-colors"
+                  @click="copyToClipboard('+1 (555) 123-4567', phoneSpanRef)"
+                >
+                  +1 (555) 123-4567
+                </span>
+              </p>
             </div>
           </div>
 
@@ -271,8 +298,14 @@
               <h3 class="text-lg font-medium text-white">
                 {{ $t("address") }}
               </h3>
-              <p class="mt-1 text-main-gray-hover">
-                {{ $t("addressDetails") }}
+              <p class="mt-1">
+                <span
+                  ref="addressSpanRef"
+                  class="text-main-gray-hover hover:text-main-red active:text-main-red cursor-pointer transition-colors"
+                  @click="copyToClipboard($t('addressDetails'), addressSpanRef)"
+                >
+                  {{ $t("addressDetails") }}
+                </span>
               </p>
             </div>
           </div>
@@ -365,24 +398,10 @@ const emailInputRef = ref<HTMLInputElement | null>(null);
 const subjectInputRef = ref<HTMLInputElement | null>(null);
 const messageInputRef = ref<HTMLTextAreaElement | null>(null);
 
-// Focus input functions
-const focusEmailInput = () => {
-  if (emailInputRef.value) {
-    emailInputRef.value.focus();
-  }
-};
-
-const focusSubjectInput = () => {
-  if (subjectInputRef.value) {
-    subjectInputRef.value.focus();
-  }
-};
-
-const focusMessageInput = () => {
-  if (messageInputRef.value) {
-    messageInputRef.value.focus();
-  }
-};
+// Refs for contact info spans
+const emailSpanRef = ref<HTMLElement | null>(null);
+const phoneSpanRef = ref<HTMLElement | null>(null);
+const addressSpanRef = ref<HTMLElement | null>(null);
 
 // State Management
 const form = reactive({
@@ -399,17 +418,52 @@ const errors = reactive({
 const loading = ref(false);
 const submissionSuccess = ref(false);
 
+// Clipboard copy handler with mobile/tablet animation
+const copyToClipboard = async (value: string, el?: HTMLElement | null) => {
+  const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+  try {
+    await navigator.clipboard.writeText(String(value));
+    if (isDesktop) {
+      toast.success(t("copiedToClipboard"));
+    } else if (el) {
+      el.classList.add("!text-main-red");
+      setTimeout(() => {
+        el.classList.remove("!text-main-red");
+      }, 700);
+    }
+  } catch (err) {
+    try {
+      const textarea = document.createElement("textarea");
+      textarea.value = String(value);
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "absolute";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      if (isDesktop) {
+        toast.success(t("copiedToClipboard"));
+      } else if (el) {
+        el.classList.add("!text-main-red");
+        setTimeout(() => {
+          el.classList.remove("!text-main-red");
+        }, 700);
+      }
+    } catch (fallbackErr) {
+      if (isDesktop) {
+        toast.error(t("copyFailed"));
+      }
+    }
+  }
+};
+
 // Form Validation
-/**
- * Validates the form data
- * @returns boolean indicating if the form is valid
- */
 const validateForm = (): boolean => {
   let valid = true;
   errors.email = "";
   errors.message = "";
 
-  // Email validation
   if (!form.email) {
     errors.email = t("emailRequired");
     valid = false;
@@ -418,7 +472,6 @@ const validateForm = (): boolean => {
     valid = false;
   }
 
-  // Message validation
   if (!form.message) {
     errors.message = t("messageRequired");
     valid = false;
@@ -431,9 +484,6 @@ const validateForm = (): boolean => {
 };
 
 // Form Submission
-/**
- * Submits the form to the backend API
- */
 const submitForm = async (): Promise<void> => {
   if (!validateForm()) return;
 
@@ -446,7 +496,6 @@ const submitForm = async (): Promise<void> => {
       message: form.message,
     });
 
-    // Reset form and show success message
     form.subject = "";
     form.message = "";
     if (!authStore.isAuthenticated) {
@@ -455,12 +504,9 @@ const submitForm = async (): Promise<void> => {
 
     submissionSuccess.value = true;
 
-    // Hide success message after 5 seconds
     setTimeout(() => {
       submissionSuccess.value = false;
     }, 5000);
-
-    toast.success(t("messageSentSuccess"));
   } catch (error) {
     console.error("Error submitting support message:", error);
     toast.error(t("messageSendFailed"));

@@ -9,20 +9,7 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="relative p-[1px]">
-      <!-- Gradient border -->
-      <div
-        class="absolute inset-0 bg-gradient-to-br from-white via-white/50 to-transparent opacity-80"
-      ></div>
-
-      <!-- Content with background -->
-      <div class="relative bg-[#0E0E0E] flex flex-col items-center py-16">
-        <div
-          class="w-14 h-14 border-4 border-white border-opacity-20 border-t-main-red rounded-full animate-spin mb-6"
-        ></div>
-        <p class="text-white text-lg">{{ $t("loading") }}</p>
-      </div>
-    </div>
+    <Loader v-if="loading" :text="$t('loading')" />
 
     <!-- Error State -->
     <div v-else-if="error" class="relative p-[1px]">
@@ -46,9 +33,16 @@
     <!-- News List -->
     <TransitionGroup
       v-if="!loading && newsItems.length > 0"
-      name="list"
+      name=""
       tag="div"
       class="space-y-8"
+      enter-active-class="transition-all duration-500 ease-in-out"
+      leave-active-class="transition-all duration-500 ease-in-out"
+      enter-from-class="opacity-0 translate-y-8"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 translate-y-8"
+      move-class="transition-transform duration-500 ease-in-out"
     >
       <div
         v-for="newsItem in newsItems"
@@ -99,7 +93,7 @@
               <div v-if="textExceedsLimit(newsItem.text)" class="mt-auto pt-2">
                 <button
                   @click="openNewsDetail(newsItem)"
-                  class="text-main-red hover:text-main-red-hover transition-colors duration-300 flex items-center text-sm font-medium"
+                  class="text-main-red hover:text-main-red-hover transition-colors duration-300 flex items-center text-sm font-medium cursor-pointer"
                 >
                   {{ $t("readMore") }}
                   <svg
@@ -278,6 +272,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
+import Loader from "@/components/general/Loader.vue";
 
 import { getPaginatedActiveNews } from "@/services/newsService";
 
@@ -285,8 +280,8 @@ import type { News, PaginationData } from "@/types/news";
 import NewsModal from "@/components/general/NewsModal.vue";
 import { useEventBus } from "@/utils/eventBus";
 
-const TEXT_LIMIT = 250; // Increased limit for better previews
-const ITEMS_PER_PAGE = 5; // Reduced to show fewer items per page for better viewing
+const TEXT_LIMIT = 250;
+const ITEMS_PER_PAGE = 5;
 
 const { t } = useI18n();
 const newsItems = ref<News[]>([]);
@@ -390,19 +385,15 @@ const textExceedsLimit = (text: string): boolean => {
 };
 
 const getPreviewText = (html: string): string => {
-  // Always truncate HTML content for consistency
   const plainText = stripHtml(html);
 
-  // Create a DOM element to manipulate the HTML
   const tempElement = document.createElement("div");
   tempElement.innerHTML = html;
 
-  // If text is already short enough, just return it
   if (plainText.length <= TEXT_LIMIT) {
     return html;
   }
 
-  // Get all text nodes recursively
   const textNodes: Node[] = [];
   const getTextNodes = (node: Node) => {
     if (node.nodeType === Node.TEXT_NODE) {
@@ -414,7 +405,6 @@ const getPreviewText = (html: string): string => {
 
   getTextNodes(tempElement);
 
-  // Truncate text
   let currentLength = 0;
   let truncated = false;
 
@@ -428,17 +418,14 @@ const getPreviewText = (html: string): string => {
       node.textContent = text.substring(0, cutPoint) + "...";
       truncated = true;
 
-      // Find the nearest parent element that's a direct child of tempElement or its significant child
       let currentNode: Node | null = node;
       let foundContainer = false;
 
       while (currentNode && !foundContainer) {
-        // Go up until we find a direct child of the temp element or a significant element (p, div, etc.)
         const parent: Node | null = currentNode.parentNode;
         if (!parent || parent === tempElement) {
           foundContainer = true;
         } else {
-          // Keep nodes we've processed so far and remove siblings
           const nodeName = (parent as Element).nodeName.toLowerCase();
           if (
             nodeName === "p" ||
@@ -457,7 +444,6 @@ const getPreviewText = (html: string): string => {
         currentNode = parent;
       }
 
-      // Remove all siblings that come after current node
       if (currentNode && currentNode.parentNode) {
         const parent = currentNode.parentNode;
         let nextSibling = currentNode.nextSibling;
@@ -495,21 +481,3 @@ onMounted(() => {
   on("language-changed", refreshNews);
 });
 </script>
-
-<style>
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-/* Make sure each item animates independently */
-.list-move {
-  transition: transform 0.5s ease;
-}
-</style>

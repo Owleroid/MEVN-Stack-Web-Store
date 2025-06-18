@@ -9,7 +9,7 @@
   >
     <div
       v-if="news"
-      class="fixed inset-0 bg-black/90 flex justify-center items-center z-50 overflow-y-auto py-4 px-2 backdrop-blur-sm"
+      class="fixed inset-0 bg-black/60 flex justify-center items-center z-50 overflow-y-auto py-4 px-2 backdrop-blur-sm"
       @click="close"
     >
       <Transition
@@ -21,19 +21,20 @@
         leave-to-class="opacity-0 transform scale-95"
       >
         <div
-          class="w-full max-w-3xl relative p-[1px] my-4 max-h-[90vh] overflow-hidden shadow-2xl"
+          class="w-full max-w-3xl mx-8 my-12 sm:mx-4 sm:my-8 p-[0.5px] md:p-[1px] relative flex flex-col justify-center"
           @click.stop
         >
           <!-- Gradient border -->
           <div
-            class="absolute inset-0 bg-gradient-to-br from-white via-white/50 to-transparent opacity-80"
+            class="pointer-events-none absolute inset-0 z-10 bg-gradient-to-br from-white via-white/50 to-transparent opacity-60"
           ></div>
-
-          <!-- Content with background -->
-          <div class="relative bg-[#0E0E0E] max-h-[90vh] overflow-y-auto">
-            <!-- Modal Header with Close Button -->
+          <!-- Modal content -->
+          <div
+            class="relative bg-[#0E0E0E] flex flex-col max-h-[90vh] shadow-2xl z-20 overflow-hidden"
+          >
+            <!-- Header -->
             <div
-              class="p-4 md:p-6 border-b border-white/10 sticky top-0 z-10 backdrop-blur-md bg-[#0E0E0E]/95 flex items-center justify-between"
+              class="sticky top-0 z-30 bg-[#0E0E0E]/95 border-b border-white/10 px-6 py-4 flex items-center justify-between"
             >
               <h2
                 class="text-xl md:text-2xl font-bold font-oswald uppercase bg-gradient-to-b from-gray-100 to-gray-500 text-transparent bg-clip-text pr-8"
@@ -42,12 +43,12 @@
               </h2>
               <button
                 @click="close"
-                class="absolute right-4 md:right-6 top-4 md:top-6 p-1 text-main-red focus:outline-none transition-colors duration-200"
+                class="absolute right-6 top-4 p-1 text-main-red focus:outline-none transition-colors duration-200 cursor-pointer group"
                 aria-label="Close"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
+                  class="h-6 w-6 transition-transform duration-300 group-hover:rotate-180"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -59,30 +60,26 @@
                 </svg>
               </button>
             </div>
-
-            <!-- News Image with enhanced styling -->
-            <div v-if="news.imageUrl" class="relative">
-              <div class="w-full h-56 md:h-80 overflow-hidden">
-                <img
-                  :src="news.imageUrl"
-                  :alt="news.title"
-                  class="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-                />
+            <!-- Scrollable content -->
+            <div class="flex-1 min-h-0 overflow-y-auto px-6 py-6">
+              <div v-if="news.imageUrl" class="relative mb-6">
+                <div class="w-full h-56 md:h-80 overflow-hidden">
+                  <img
+                    :src="news.imageUrl"
+                    :alt="news.title"
+                    class="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                  />
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-[#0E0E0E] via-[#0E0E0E]/60 to-transparent"
+                ></div>
+                <!-- Date badge -->
+                <div
+                  class="absolute right-4 top-4 bg-main-red/90 backdrop-blur-sm text-white text-sm font-medium py-1 px-3 rounded shadow-lg"
+                >
+                  {{ formatDate(news.createdAt) }}
+                </div>
               </div>
-              <div
-                class="absolute inset-0 bg-gradient-to-t from-[#0E0E0E] via-[#0E0E0E]/60 to-transparent"
-              ></div>
-
-              <!-- Date badge -->
-              <div
-                class="absolute right-4 top-4 bg-main-red/90 backdrop-blur-sm text-white text-sm font-medium py-1 px-3 rounded shadow-lg"
-              >
-                {{ formatDate(news.createdAt) }}
-              </div>
-            </div>
-
-            <!-- News Content with improved typography -->
-            <div class="p-5 md:p-8">
               <!-- Show date if no image -->
               <div
                 v-if="!news.imageUrl"
@@ -90,24 +87,10 @@
               >
                 {{ formatDate(news.createdAt) }}
               </div>
-
               <div
                 class="prose prose-invert prose-lg text-white prose-headings:font-oswald prose-headings:uppercase prose-headings:text-white prose-p:text-white prose-a:text-main-red prose-a:no-underline hover:prose-a:underline prose-img:rounded-md prose-li:text-white prose-strong:text-white prose-blockquote:border-l-main-red prose-blockquote:border-opacity-70 prose-blockquote:bg-black/20 prose-blockquote:pl-4 prose-blockquote:py-1 prose-blockquote:italic max-w-none"
                 v-html="news.text"
               ></div>
-            </div>
-
-            <!-- Modal Footer with enhanced button -->
-            <div
-              class="flex justify-end p-4 md:p-6 border-t border-white/10 backdrop-blur-md bg-[#0E0E0E]/95"
-            >
-              <button
-                type="button"
-                @click="close"
-                class="h-[48px] px-10 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none shadow-lg"
-              >
-                {{ $t("close") }}
-              </button>
             </div>
           </div>
         </div>

@@ -2,17 +2,7 @@
   <div class="w-full my-8">
     <div class="relative">
       <!-- Loading State -->
-      <div
-        v-if="loading"
-        class="py-12 flex justify-center items-center min-h-[400px]"
-      >
-        <div class="flex flex-col items-center">
-          <div
-            class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-3"
-          ></div>
-          <p class="text-gray-500">{{ $t("loadingAnnouncements") }}</p>
-        </div>
-      </div>
+      <Loader v-if="loading" :text="$t('loadingAnnouncements')" />
 
       <!-- Empty State -->
       <div
@@ -60,8 +50,12 @@
               <div class="relative h-full">
                 <!-- NEW! Text with gradient -->
                 <transition name="fade">
-                  <div class="absolute top-[10%] right-[10%] z-10">
-                    <div class="font-bold text-4xl md:text-6xl drop-shadow-md">
+                  <div
+                    class="absolute top-[10%] right-[10%] md:right-[8%] lg:right-[25%] z-10"
+                  >
+                    <div
+                      class="font-bold text-3xl md:text-4xl lg:text-5xl drop-shadow-md"
+                    >
                       <span
                         class="bg-clip-text text-transparent bg-gradient-to-b from-[#BA0913] to-[#530109]"
                         >NEW!</span
@@ -77,30 +71,27 @@
                   <img
                     :src="announcement.imageUrl"
                     :alt="announcement.product.name"
-                    class="w-full max-w-4xl mx-auto h-auto object-contain rounded-md flex-grow py-4 px-2"
-                    style="min-height: 320px"
+                    class="mx-auto object-contain rounded-md flex-grow py-4 px-2 max-w-[400px] md:max-w-[600px] lg:max-w-[700px] max-h-[320px] md:max-h-[400px] lg:max-h-[500px]"
+                    style="min-height: 200px"
                   />
 
-                  <!-- Buttons directly on the image - no gradient -->
-                  <div
-                    class="absolute bottom-0 left-0 right-0 flex justify-center gap-6 p-4"
-                  >
-                    <transition-group name="fade">
-                      <router-link
-                        :key="'view-product'"
-                        :to="`/${announcement.product.category.slug}/${announcement.product.slug}`"
-                        class="h-[48px] px-12 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none flex items-center justify-center whitespace-nowrap"
-                      >
-                        {{ $t("buyNow") }}
-                      </router-link>
-                      <router-link
-                        :key="'view-collections'"
-                        to="/collections"
-                        class="h-[48px] px-12 uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none flex items-center justify-center whitespace-nowrap"
-                      >
-                        {{ $t("collections") }}
-                      </router-link>
-                    </transition-group>
+                  <!-- Buttons -->
+                  <div class="flex justify-center items-center p-4 w-auto">
+                    <router-link
+                      :key="'view-product'"
+                      :to="`/${announcement.product.category.slug}/${announcement.product.slug}`"
+                      class="w-36 h-[48px] uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none flex items-center justify-center whitespace-nowrap"
+                    >
+                      {{ $t("buyNow") }}
+                    </router-link>
+                    <div class="w-6"></div>
+                    <router-link
+                      :key="'view-collections'"
+                      to="/collections"
+                      class="w-36 h-[48px] uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none flex items-center justify-center whitespace-nowrap"
+                    >
+                      {{ $t("collections") }}
+                    </router-link>
                   </div>
                 </div>
               </div>
@@ -150,7 +141,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
+
+import Loader from "@/components/general/Loader.vue";
+
 import { getActiveAnnouncements } from "@/services/announcementService";
+
 import type { Announcement } from "@/types/announcement";
 
 const announcements = ref<Announcement[]>([]);
@@ -168,7 +163,6 @@ const fetchAnnouncements = async () => {
     if (success) {
       announcements.value = fetchedAnnouncements;
 
-      // Start autoplay if there are multiple announcements
       if (fetchedAnnouncements.length > 1) {
         startAutoplay();
       }
@@ -185,7 +179,7 @@ const nextSlide = () => {
   if (currentIndex.value < announcements.value.length - 1) {
     currentIndex.value++;
   } else {
-    currentIndex.value = 0; // Loop back to the first slide
+    currentIndex.value = 0;
   }
   restartAutoplay();
 };
@@ -194,7 +188,7 @@ const prevSlide = () => {
   if (currentIndex.value > 0) {
     currentIndex.value--;
   } else {
-    currentIndex.value = announcements.value.length - 1; // Loop to the last slide
+    currentIndex.value = announcements.value.length - 1;
   }
   restartAutoplay();
 };
@@ -212,7 +206,7 @@ const startAutoplay = () => {
 
   autoplayInterval.value = setInterval(() => {
     nextSlide();
-  }, 5000); // Change slide every 5 seconds
+  }, 5000);
 };
 
 const stopAutoplay = () => {

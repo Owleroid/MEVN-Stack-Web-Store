@@ -1,14 +1,7 @@
 <template>
   <div class="px-4 py-8 md:py-10 max-w-7xl mx-auto">
     <!-- Loading State -->
-    <div v-if="loading" class="flex justify-center items-center py-12">
-      <div
-        class="w-14 h-14 border-4 border-white border-opacity-20 border-t-main-red rounded-full animate-spin"
-      ></div>
-      <span class="ml-3 text-sm text-main-gray-hover">{{
-        $t("loadingProduct")
-      }}</span>
-    </div>
+    <Loader v-if="loading" :text="$t('loadingProduct')" />
 
     <!-- Error State -->
     <div
@@ -102,7 +95,7 @@
         </nav>
       </div>
 
-      <!-- Product Name (Centered) -->
+      <!-- Product Name -->
       <h1
         class="text-3xl md:text-4xl font-medium uppercase font-display bg-gradient-to-b from-[#F1F1F1] to-[#818181] bg-clip-text text-transparent mb-6 text-center"
       >
@@ -196,9 +189,7 @@
           <!-- Price -->
           <div class="flex items-center space-x-4">
             <div v-if="product.discount" class="flex flex-col">
-              <p
-                class="text-2xl font-medium bg-gradient-to-b from-main-red to-[#818181] bg-clip-text text-transparent"
-              >
+              <p class="text-2xl font-medium text-main-red">
                 {{ formatPrice(product.price[currency]) }}
               </p>
               <div class="flex items-center space-x-2">
@@ -262,11 +253,11 @@
           </div>
 
           <!-- Amount selector and Add to Cart Section -->
-          <div class="mt-8 flex items-center gap-4">
+          <div class="mt-8 flex items-center justify-center gap-4">
             <div class="w-32" @click.stop>
               <AmountSelector v-model:amount="quantity" />
             </div>
-            <div class="flex-1" @click.stop>
+            <div class="w-auto" @click.stop>
               <AddToCartButton :product="product" :quantity="quantity" />
             </div>
           </div>
@@ -387,6 +378,7 @@ import { getProductBySlug } from "@/services/productService";
 
 import AddToCartButton from "@/components/general/AddToCartButton.vue";
 import AmountSelector from "@/components/general/AmountSelector.vue";
+import Loader from "@/components/general/Loader.vue";
 
 import type { Product } from "@/types/products";
 
@@ -413,16 +405,6 @@ const modalImage = ref<string>("");
 
 // Get user's preferred currency
 const currency = authStore.currency as "rubles" | "euros";
-
-// Utilities
-const formatDate = (dateString: string | Date): string => {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat(currency === "rubles" ? "ru-RU" : "en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }).format(date);
-};
 
 // Computed
 const hasSecondaryImages = computed(

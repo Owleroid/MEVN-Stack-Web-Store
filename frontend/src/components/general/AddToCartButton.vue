@@ -2,7 +2,7 @@
   <button
     @click="addToCart"
     type="button"
-    class="w-full h-[48px] uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none"
+    class="px-6 h-[48px] uppercase font-semibold text-white bg-gradient-to-b from-[#BA0913] to-[#530109] hover:from-[#D20A15] hover:to-[#7A020D] transition-colors duration-200 focus:outline-none cursor-pointer"
   >
     <span class="flex items-center justify-center gap-2">
       {{ $t("addToCart") }}

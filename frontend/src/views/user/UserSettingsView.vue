@@ -1,21 +1,19 @@
 <template>
-  <div class="px-4 py-8 md:py-10 max-w-5xl mx-auto">
+  <div class="px-8 md:px-12 py-8 md:py-10 max-w-5xl mx-auto">
     <!-- Settings/Orders Toggle -->
-    <div class="flex justify-between items-center mb-8">
-      <div
-        class="flex-1 py-2 flex justify-center border-r border-main-gray-hover"
+    <div class="flex justify-center items-center mb-8 lg:hidden">
+      <router-link
+        to="/settings"
+        class="text-3xl text-main-red px-10 border-r border-main-gray-hover"
       >
-        <router-link to="/settings" class="text-main-red text-3xl">
-          {{ $t("settings") }}
-        </router-link>
-      </div>
-      <div
-        class="flex-1 py-2 flex justify-center border-l border-main-gray-hover"
+        {{ $t("settings") }}
+      </router-link>
+      <router-link
+        to="/orders"
+        class="text-3xl text-main-gray-hover px-10 border-l border-main-gray-hover"
       >
-        <router-link to="/orders" class="text-3xl text-main-gray-hover">
-          {{ $t("orders") }}
-        </router-link>
-      </div>
+        {{ $t("orders") }}
+      </router-link>
     </div>
 
     <!-- Personal Information Form -->
@@ -31,14 +29,27 @@
           >
             {{ $t("email") }}
           </label>
-          <div class="border border-white border-opacity-50 p-3 bg-transparent">
-            <input
-              type="email"
-              id="email"
-              v-model="user.email"
-              disabled
-              class="w-full bg-transparent font-medium text-white focus:outline-none"
-            />
+          <div class="relative p-[1px] mt-1">
+            <div
+              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+              :class="[
+                activeInput === 'email'
+                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+              ]"
+            ></div>
+            <div class="relative bg-[#0E0E0E]">
+              <input
+                type="email"
+                id="email"
+                v-model="user.email"
+                disabled
+                class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                @focus="activeInput = 'email'"
+                @blur="activeInput = ''"
+                ref="emailInputRef"
+              />
+            </div>
           </div>
         </div>
 
@@ -47,29 +58,31 @@
             for="name"
             :class="[
               'block text-base transition-colors duration-300 ease-in-out',
-              activeInput === 'name' ? 'text-white' : 'text-main-gray-hover',
+              activeInput === 'name' ? 'text-main-red' : 'text-main-gray-hover',
             ]"
           >
             {{ $t("name") }}
           </label>
-          <div
-            :class="[
-              'border p-3 bg-transparent transition-colors duration-300 ease-in-out',
-              activeInput === 'name'
-                ? 'border-main-red'
-                : 'border-white border-opacity-50',
-            ]"
-            @click="focusNameInput"
-          >
-            <input
-              type="text"
-              id="name"
-              v-model="user.name"
-              class="w-full bg-transparent font-medium text-white focus:outline-none"
-              @focus="activeInput = 'name'"
-              @blur="activeInput = ''"
-              ref="nameInputRef"
-            />
+          <div class="relative p-[1px] mt-1">
+            <div
+              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+              :class="[
+                activeInput === 'name'
+                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+              ]"
+            ></div>
+            <div class="relative bg-[#0E0E0E]">
+              <input
+                type="text"
+                id="name"
+                v-model="user.name"
+                class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                @focus="activeInput = 'name'"
+                @blur="activeInput = ''"
+                ref="nameInputRef"
+              />
+            </div>
           </div>
         </div>
 
@@ -78,29 +91,33 @@
             for="surname"
             :class="[
               'block text-base transition-colors duration-300 ease-in-out',
-              activeInput === 'surname' ? 'text-white' : 'text-main-gray-hover',
+              activeInput === 'surname'
+                ? 'text-main-red'
+                : 'text-main-gray-hover',
             ]"
           >
             {{ $t("surname") }}
           </label>
-          <div
-            :class="[
-              'border p-3 bg-transparent transition-colors duration-300 ease-in-out',
-              activeInput === 'surname'
-                ? 'border-main-red'
-                : 'border-white border-opacity-50',
-            ]"
-            @click="focusSurnameInput"
-          >
-            <input
-              type="text"
-              id="surname"
-              v-model="user.surname"
-              class="w-full bg-transparent font-medium text-white focus:outline-none"
-              @focus="activeInput = 'surname'"
-              @blur="activeInput = ''"
-              ref="surnameInputRef"
-            />
+          <div class="relative p-[1px] mt-1">
+            <div
+              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+              :class="[
+                activeInput === 'surname'
+                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+              ]"
+            ></div>
+            <div class="relative bg-[#0E0E0E]">
+              <input
+                type="text"
+                id="surname"
+                v-model="user.surname"
+                class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                @focus="activeInput = 'surname'"
+                @blur="activeInput = ''"
+                ref="surnameInputRef"
+              />
+            </div>
           </div>
         </div>
 
@@ -109,29 +126,33 @@
             for="phone"
             :class="[
               'block text-base transition-colors duration-300 ease-in-out',
-              activeInput === 'phone' ? 'text-white' : 'text-main-gray-hover',
+              activeInput === 'phone'
+                ? 'text-main-red'
+                : 'text-main-gray-hover',
             ]"
           >
             {{ $t("phone") }}
           </label>
-          <div
-            :class="[
-              'border p-3 bg-transparent transition-colors duration-300 ease-in-out',
-              activeInput === 'phone'
-                ? 'border-main-red'
-                : 'border-white border-opacity-50',
-            ]"
-            @click="focusPhoneInput"
-          >
-            <input
-              type="tel"
-              id="phone"
-              v-model="user.phone"
-              class="w-full bg-transparent font-medium text-white focus:outline-none"
-              @focus="activeInput = 'phone'"
-              @blur="activeInput = ''"
-              ref="phoneInputRef"
-            />
+          <div class="relative p-[1px] mt-1">
+            <div
+              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+              :class="[
+                activeInput === 'phone'
+                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+              ]"
+            ></div>
+            <div class="relative bg-[#0E0E0E]">
+              <input
+                type="tel"
+                id="phone"
+                v-model="user.phone"
+                class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                @focus="activeInput = 'phone'"
+                @blur="activeInput = ''"
+                ref="phoneInputRef"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -145,29 +166,33 @@
             for="country"
             :class="[
               'block text-base transition-colors duration-300 ease-in-out',
-              activeInput === 'country' ? 'text-white' : 'text-main-gray-hover',
+              activeInput === 'country'
+                ? 'text-main-red'
+                : 'text-main-gray-hover',
             ]"
           >
             {{ $t("deliveryData.country") }}
           </label>
-          <div
-            :class="[
-              'border p-3 bg-transparent transition-colors duration-300 ease-in-out',
-              activeInput === 'country'
-                ? 'border-main-red'
-                : 'border-white border-opacity-50',
-            ]"
-            @click="focusCountryInput"
-          >
-            <input
-              type="text"
-              id="country"
-              v-model="safeDeliveryData.country"
-              class="w-full bg-transparent font-medium text-white focus:outline-none"
-              @focus="activeInput = 'country'"
-              @blur="activeInput = ''"
-              ref="countryInputRef"
-            />
+          <div class="relative p-[1px] mt-1">
+            <div
+              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+              :class="[
+                activeInput === 'country'
+                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+              ]"
+            ></div>
+            <div class="relative bg-[#0E0E0E]">
+              <input
+                type="text"
+                id="country"
+                v-model="safeDeliveryData.country"
+                class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                @focus="activeInput = 'country'"
+                @blur="activeInput = ''"
+                ref="countryInputRef"
+              />
+            </div>
           </div>
         </div>
 
@@ -176,29 +201,31 @@
             for="city"
             :class="[
               'block text-base transition-colors duration-300 ease-in-out',
-              activeInput === 'city' ? 'text-white' : 'text-main-gray-hover',
+              activeInput === 'city' ? 'text-main-red' : 'text-main-gray-hover',
             ]"
           >
             {{ $t("deliveryData.city") }}
           </label>
-          <div
-            :class="[
-              'border p-3 bg-transparent transition-colors duration-300 ease-in-out',
-              activeInput === 'city'
-                ? 'border-main-red'
-                : 'border-white border-opacity-50',
-            ]"
-            @click="focusCityInput"
-          >
-            <input
-              type="text"
-              id="city"
-              v-model="safeDeliveryData.city"
-              class="w-full bg-transparent font-medium text-white focus:outline-none"
-              @focus="activeInput = 'city'"
-              @blur="activeInput = ''"
-              ref="cityInputRef"
-            />
+          <div class="relative p-[1px] mt-1">
+            <div
+              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+              :class="[
+                activeInput === 'city'
+                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+              ]"
+            ></div>
+            <div class="relative bg-[#0E0E0E]">
+              <input
+                type="text"
+                id="city"
+                v-model="safeDeliveryData.city"
+                class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                @focus="activeInput = 'city'"
+                @blur="activeInput = ''"
+                ref="cityInputRef"
+              />
+            </div>
           </div>
         </div>
 
@@ -207,29 +234,33 @@
             for="street"
             :class="[
               'block text-base transition-colors duration-300 ease-in-out',
-              activeInput === 'street' ? 'text-white' : 'text-main-gray-hover',
+              activeInput === 'street'
+                ? 'text-main-red'
+                : 'text-main-gray-hover',
             ]"
           >
             {{ $t("deliveryData.street") }}
           </label>
-          <div
-            :class="[
-              'border p-3 bg-transparent transition-colors duration-300 ease-in-out',
-              activeInput === 'street'
-                ? 'border-main-red'
-                : 'border-white border-opacity-50',
-            ]"
-            @click="focusStreetInput"
-          >
-            <input
-              type="text"
-              id="street"
-              v-model="safeDeliveryData.street"
-              class="w-full bg-transparent font-medium text-white focus:outline-none"
-              @focus="activeInput = 'street'"
-              @blur="activeInput = ''"
-              ref="streetInputRef"
-            />
+          <div class="relative p-[1px] mt-1">
+            <div
+              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+              :class="[
+                activeInput === 'street'
+                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+              ]"
+            ></div>
+            <div class="relative bg-[#0E0E0E]">
+              <input
+                type="text"
+                id="street"
+                v-model="safeDeliveryData.street"
+                class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                @focus="activeInput = 'street'"
+                @blur="activeInput = ''"
+                ref="streetInputRef"
+              />
+            </div>
           </div>
         </div>
 
@@ -239,30 +270,32 @@
             :class="[
               'block text-base transition-colors duration-300 ease-in-out',
               activeInput === 'buildingNumber'
-                ? 'text-white'
+                ? 'text-main-red'
                 : 'text-main-gray-hover',
             ]"
           >
             {{ $t("deliveryData.buildingNumber") }}
           </label>
-          <div
-            :class="[
-              'border p-3 bg-transparent transition-colors duration-300 ease-in-out',
-              activeInput === 'buildingNumber'
-                ? 'border-main-red'
-                : 'border-white border-opacity-50',
-            ]"
-            @click="focusBuildingNumberInput"
-          >
-            <input
-              type="text"
-              id="buildingNumber"
-              v-model="safeDeliveryData.buildingNumber"
-              class="w-full bg-transparent font-medium text-white focus:outline-none"
-              @focus="activeInput = 'buildingNumber'"
-              @blur="activeInput = ''"
-              ref="buildingNumberInputRef"
-            />
+          <div class="relative p-[1px] mt-1">
+            <div
+              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+              :class="[
+                activeInput === 'buildingNumber'
+                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+              ]"
+            ></div>
+            <div class="relative bg-[#0E0E0E]">
+              <input
+                type="text"
+                id="buildingNumber"
+                v-model="safeDeliveryData.buildingNumber"
+                class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                @focus="activeInput = 'buildingNumber'"
+                @blur="activeInput = ''"
+                ref="buildingNumberInputRef"
+              />
+            </div>
           </div>
         </div>
 
@@ -272,30 +305,32 @@
             :class="[
               'block text-base transition-colors duration-300 ease-in-out',
               activeInput === 'apartment'
-                ? 'text-white'
+                ? 'text-main-red'
                 : 'text-main-gray-hover',
             ]"
           >
             {{ $t("deliveryData.apartment") }}
           </label>
-          <div
-            :class="[
-              'border p-3 bg-transparent transition-colors duration-300 ease-in-out',
-              activeInput === 'apartment'
-                ? 'border-main-red'
-                : 'border-white border-opacity-50',
-            ]"
-            @click="focusApartmentInput"
-          >
-            <input
-              type="text"
-              id="apartment"
-              v-model="safeDeliveryData.apartment"
-              class="w-full bg-transparent font-medium text-white focus:outline-none"
-              @focus="activeInput = 'apartment'"
-              @blur="activeInput = ''"
-              ref="apartmentInputRef"
-            />
+          <div class="relative p-[1px] mt-1">
+            <div
+              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+              :class="[
+                activeInput === 'apartment'
+                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+              ]"
+            ></div>
+            <div class="relative bg-[#0E0E0E]">
+              <input
+                type="text"
+                id="apartment"
+                v-model="safeDeliveryData.apartment"
+                class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                @focus="activeInput = 'apartment'"
+                @blur="activeInput = ''"
+                ref="apartmentInputRef"
+              />
+            </div>
           </div>
         </div>
 
@@ -305,30 +340,32 @@
             :class="[
               'block text-base transition-colors duration-300 ease-in-out',
               activeInput === 'postalCode'
-                ? 'text-white'
+                ? 'text-main-red'
                 : 'text-main-gray-hover',
             ]"
           >
             {{ $t("deliveryData.postalCode") }}
           </label>
-          <div
-            :class="[
-              'border p-3 bg-transparent transition-colors duration-300 ease-in-out',
-              activeInput === 'postalCode'
-                ? 'border-main-red'
-                : 'border-white border-opacity-50',
-            ]"
-            @click="focusPostalCodeInput"
-          >
-            <input
-              type="text"
-              id="postalCode"
-              v-model="safeDeliveryData.postalCode"
-              class="w-full bg-transparent font-medium text-white focus:outline-none"
-              @focus="activeInput = 'postalCode'"
-              @blur="activeInput = ''"
-              ref="postalCodeInputRef"
-            />
+          <div class="relative p-[1px] mt-1">
+            <div
+              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+              :class="[
+                activeInput === 'postalCode'
+                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+              ]"
+            ></div>
+            <div class="relative bg-[#0E0E0E]">
+              <input
+                type="text"
+                id="postalCode"
+                v-model="safeDeliveryData.postalCode"
+                class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                @focus="activeInput = 'postalCode'"
+                @blur="activeInput = ''"
+                ref="postalCodeInputRef"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -377,13 +414,26 @@
         <label class="block text-base text-main-gray-hover mb-2">
           {{ $t("regionSettings.currentRegion") }}
         </label>
-        <div
-          class="flex items-center gap-2 p-3 border border-white border-opacity-50 bg-transparent"
-        >
-          <span class="text-xl" v-if="currentRegion === 'RU'">🇷🇺</span>
-          <span class="text-xl" v-else-if="currentRegion === 'EU'">🇪🇺</span>
-          <span class="text-xl" v-else>🌎</span>
-          <span class="text-white">{{ getRegionName(currentRegion) }}</span>
+        <div class="relative p-[1px] mt-1">
+          <div
+            class="absolute inset-0 transition-colors duration-500 ease-in-out"
+            :class="[
+              activeInput === 'region'
+                ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+            ]"
+          ></div>
+          <div
+            class="relative bg-[#0E0E0E] flex items-center gap-2 p-3"
+            tabindex="0"
+            @focus="activeInput = 'region'"
+            @blur="activeInput = ''"
+          >
+            <span class="text-xl" v-if="currentRegion === 'RU'">🇷🇺</span>
+            <span class="text-xl" v-else-if="currentRegion === 'EU'">🇪🇺</span>
+            <span class="text-xl" v-else>🌎</span>
+            <span class="text-white">{{ getRegionName(currentRegion) }}</span>
+          </div>
         </div>
       </div>
 
@@ -409,30 +459,32 @@
             :class="[
               'block text-base transition-colors duration-500 ease-in-out',
               activeInput === 'currentPassword'
-                ? 'text-white'
+                ? 'text-main-red'
                 : 'text-main-gray-hover',
             ]"
           >
             {{ $t("changePassword.currentPassword") }}
           </label>
-          <div
-            :class="[
-              'border p-3 bg-transparent transition-colors duration-500 ease-in-out',
-              activeInput === 'currentPassword'
-                ? 'border-main-red'
-                : 'border-white border-opacity-50',
-            ]"
-            @click="focusCurrentPasswordInput"
-          >
-            <input
-              type="password"
-              id="currentPassword"
-              v-model="passwords.currentPassword"
-              class="w-full bg-transparent font-medium text-white focus:outline-none"
-              @focus="activeInput = 'currentPassword'"
-              @blur="activeInput = ''"
-              ref="currentPasswordInputRef"
-            />
+          <div class="relative p-[1px] mt-1">
+            <div
+              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+              :class="[
+                activeInput === 'currentPassword'
+                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+              ]"
+            ></div>
+            <div class="relative bg-[#0E0E0E]">
+              <input
+                type="password"
+                id="currentPassword"
+                v-model="passwords.currentPassword"
+                class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                @focus="activeInput = 'currentPassword'"
+                @blur="activeInput = ''"
+                ref="currentPasswordInputRef"
+              />
+            </div>
           </div>
         </div>
 
@@ -442,30 +494,32 @@
             :class="[
               'block text-base transition-colors duration-500 ease-in-out',
               activeInput === 'newPassword'
-                ? 'text-white'
+                ? 'text-main-red'
                 : 'text-main-gray-hover',
             ]"
           >
             {{ $t("changePassword.newPassword") }}
           </label>
-          <div
-            :class="[
-              'border p-3 bg-transparent transition-colors duration-500 ease-in-out',
-              activeInput === 'newPassword'
-                ? 'border-main-red'
-                : 'border-white border-opacity-50',
-            ]"
-            @click="focusNewPasswordInput"
-          >
-            <input
-              type="password"
-              id="newPassword"
-              v-model="passwords.newPassword"
-              class="w-full bg-transparent font-medium text-white focus:outline-none"
-              @focus="activeInput = 'newPassword'"
-              @blur="activeInput = ''"
-              ref="newPasswordInputRef"
-            />
+          <div class="relative p-[1px] mt-1">
+            <div
+              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+              :class="[
+                activeInput === 'newPassword'
+                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+              ]"
+            ></div>
+            <div class="relative bg-[#0E0E0E]">
+              <input
+                type="password"
+                id="newPassword"
+                v-model="passwords.newPassword"
+                class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                @focus="activeInput = 'newPassword'"
+                @blur="activeInput = ''"
+                ref="newPasswordInputRef"
+              />
+            </div>
           </div>
         </div>
 
@@ -475,30 +529,32 @@
             :class="[
               'block text-base transition-colors duration-500 ease-in-out',
               activeInput === 'confirmPassword'
-                ? 'text-white'
+                ? 'text-main-red'
                 : 'text-main-gray-hover',
             ]"
           >
             {{ $t("changePassword.confirmPassword") }}
           </label>
-          <div
-            :class="[
-              'border p-3 bg-transparent transition-colors duration-500 ease-in-out',
-              activeInput === 'confirmPassword'
-                ? 'border-main-red'
-                : 'border-white border-opacity-50',
-            ]"
-            @click="focusConfirmPasswordInput"
-          >
-            <input
-              type="password"
-              id="confirmPassword"
-              v-model="passwords.confirmPassword"
-              class="w-full bg-transparent font-medium text-white focus:outline-none"
-              @focus="activeInput = 'confirmPassword'"
-              @blur="activeInput = ''"
-              ref="confirmPasswordInputRef"
-            />
+          <div class="relative p-[1px] mt-1">
+            <div
+              class="absolute inset-0 transition-colors duration-500 ease-in-out"
+              :class="[
+                activeInput === 'confirmPassword'
+                  ? 'bg-gradient-to-br from-[#BA0913] via-[#BA0913]/50 to-transparent opacity-80'
+                  : 'bg-gradient-to-br from-white via-white/50 to-transparent opacity-80',
+              ]"
+            ></div>
+            <div class="relative bg-[#0E0E0E]">
+              <input
+                type="password"
+                id="confirmPassword"
+                v-model="passwords.confirmPassword"
+                class="w-full shadow-sm text-base bg-[#0E0E0E] text-white px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                @focus="activeInput = 'confirmPassword'"
+                @blur="activeInput = ''"
+                ref="confirmPasswordInputRef"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -566,6 +622,10 @@
       @region-selected="onRegionSelected"
       @cancel="showRegionSelector = false"
     />
+
+    <div v-if="loading">
+      <Loader :text="$t('loading')" />
+    </div>
   </div>
 </template>
 
@@ -579,6 +639,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { getUserRegion, setUserRegion } from "@/services/geolocationService";
 
 import RegionSelector from "@/components/general/RegionSelector.vue";
+import Loader from "@/components/general/Loader.vue";
 
 import {
   getUserData,
@@ -586,7 +647,6 @@ import {
   changeUserPassword,
 } from "@/services/authService";
 
-// Create a more specific type that guarantees deliveryData exists
 interface SafeUserData {
   id: string;
   email: string;
@@ -628,55 +688,7 @@ const postalCodeInputRef = ref<HTMLInputElement | null>(null);
 const currentPasswordInputRef = ref<HTMLInputElement | null>(null);
 const newPasswordInputRef = ref<HTMLInputElement | null>(null);
 const confirmPasswordInputRef = ref<HTMLInputElement | null>(null);
-
-// Focus functions
-const focusNameInput = () => {
-  if (nameInputRef.value) nameInputRef.value.focus();
-};
-
-const focusSurnameInput = () => {
-  if (surnameInputRef.value) surnameInputRef.value.focus();
-};
-
-const focusPhoneInput = () => {
-  if (phoneInputRef.value) phoneInputRef.value.focus();
-};
-
-const focusCountryInput = () => {
-  if (countryInputRef.value) countryInputRef.value.focus();
-};
-
-const focusCityInput = () => {
-  if (cityInputRef.value) cityInputRef.value.focus();
-};
-
-const focusStreetInput = () => {
-  if (streetInputRef.value) streetInputRef.value.focus();
-};
-
-const focusBuildingNumberInput = () => {
-  if (buildingNumberInputRef.value) buildingNumberInputRef.value.focus();
-};
-
-const focusApartmentInput = () => {
-  if (apartmentInputRef.value) apartmentInputRef.value.focus();
-};
-
-const focusPostalCodeInput = () => {
-  if (postalCodeInputRef.value) postalCodeInputRef.value.focus();
-};
-
-const focusCurrentPasswordInput = () => {
-  if (currentPasswordInputRef.value) currentPasswordInputRef.value.focus();
-};
-
-const focusNewPasswordInput = () => {
-  if (newPasswordInputRef.value) newPasswordInputRef.value.focus();
-};
-
-const focusConfirmPasswordInput = () => {
-  if (confirmPasswordInputRef.value) confirmPasswordInputRef.value.focus();
-};
+const emailInputRef = ref<HTMLInputElement | null>(null);
 
 // Use the safe type
 const user = ref<SafeUserData>({
@@ -710,7 +722,6 @@ onMounted(async () => {
   if (authStore.isAuthenticated) {
     try {
       const response = await getUserData(authStore.userId);
-      // Handle potential undefined fields
       user.value = {
         id: response.id || "",
         email: response.email || "",
@@ -747,11 +758,9 @@ const onRegionSelected = (region: string) => {
   showRegionSelector.value = false;
   currentRegion.value = region;
 
-  // Update region in auth store and session storage
   authStore.userRegion = region;
   setUserRegion(region);
 
-  // Update language and currency based on selected region
   if (region === "RU") {
     authStore.setLanguage("ru");
     authStore.setCurrency("rubles");
@@ -790,17 +799,14 @@ const changePassword = async () => {
       passwords.value.newPassword
     );
 
-    // Show success message
     passwordChangeSuccess.value = true;
 
-    // Hide success message after 5 seconds
     setTimeout(() => {
       passwordChangeSuccess.value = false;
     }, 5000);
 
     toast.success(t("passwordChangeSuccess"));
 
-    // Clear password fields after successful change
     passwords.value = {
       currentPassword: "",
       newPassword: "",
